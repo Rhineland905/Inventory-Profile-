@@ -181,7 +181,7 @@ fun Project.fabricCommonDependency(minecraft_version: Any,
             }
         }
         modmenu_version?.let {
-            "modCompileOnly"("com.terraformersmc:modmenu:$modmenu_version")
+            "modApi"("com.terraformersmc:modmenu:$modmenu_version")
         }
 
         libIPN_version?.let {
