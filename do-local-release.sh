@@ -24,6 +24,8 @@ if [[ n$IPNEXT_RELEASE != "n" ]]; then
   . ~/.config/secrets/curseforge.sh
 fi
 
+
+PROJECT_URL=$(git remote get-url origin)
 PROJECT_NAME="IPN"
 
 BUILD_PATH=""
@@ -43,7 +45,7 @@ if [[ -e /tmp/IPN/${PROJECT_NAME} ]]; then
   rm -rf /tmp/IPN/${PROJECT_NAME}
 fi
 
-git clone git@gitea.lan:Inventory-Profiles-Next/${PROJECT_NAME}.git ${PROJECT_NAME}
+git clone ${PROJECT_URL} ${PROJECT_NAME}
 
 if [[ ! -e ../venv ]]; then
   python -m venv ../venv
