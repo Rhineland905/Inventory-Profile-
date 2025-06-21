@@ -46,10 +46,10 @@ val libIPN_version = "${project.name}:${project.ext["libIPN_version"]}"
 val controlify_version = "2.2.0+1.21.6-neoforge"
 val yacl_version = "3.7.1+1.21.6-neoforge"
 
-ext["kff_ver"] = "5.7"
-ext["forge_ver"] = "21.3"
+ext["kff_ver"] = "5.8"
+ext["forge_ver"] = "21.6"
 ext["forge_ver_max"] = ""
-ext["mc_ver"] = "1.21.5"
+ext["mc_ver"] = "1.21.6"
 ext["mc_ver_max"] = "1.22"
 
 
