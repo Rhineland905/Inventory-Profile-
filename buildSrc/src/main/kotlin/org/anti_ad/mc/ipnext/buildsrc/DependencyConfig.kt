@@ -334,13 +334,15 @@ fun Project.neoForgeCommonDependency(minecraft_version: Any,
         }
 */
 
-        "compileOnly"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0") {
+        "compileOnly"("org.jetbrains.kotlinx:kotlinx-serialization-json:1+") {
             exclude("org.jetbrains.kotlin")
             this.isChanging = true
         }
+/*
         "compileOnly"("org.jetbrains.kotlin:kotlin-stdlib:2.0.0") {
             exclude("org.jetbrains.kotlin")
         }
+*/
 
         "compileOnly"("org.antlr:antlr4-runtime:$antlrVersion") {
             version {

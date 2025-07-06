@@ -49,8 +49,8 @@ dependencies {
 
 plugins {
     //`kotlin-dsl`
-    kotlin("jvm") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("jvm") version "2.1.21"
+    kotlin("plugin.serialization") version "2.1.21"
     idea
     `java-library`
     `maven-publish`
@@ -205,6 +205,7 @@ class Version(val major: String, val minor: String, val revision: String, val pr
         else //Only use git hash if it's a prerelease.
             "$major.$minor.$revision-BETA+C$gitHash-SNAPSHOT"
     }
+
 
     fun toCleanString(): String {
         return if (!preRelease)

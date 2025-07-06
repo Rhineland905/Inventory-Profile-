@@ -32,7 +32,7 @@ class IPNOptiFabricMixinPlugin: IMixinConfigPlugin {
 
     val optifabricMixin = "org.anti_ad.mc.ipnext.mixin.MixinGameRendererOptifabric"
 
-    override fun onLoad(mixinPackage: String?) {
+    override fun onLoad(mixinPackage: String) {
         hasOptiFabric = FabricLoader.getInstance().getModContainer("optifabric").isPresent
     }
 
