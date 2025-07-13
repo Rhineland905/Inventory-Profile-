@@ -161,23 +161,31 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                     val scr = Vanilla.screen()
                     if (scr != null && scr === screen) {
                         if (Vanilla.screen() == this@SortingButtonCollectionWidget.screen) {
-                            when (button) {
-                                0                          -> {
-                                    GeneralInventoryActions.doSort(container, true, forcePlayer = playerSide)
-                                }
-
-                                KeyCodes.MOUSE_SCROLL_UP   -> {
-                                    if (Vanilla.screen() == null) {
-                                        Log.trace("Received scroll event with no active screen", Exception())
+                            if (GuiSettings.CHANGE_SORT_ORDER_WITH_SCROLL_WHEEL.booleanValue) {
+                                when (button) {
+                                    0                          -> {
+                                        GeneralInventoryActions.doSort(container, true, forcePlayer = playerSide)
                                     }
-                                    ModSettings.SORT_ORDER.togglePrevious();
-                                }
 
-                                KeyCodes.MOUSE_SCROLL_DOWN -> {
-                                    if (Vanilla.screen() == null) {
-                                        Log.trace("Received scroll event with no active screen", Exception())
+                                    KeyCodes.MOUSE_SCROLL_UP   -> {
+                                        if (Vanilla.screen() == null) {
+                                            Log.trace("Received scroll event with no active screen", Exception())
+                                        }
+                                        ModSettings.SORT_ORDER.togglePrevious();
                                     }
-                                    ModSettings.SORT_ORDER.toggleNext();
+
+                                    KeyCodes.MOUSE_SCROLL_DOWN -> {
+                                        if (Vanilla.screen() == null) {
+                                            Log.trace("Received scroll event with no active screen", Exception())
+                                        }
+                                        ModSettings.SORT_ORDER.toggleNext();
+                                    }
+                                }
+                            } else {
+                                when (button) {
+                                    0                          -> {
+                                        GeneralInventoryActions.doSort(container, true, forcePlayer = playerSide)
+                                    }
                                 }
                             }
                         }
@@ -252,9 +260,11 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                 tooltipTextSource = {
                     StringBuilder()
                         .append(I18n.translate("inventoryprofiles.tooltip.sort_button"))
-                        .append(I18n.translate("inventoryprofiles.tooltip.sort_button.current_order", I18n.translate(ModSettings.SORT_ORDER.value.toString())))
-                        .append(I18n.translate("inventoryprofiles.tooltip.sort_button.key_help"))
-                        .toString()
+                        .append(I18n.translate("inventoryprofiles.tooltip.sort_button.current_order", I18n.translate(ModSettings.SORT_ORDER.value.toString()))).also { sb ->
+                            if (GuiSettings.CHANGE_SORT_ORDER_WITH_SCROLL_WHEEL.booleanValue) {
+                                sb.append(I18n.translate("inventoryprofiles.tooltip.sort_button.key_help"))
+                            }
+                        }.toString()
                 }
                 id = "sort_button"
                 hintableList.add(this)
