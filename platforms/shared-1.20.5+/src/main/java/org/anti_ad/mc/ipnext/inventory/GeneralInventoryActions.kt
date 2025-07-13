@@ -24,7 +24,6 @@ import org.anti_ad.mc.alias.component.`(types)`
 import org.anti_ad.mc.alias.component.ComponentType
 import org.anti_ad.mc.alias.inventory.PlayerInventory
 import org.anti_ad.mc.alias.nbt.NbtHelper_toFormattedString
-import org.anti_ad.mc.alias.registry.Registries
 import org.anti_ad.mc.alias.screen.BeaconContainer
 import org.anti_ad.mc.alias.screen.Container
 import org.anti_ad.mc.alias.screen.slot.Slot
@@ -65,6 +64,7 @@ import org.anti_ad.mc.ipnext.item.ComponentUtils.toFullNbtOrNull
 import org.anti_ad.mc.ipnext.item.EMPTY
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.fullItemInfoAsJson
+import org.anti_ad.mc.ipnext.item.`(isBundleAndHasItems)`
 import org.anti_ad.mc.ipnext.item.isEmpty
 import org.anti_ad.mc.ipnext.item.itemId
 import org.anti_ad.mc.ipnext.item.rule.Rule
@@ -341,8 +341,13 @@ object GeneralInventoryActions {
         InnerActions.cleanTempSlotsForClosing()
     }
 
-    fun scrollToPlayer() {
-        if (!ScrollSettings.TEMP_DISABLE.isPressing()) {
+    fun scrollToPlayer(focusedItem: ItemStack) {
+        val itemType = focusedItem.itemType
+/*
+        if (!ScrollSettings.TEMP_DISABLE.isPressing() &&
+            !(ScrollSettings.DISABLE_FOR_NON_EMPTY_BUNDLES.booleanValue && itemType.`(isBundleAndHasItems)`)) {
+*/
+        if (isEnabled(focusedItem)) {
             if (ScrollSettings.SCROLL_FULL_STACK.isPressing()) {
                 if (ScrollSettings.SCROLL_THROW.isPressing()) {
                     ScrollingUtils.scrollFullStackThrow()
@@ -367,8 +372,17 @@ object GeneralInventoryActions {
         }
     }
 
-    fun scrollToChest() {
-        if (!ScrollSettings.TEMP_DISABLE.isPressing()) {
+    fun isEnabled(focusedItem: ItemStack) : Boolean {
+        val itemType = focusedItem.itemType
+        val isTempDisable = ScrollSettings.TEMP_DISABLE.isPressing()
+        val isBundle = ScrollSettings.DISABLE_FOR_NON_EMPTY_BUNDLES.booleanValue && itemType.`(isBundleAndHasItems)`
+        return  isBundle && isTempDisable ||
+                !isBundle && !isTempDisable
+    }
+
+    fun scrollToChest(focusedItem: ItemStack) {
+
+        if (isEnabled(focusedItem)) {
             if (ScrollSettings.SCROLL_FULL_STACK.isPressing()) {
                 if (ScrollSettings.SCROLL_THROW.isPressing()) {
                     ScrollingUtils.scrollFullStackThrow()
@@ -389,6 +403,34 @@ object GeneralInventoryActions {
                 } else {
                     ScrollingUtils.scrollSingleItem(ScrollDirection.TO_CHEST)
                 }
+            }
+        }
+    }
+
+    fun scrollUp() {
+        val focusedSlot = vFocusedSlot()
+        val focusedItem = focusedSlot?.`(itemStack)` ?: ItemStack.EMPTY
+        if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
+            scrollToChest(focusedItem)
+        } else {
+            if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+                scrollToChest(focusedItem)
+            } else {
+                scrollToPlayer(focusedItem)
+            }
+        }
+    }
+
+    fun scrollDown() {
+        val focusedSlot = vFocusedSlot()
+        val focusedItem = focusedSlot?.`(itemStack)` ?: ItemStack.EMPTY
+        if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
+            scrollToPlayer(focusedItem)
+        } else {
+            if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+                scrollToPlayer(focusedItem)
+            } else {
+                scrollToChest(focusedItem)
             }
         }
     }

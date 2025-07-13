@@ -81,8 +81,8 @@ object InventoryInputHandler : IInputHandler {
                             || Hotkeys.DUMP_ITEM_NBT_TO_CHAT     /**/ run ::dumpItemNbt
                             || Hotkeys.COPY_COMPONENTS           /**/ run ::nbtToClipboard
                             || Hotkeys.COPY_ITEM_ID              /**/ run ::idToClipboard
-                            || Hotkeys.SCROLL_TO_CHEST           /**/ run ::scrollToChest
-                            || Hotkeys.SCROLL_TO_INVENTORY       /**/ run ::scrollToPlayer
+                            || Hotkeys.SCROLL_TO_CHEST           /**/ run ::scrollUp
+                            || Hotkeys.SCROLL_TO_INVENTORY       /**/ run ::scrollDown
                 }
             }
         }

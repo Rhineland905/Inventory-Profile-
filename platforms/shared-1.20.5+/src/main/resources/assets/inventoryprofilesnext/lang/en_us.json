@@ -348,8 +348,14 @@
 
 
     "inventoryprofiles.gui.config.ScrollSettings":                                       "Item Scrolling",
+    "inventoryprofiles.config.category.scroll.general":                                  "Scrolling General Settings",
     "inventoryprofiles.config.category.scroll.modifiers":                                "Scroll Hot Keys Modifiers",
     "inventoryprofiles.config.category.scroll.single":                                   "Scrolling Cursor Items",
+    "inventoryprofiles.config.name.direction_absolute":                                  "Scroll Direction Absolute",
+    "inventoryprofiles.config.description.direction_absolute":                           "When true 'scroll wheel up' will always move items from the player inventory to the chest\nand 'scroll wheel down' will always move items from the chest to the player inventory.\n\nWhen false 'scroll wheel up' will move items from the inventory under the cursor to the other inventory\n and 'scroll wheel down' will move items from the other inventory to the inventory under the cursor.",
+    "inventoryprofiles.config.name.disable_for_non_empty_bundles":                       "Disable for non empty bundles",
+    "inventoryprofiles.config.description.disable_for_non_empty_bundles":                "When true scrolling won't move non empty bundles and will allow vanilla handling.\nWhen false scrolling will move non empty bundles",
+
     "inventoryprofiles.config.name.scroll_full_stack":                                   "Scroll The Whole Stack",
     "inventoryprofiles.config.description.scroll_full_stack":                            "If you hold this key while using the scroll to chest/player keys the full stack will be scrolled not just 1 item.\nNOTE:\nThis modifies the behaviour of the options below to work on a stack level not on single item.",
     "inventoryprofiles.config.name.scroll_leave_last":                                   "Leave One",

@@ -505,4 +505,9 @@ inline val ItemType.`(equipmentSlot)`: EquipmentSlot?
 
 val ItemType.`(isBundle)`: Boolean
     get() = false
+
+val ItemType.`(isBundleAndHasItems)`: Boolean
+    get() {
+        return tag?.get(DataComponentTypes.BUNDLE_CONTENTS)?.size()?.let { it: Int -> it > 0 } ?: false
+    }
 //endregion

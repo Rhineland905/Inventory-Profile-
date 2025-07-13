@@ -22,10 +22,8 @@
 
 package org.anti_ad.mc.ipnext.config
 
-import org.anti_ad.mc.common.Savable
 import org.anti_ad.mc.common.config.builder.CATEGORY
 import org.anti_ad.mc.common.config.builder.ConfigDeclaration
-import org.anti_ad.mc.common.config.builder.ConfigSaveLoadManager
 import org.anti_ad.mc.common.config.builder.bool
 import org.anti_ad.mc.common.config.builder.button
 import org.anti_ad.mc.common.config.builder.color
@@ -39,7 +37,6 @@ import org.anti_ad.mc.common.config.builder.hotkey
 import org.anti_ad.mc.common.config.builder.int
 import org.anti_ad.mc.common.config.builder.keyToggleBool
 import org.anti_ad.mc.common.config.builder.string
-import org.anti_ad.mc.common.config.builder.toMultiConfig
 import org.anti_ad.mc.common.input.KeybindSettings
 import org.anti_ad.mc.common.vanilla.render.asAlpha
 import org.anti_ad.mc.common.vanilla.render.b
@@ -303,6 +300,7 @@ object GuiSettings : ConfigDeclaration {
     val REGULAR_POST_ACTION                       /**/ by enum(PostAction.NONE)
     val REGULAR_SORT_ORDER                        /**/ by enum(SortingMethodIndividual.GLOBAL)
     val REGULAR_CUSTOM_RULE                       /**/ by string("@custom")
+    val CHANGE_SORT_ORDER_WITH_SCROLL_WHEEL       /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
     val SHOW_SORT_IN_COLUMNS_BUTTON               /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
     val IN_COLUMNS_POST_ACTION                    /**/ by enum(PostAction.GROUP_IN_COLUMNS)
     val IN_COLUMNS_SORT_ORDER                     /**/ by enum(SortingMethodIndividual.GLOBAL)
@@ -340,6 +338,11 @@ object EditProfiles : ConfigDeclaration {
 
 object ScrollSettings: ConfigDeclaration {
     override val builder = createBuilder()
+
+        .CATEGORY("$category.scrolling.general")
+    val DIRECTION_ABSOLUTE                               /**/ by bool(true)
+    val DISABLE_FOR_NON_EMPTY_BUNDLES                    /**/ by bool(true)
+
         .CATEGORY("$category.scroll.modifiers")
     val SCROLL_FULL_STACK                                /**/ by hotkey("LEFT_SHIFT",
                                                                         KeybindSettings.GUI_EXTRA)
@@ -353,6 +356,7 @@ object ScrollSettings: ConfigDeclaration {
                                                                         KeybindSettings.GUI_EXTRA)
         .CATEGORY("$category.scroll.single")
     val SCROLL_AUTO_PICKUP_NEXT_FOR_SINGLE               /**/ by bool(true)
+
 
 }
 
