@@ -27,13 +27,10 @@ import org.anti_ad.mc.alias.component.ComponentType
 import org.anti_ad.mc.alias.component.DataComponentTypes
 import org.anti_ad.mc.alias.enchantment.Enchantments
 import org.anti_ad.mc.alias.inventory.PlayerInventory
-//import org.anti_ad.mc.alias.item.ArmorItem
 import org.anti_ad.mc.alias.item.AxeItem
 import org.anti_ad.mc.alias.item.FishingRodItem
 import org.anti_ad.mc.alias.item.HoeItem
 import org.anti_ad.mc.alias.item.Items
-//import org.anti_ad.mc.alias.item.MiningToolItem
-//import org.anti_ad.mc.alias.item.PickaxeItem
 import org.anti_ad.mc.alias.item.ShovelItem
 import org.anti_ad.mc.alias.registry.Registries //import org.anti_ad.mc.alias.item.SwordItem
 import org.anti_ad.mc.alias.registry.tag.ItemTags

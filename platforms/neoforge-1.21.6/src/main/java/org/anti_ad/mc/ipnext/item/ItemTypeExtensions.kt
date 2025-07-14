@@ -393,7 +393,9 @@ inline val ItemType.isHoneyBottle: Boolean
     get() = item == Items.HONEY_BOTTLE
 
 inline val ItemType.isStew: Boolean
-    get() = this.`(isFood)` && vanillaStack.components[DataComponentTypes.SUSPICIOUS_STEW_EFFECTS] != null
+    get() = `(isFood)`
+            && (vanillaStack.components[DataComponentTypes.USE_REMAINDER]?.convertInto?.item == Items.BOWL && vanillaStack.components[DataComponentTypes.USE_REMAINDER]?.convertInto?.count == 1)
+
 
 //region ItemType Potion Relative
 
