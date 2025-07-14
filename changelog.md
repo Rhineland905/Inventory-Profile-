@@ -1,14 +1,24 @@
 <!-- latest begin -->
 
-### 2.1.9
+### 2.1.10
 
-- fixed profiles save and load on *Forge when connecting to servers.
-- added support for Minecraft 1.21.6 Fabric.
+- Fixed "Beetroot soup, mushroom stew, and rabbit stew do not autofill. #479"
+- Added toggle between absolute and relative scrolling.
+  * The original behaviour (default) is absolute. `scroll up` will always move from the player inventory to the opened chest. `scroll down` will always move from the opened chest to the player inventory.
+  * The new behaviour is relative. `scroll up` will move **from** the inventory under the mouse cursor to the other one, `scroll down` will move **to** the inventory under the mouse cursor from the other one.
+- Now by default the scroll-wheel actions will not move bundles with items in them and will allow the vanilla behaviour. 
+  * The `temp disable` key will allow temporary a non-empty bundle to be moved.
+
+### All scroll wheel related changes above can be controlled int the `Item Scrolling` tab of the settings.
 
 
 <!-- latest end -->
 <!-- rest begin -->
 
+### 2.1.9
+
+- fixed profiles save and load on *Forge when connecting to servers.
+- added support for Minecraft 1.21.6 Fabric.
 
 ### 2.1.8
 
