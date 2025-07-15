@@ -22,6 +22,7 @@ package org.anti_ad.mc.ipnext.gui.inject
 
 import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
+import org.anti_ad.mc.alias.screen.AnvilContainer
 import org.anti_ad.mc.alias.screen.Container
 import org.anti_ad.mc.common.extensions.containsAny
 import org.anti_ad.mc.common.extensions.detectable
@@ -31,9 +32,7 @@ import org.anti_ad.mc.common.gui.layout.setBottomRight
 import org.anti_ad.mc.common.gui.layout.setTopRight
 import org.anti_ad.mc.common.gui.widgets.Widget
 import org.anti_ad.mc.common.input.KeyCodes
-import org.anti_ad.mc.ipnext.integration.HintsManagerNG
 import org.anti_ad.mc.common.vanilla.Vanilla
-import org.anti_ad.mc.common.vanilla.alias.RenderLayer
 import org.anti_ad.mc.common.vanilla.alias.glue.I18n
 import org.anti_ad.mc.common.vanilla.render.glue.rDrawOutline
 import org.anti_ad.mc.common.vanilla.render.opaque
@@ -153,7 +152,22 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
         private val addNonChestSide = types.contains(PURE_BACKPACK)
         private val shouldAdd = addChestSide || addNonChestSide
 
-        inner class SortButton(playerSide: Boolean): SortButtonWidget() {
+        abstract inner class AutoHideSortButton: SortButtonWidget() {
+            override var visible: Boolean
+                get() {
+                    val container = Vanilla.container()
+                    return if (container is AnvilContainer) {
+                        container.levelCost == 0
+                    } else {
+                        super.visible
+                    }
+                }
+                set(value) {
+                    super.visible = value
+                }
+        }
+
+        inner class SortButton(playerSide: Boolean): AutoHideSortButton() {
 
             init {
                 this@SortingButtonCollectionWidget.snapableList.add(this)
@@ -194,7 +208,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
             }
         }
 
-        inner class SortInColumnButton(playerSide: Boolean): SortButtonWidget() {
+        inner class SortInColumnButton(playerSide: Boolean): AutoHideSortButton() {
             init {
                 this@SortingButtonCollectionWidget.snapableList.add(this)
                 clickEvent = { button ->
@@ -205,7 +219,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
             }
         }
 
-        inner class SortInRowButton(playerSide: Boolean): SortButtonWidget() {
+        inner class SortInRowButton(playerSide: Boolean): AutoHideSortButton() {
             init {
                 this@SortingButtonCollectionWidget.snapableList.add(this)
                 clickEvent = { button ->
@@ -219,8 +233,8 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
         private fun makeSortButton(playerSide: Boolean = false,
                            columnSort: Boolean = false,
                            rowSort: Boolean = false): SortButtonWidget {
-            if (columnSort) {
-                return SortInColumnButton(playerSide).apply {
+            return if (columnSort) {
+                SortInColumnButton(playerSide).apply {
                     hints = if (playerSide) {
                         this@SortingButtonCollectionWidget.hints.hintFor(IPNButton.SORT_COLUMNS_PLAYER)
                     } else {
@@ -234,7 +248,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                     hintableList.add(this)
                 }
             } else if (rowSort) {
-                return SortInRowButton(playerSide).apply {
+                SortInRowButton(playerSide).apply {
                     hints = if (playerSide) {
                         this@SortingButtonCollectionWidget.hints.hintFor(IPNButton.SORT_ROWS_PLAYER)
                     } else {
@@ -247,27 +261,29 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                     id = "sort_rows_button"
                     hintableList.add(this)
                 }
-            }
-            return SortButton(playerSide).apply {
-                hints = if (playerSide) {
-                    this@SortingButtonCollectionWidget.hints.hintFor(IPNButton.SORT_PLAYER)
-                } else {
-                    this@SortingButtonCollectionWidget.hints.hintFor(IPNButton.SORT)
+            } else {
+                SortButton(playerSide).apply {
+                    hints = if (playerSide) {
+                        this@SortingButtonCollectionWidget.hints.hintFor(IPNButton.SORT_PLAYER)
+                    } else {
+                        this@SortingButtonCollectionWidget.hints.hintFor(IPNButton.SORT)
+                    }
+                    tx = 10
+                    this@SortingButtonCollectionWidget.addChild(this)
+                    visible = GuiSettings.SHOW_REGULAR_SORT_BUTTON.booleanValue && shouldAdd
+                    tooltipTextSource = {
+                        StringBuilder()
+                            .append(I18n.translate("inventoryprofiles.tooltip.sort_button"))
+                            .append(I18n.translate("inventoryprofiles.tooltip.sort_button.current_order",
+                                                   I18n.translate(ModSettings.SORT_ORDER.value.toString()))).also { sb ->
+                                if (GuiSettings.CHANGE_SORT_ORDER_WITH_SCROLL_WHEEL.booleanValue) {
+                                    sb.append(I18n.translate("inventoryprofiles.tooltip.sort_button.key_help"))
+                                }
+                            }.toString()
+                    }
+                    id = "sort_button"
+                    hintableList.add(this)
                 }
-                tx = 10
-                this@SortingButtonCollectionWidget.addChild(this)
-                visible = GuiSettings.SHOW_REGULAR_SORT_BUTTON.booleanValue && shouldAdd
-                tooltipTextSource = {
-                    StringBuilder()
-                        .append(I18n.translate("inventoryprofiles.tooltip.sort_button"))
-                        .append(I18n.translate("inventoryprofiles.tooltip.sort_button.current_order", I18n.translate(ModSettings.SORT_ORDER.value.toString()))).also { sb ->
-                            if (GuiSettings.CHANGE_SORT_ORDER_WITH_SCROLL_WHEEL.booleanValue) {
-                                sb.append(I18n.translate("inventoryprofiles.tooltip.sort_button.key_help"))
-                            }
-                        }.toString()
-                }
-                id = "sort_button"
-                hintableList.add(this)
             }
         }
 
