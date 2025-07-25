@@ -76,3 +76,6 @@ fun StonecutterContainer.selectRecipe(id: Int) {
     onButtonClick(Vanilla.player(), id)
     Vanilla.mc().interactionManager?.clickButton(syncId, id)
 }
+
+val AnvilContainer.`(levelCost)`: Int
+    get() = this.levelCost

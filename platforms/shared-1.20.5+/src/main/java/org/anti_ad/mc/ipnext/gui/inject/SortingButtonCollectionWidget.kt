@@ -52,6 +52,7 @@ import org.anti_ad.mc.ipnext.integration.HintClassData
 import org.anti_ad.mc.ipnext.inventory.ContainerType.*
 import org.anti_ad.mc.ipnext.inventory.ContainerTypes
 import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions
+import org.anti_ad.mc.ipnext.container.`(levelCost)`
 
 //todo REFACTOR THIS SHIT
 
@@ -157,7 +158,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                 get() {
                     val container = Vanilla.container()
                     return if (container is AnvilContainer) {
-                        container.levelCost == 0 && super.visible
+                        container.`(levelCost)` == 0 && super.visible
                     } else {
                         super.visible
                     }

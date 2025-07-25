@@ -78,3 +78,6 @@ fun StonecutterContainer.selectRecipe(id: Int) {
     clickMenuButton(Vanilla.player(), id)
     Vanilla.mc().gameMode?.handleInventoryButtonClick(`(syncId)`, id)
 }
+
+val AnvilContainer.`(levelCost)`: Int
+    get() = this.cost
