@@ -20,7 +20,11 @@
 
 package org.anti_ad.mc.ipnext.parser
 
+import org.anti_ad.mc.ipnext.Log
 import org.antlr.v4.runtime.*
+import org.antlr.v4.runtime.atn.ATNConfigSet
+import org.antlr.v4.runtime.dfa.DFA
+import java.util.BitSet
 
 data class SyntaxErrorException(val line: Int,
                                 val pos: Int,
@@ -53,5 +57,16 @@ private object ErrorListener : BaseErrorListener() {
         throw SyntaxErrorException(line,
                                    charPositionInLine,
                                    msg)
+    }
+
+    override fun reportAmbiguity(recognizer: Parser?,
+                                 dfa: DFA?,
+                                 startIndex: Int,
+                                 stopIndex: Int,
+                                 exact: Boolean,
+                                 ambigAlts: BitSet?,
+                                 configs: ATNConfigSet?) {
+        Log.trace { "reportAmbiguity from: $stopIndex to $startIndex" }
+        super.reportAmbiguity(recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs)
     }
 }

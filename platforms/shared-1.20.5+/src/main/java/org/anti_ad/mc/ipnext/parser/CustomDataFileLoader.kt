@@ -132,7 +132,7 @@ object ProfilesLoader: Loader, Savable {
         savedProfiles.clear()
         val temp = mutableListOf<ProfileData>()
         if (fromUserInput) {
-            TellPlayer.chat("Loafing profiles...")
+            TellPlayer.chat("Loading profiles...")
         }
         if (file.exists()) {
             tryOrPrint({msg->

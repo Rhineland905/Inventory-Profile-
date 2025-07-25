@@ -3,6 +3,8 @@ lexer grammar ProfilesLexer;
 
 WS : [\p{white_space}]+ -> skip ;
 
+
+
 PROFILE      : 'profile';
 ACTIVATE     : 'activate';
 
@@ -34,14 +36,14 @@ LBRACE : '{' ;
 RBRACE : '}' ;
 DQUOTE : '"' ;
 LID    : 'id';
-LVL    : 'lvl';
-S      : 's';
+//LVL    : 'lvl';
+//S      : 's';
 
 COLON : ':';
-SEMICOLON : ';';
+//SEMICOLON : ';';
 
 //fragment ENCHANTMENTS    : 'Enchantments';
-COMPONENT      : '"Component" :';
+//COMPONENT      : '"Component" :';
 
 ARROW : '->';
 
@@ -58,11 +60,8 @@ Id :  ID;
 
 NamespacedId: DQUOTE ~ [:" \n\t[\],(){}]+ ':' ~ [:" \n\t[\],(){}]+ DQUOTE;
 
-
-
 STRING
-   : '"' (ESC | SAFECODEPOINT)* '"'
-   ;
+   : DQUOTE (ESC | SAFECODEPOINT)* DQUOTE;
 
 
 fragment ESC
@@ -77,3 +76,5 @@ fragment HEX
 fragment SAFECODEPOINT
    : ~ ["\\\u0000-\u001F]
    ;
+
+

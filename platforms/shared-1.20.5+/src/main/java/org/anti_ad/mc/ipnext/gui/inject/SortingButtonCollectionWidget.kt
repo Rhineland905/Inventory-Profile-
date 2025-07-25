@@ -157,7 +157,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                 get() {
                     val container = Vanilla.container()
                     return if (container is AnvilContainer) {
-                        container.levelCost == 0
+                        container.levelCost == 0 && super.visible
                     } else {
                         super.visible
                     }

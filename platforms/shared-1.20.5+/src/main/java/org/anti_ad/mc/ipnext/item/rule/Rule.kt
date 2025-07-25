@@ -76,7 +76,7 @@ abstract class BaseRule : Rule {
             if (field === defaultComparator) {
                 Log.trace("Using default comparator")
             } else {
-                Log.trace("Using comparator set by user: $field, created at: $createdHere")
+                Log.trace("Using comparator set by user: $field, created at:", createdHere!!)
             }
             return field
         }
