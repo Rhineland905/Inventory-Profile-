@@ -1,5 +1,14 @@
 <!-- latest begin -->
 
+### 2.1.11
+
+- Fixed profiles save/load problem where the serialised NBT contains escaped `'`.
+- Overlay buttons will now hide themselves when the anvil GUI shows cost value. \
+  This will not take into account if the buttons have been moved or if they don't really overlap with the cost label.
+
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.1.10
 
 - Fixed "Beetroot soup, mushroom stew, and rabbit stew do not autofill. #479"
@@ -10,10 +19,6 @@
   * The `temp disable` key will allow temporary a non-empty bundle to be moved.
 
 ### All scroll wheel related changes above can be controlled int the `Item Scrolling` tab of the settings.
-
-
-<!-- latest end -->
-<!-- rest begin -->
 
 ### 2.1.9
 
