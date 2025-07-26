@@ -352,7 +352,33 @@ object GeneralInventoryActions {
         }
     }
 
+    fun scrollUp() {
+        val focusedSlot = vFocusedSlot()
+        val focusedItem = focusedSlot?.`(itemStack)` ?: ItemStack.EMPTY
+        if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
+            scrollToChest()
+        } else {
+            if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+                scrollToChest()
+            } else {
+                scrollToPlayer()
+            }
+        }
+    }
 
+    fun scrollDown() {
+        val focusedSlot = vFocusedSlot()
+        val focusedItem = focusedSlot?.`(itemStack)` ?: ItemStack.EMPTY
+        if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
+            scrollToPlayer()
+        } else {
+            if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+                scrollToPlayer()
+            } else {
+                scrollToChest()
+            }
+        }
+    }
 
 
 

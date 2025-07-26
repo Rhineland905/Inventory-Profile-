@@ -66,7 +66,8 @@ import org.anti_ad.mc.common.vanilla.alias.ItemStack as VanillaItemStack
 inline val VanillaItemStack.`(itemType)`: ItemType
     get() = ItemType(item,
                      nbt,
-                     { isDamageable }) //tag)
+                     { isDamageable },
+                     sourceStack = this) //tag)
 inline val VanillaItemStack.`(itemStack)`: ItemStack
     get() = if (isEmpty) ItemStack.EMPTY else ItemStack(`(itemType)`,
                                                         count)

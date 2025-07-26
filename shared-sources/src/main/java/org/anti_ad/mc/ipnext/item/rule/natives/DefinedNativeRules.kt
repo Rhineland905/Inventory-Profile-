@@ -89,7 +89,7 @@ private fun <T, R : TypeBasedRule<T>> type(supplier: () -> R,
                                            valueOf: (Rule.(ItemType) -> T)? = null) = TypeBasedRuleProvider(supplier,
                                                                                                             valueOf)
 
-private fun <R : Rule> rule(supplier: () -> R) = ByPropertyName<() -> R> { name ->
+internal fun <R : Rule> rule(supplier: () -> R) = ByPropertyName<() -> R> { name ->
     supplier.also { NATIVE_MAP[name] = it }
 }
 
@@ -100,7 +100,7 @@ object NativeRules {
     val map = NATIVE_MAP // force load class
 }
 
-private val NATIVE_MAP = mutableMapOf<String, () -> Rule>()
+internal val NATIVE_MAP = mutableMapOf<String, () -> Rule>()
 
 val none by rule(::MutableEmptyRule)
 

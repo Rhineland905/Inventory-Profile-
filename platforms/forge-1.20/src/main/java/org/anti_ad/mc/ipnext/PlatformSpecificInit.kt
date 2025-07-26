@@ -19,6 +19,8 @@
 
 package org.anti_ad.mc.ipnext
 
-fun specificInit() {
+import org.anti_ad.mc.ipnext.item.rule.initSpecificNativeRules
 
+fun specificInit() {
+    initSpecificNativeRules()
 }

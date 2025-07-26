@@ -32,7 +32,6 @@ import org.anti_ad.mc.common.vanilla.alias.DefaultedRegistry
 import org.anti_ad.mc.common.vanilla.alias.GameOptions
 import org.anti_ad.mc.common.vanilla.alias.Identifier
 import org.anti_ad.mc.common.vanilla.alias.Inventory
-import org.anti_ad.mc.common.vanilla.alias.ItemGroup
 import org.anti_ad.mc.common.vanilla.alias.KeyBinding
 import org.anti_ad.mc.common.vanilla.alias.MinecraftClient
 import org.anti_ad.mc.common.vanilla.alias.NbtCompound
@@ -54,6 +53,7 @@ import org.anti_ad.mc.ipnext.item.ItemType
 import org.anti_ad.mc.ipnext.item.MutableItemStack
 import org.anti_ad.mc.ipnext.item.empty
 import org.anti_ad.mc.ipnext.item.vanillaStack
+import org.anti_ad.mc.ipnext.mixinhelpers.IMixinSerializedCapsAccessor
 import org.anti_ad.mc.common.vanilla.alias.ItemStack as VanillaItemStack
 
 // ============
@@ -62,10 +62,19 @@ import org.anti_ad.mc.common.vanilla.alias.ItemStack as VanillaItemStack
 
 // use `()` to avoid potential mapping name collision
 
+
+fun VanillaItemStack?.capsEquals(other: Any?): Boolean {
+    if (this === other) return true
+    if (this == null || other !is VanillaItemStack) return false
+    return (this as IMixinSerializedCapsAccessor).`IPN$serializeCaps`().equals((other as IMixinSerializedCapsAccessor).`IPN$serializeCaps`())
+}
+
 inline val VanillaItemStack.`(itemType)`: ItemType
     get() = ItemType(item,
                      tag,
-                     { this.isDamageableItem })
+                     { this.isDamageableItem },
+                     sourceStack = this,
+                     sourceStackSpecificEquals = { capsEquals(it) })
 inline val VanillaItemStack.`(itemStack)`: ItemStack
     get() = if (isEmpty) ItemStack.EMPTY else ItemStack(`(itemType)`,
                                                         count)

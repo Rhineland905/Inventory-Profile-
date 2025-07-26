@@ -47,37 +47,42 @@ public abstract class MixinMinecraftClient {
     @Shadow
     public LocalPlayer player;
 
-    @Shadow @Final
+    @Shadow
+    @Final
     public Options options;
 
-    @Shadow @Nullable public Screen screen;
+    @Shadow
+    @Nullable
+    public Screen screen;
 
     @Inject(at = @At("HEAD"),
             method = "handleKeybinds()V")
     public void handleInputEvents(CallbackInfo info) {
-        IMixinKeyBinding drop = (IMixinKeyBinding) options.keyDrop;
-        if(LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_DISABLE_THROW_FOR_NON_STACKABLE().getValue()
-                && Inventory.isHotbarSlot(this.player.getInventory().selected)
-                && drop.getTimesPressed() > 0 ) {
-
-            if (!LockSlotsHandler.INSTANCE.isHotbarQMoveActionAllowed(this.player.getInventory().selected + 36, true)) {
-
-                drop.setPressed(false);
-                drop.setTimesPressed(0);
-            }
-        }
-
-        if(LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()) {
-            KeyMapping keySwapHands = this.options.keySwapOffhand;
-            IMixinKeyBinding keySwapHandsAccessor = (IMixinKeyBinding) keySwapHands;
-
-            if (this.screen == null
+        if (this.player != null) {
+            IMixinKeyBinding drop = (IMixinKeyBinding) options.keyDrop;
+            if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_DISABLE_THROW_FOR_NON_STACKABLE().getValue()
                     && Inventory.isHotbarSlot(this.player.getInventory().selected)
-                    && keySwapHandsAccessor.getTimesPressed() > 0) {
+                    && drop.getTimesPressed() > 0) {
 
-                LockedSlotKeeper.INSTANCE.setPickingItem(true);
-                LockedSlotKeeper.INSTANCE.ignoreSelectedHotbarSlotForHandSwap();
-                LockedSlotKeeper.INSTANCE.setPickingItem(false);
+                if (!LockSlotsHandler.INSTANCE.isHotbarQMoveActionAllowed(this.player.getInventory().selected + 36, true)) {
+
+                    drop.setPressed(false);
+                    drop.setTimesPressed(0);
+                }
+            }
+
+            if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()) {
+                KeyMapping keySwapHands = this.options.keySwapOffhand;
+                IMixinKeyBinding keySwapHandsAccessor = (IMixinKeyBinding) keySwapHands;
+
+                if (this.screen == null
+                        && Inventory.isHotbarSlot(this.player.getInventory().selected)
+                        && keySwapHandsAccessor.getTimesPressed() > 0) {
+
+                    LockedSlotKeeper.INSTANCE.setPickingItem(true);
+                    LockedSlotKeeper.INSTANCE.ignoreSelectedHotbarSlotForHandSwap();
+                    LockedSlotKeeper.INSTANCE.setPickingItem(false);
+                }
             }
         }
     }

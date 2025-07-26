@@ -40,7 +40,7 @@ val mod_loader = "forge"
 val mod_version = project.version
 val minecraft_version = "1.20.1"
 val minecraft_version_string = "1.20.1"
-val forge_version = "47.1.0"
+val forge_version = "47.3.3"
 val mod_artefact_version = project.ext["mod_artefact_version"]
 val kotlin_for_forge_version = "4.3.0"
 val mappingsMap = mapOf("channel" to "official",
@@ -154,6 +154,11 @@ dependencies {
 
     //runtimeOnly( fg.deobf("curse.maven:iron-furnaces-237664:4009901"))
     implementation(fg.deobf("curse.maven:easy-villagers-400514:4584220"))
+
+
+    implementation(fg.deobf("curse.maven:patchouli-306770:6164575"))
+    implementation(fg.deobf("curse.maven:tfc-302973:6103204"))
+
 }
 
 tasks.named("compileKotlin") {

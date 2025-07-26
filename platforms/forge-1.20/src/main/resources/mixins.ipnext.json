@@ -18,7 +18,8 @@
         "MixinServerBoundInteractPacket",
         "MixinMerchantScreen",
         "MixinTraderTileEntityBase",
-        "MixinAnvilMenu"
+        "MixinAnvilMenu",
+        "MixinCapabilitiesProvider"
     ],
     "injectors":          {
         "defaultRequire": 1

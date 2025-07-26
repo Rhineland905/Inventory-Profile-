@@ -81,28 +81,30 @@ public abstract class MixinMinecraftClient {
     @Inject(at = @At("HEAD"),
             method = "handleInputEvents()V")
     public void handleInputEvents(CallbackInfo info) {
-        if(LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_DISABLE_THROW_FOR_NON_STACKABLE().getValue()
-                && PlayerInventory.isValidHotbarIndex(this.player.getInventory().selectedSlot)
-                && (options.dropKey.isPressed() || options.dropKey.wasPressed())) {
-
-            if (!LockSlotsHandler.INSTANCE.isHotbarQMoveActionAllowed(this.player.getInventory().selectedSlot + 36, true)) {
-                IMixinKeyBinding drop = (IMixinKeyBinding) options.dropKey;
-                drop.setPressed(false);
-                drop.setTimesPressed(0);
-            }
-        }
-
-        if(LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()) {
-            KeyBinding keySwapHands = options.swapHandsKey;
-            IMixinKeyBinding keySwapHandsAccessor = (IMixinKeyBinding) keySwapHands;
-
-            if (this.currentScreen == null
+        if (this.player != null) {
+            if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_DISABLE_THROW_FOR_NON_STACKABLE().getValue()
                     && PlayerInventory.isValidHotbarIndex(this.player.getInventory().selectedSlot)
-                    && keySwapHandsAccessor.getTimesPressed() > 0) {
+                    && (options.dropKey.isPressed() || options.dropKey.wasPressed())) {
 
-                LockedSlotKeeper.INSTANCE.setPickingItem(true);
-                LockedSlotKeeper.INSTANCE.ignoreSelectedHotbarSlotForHandSwap();
-                LockedSlotKeeper.INSTANCE.setPickingItem(false);
+                if (!LockSlotsHandler.INSTANCE.isHotbarQMoveActionAllowed(this.player.getInventory().selectedSlot + 36, true)) {
+                    IMixinKeyBinding drop = (IMixinKeyBinding) options.dropKey;
+                    drop.setPressed(false);
+                    drop.setTimesPressed(0);
+                }
+            }
+
+            if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()) {
+                KeyBinding keySwapHands = options.swapHandsKey;
+                IMixinKeyBinding keySwapHandsAccessor = (IMixinKeyBinding) keySwapHands;
+
+                if (this.currentScreen == null
+                        && PlayerInventory.isValidHotbarIndex(this.player.getInventory().selectedSlot)
+                        && keySwapHandsAccessor.getTimesPressed() > 0) {
+
+                    LockedSlotKeeper.INSTANCE.setPickingItem(true);
+                    LockedSlotKeeper.INSTANCE.ignoreSelectedHotbarSlotForHandSwap();
+                    LockedSlotKeeper.INSTANCE.setPickingItem(false);
+                }
             }
         }
     }

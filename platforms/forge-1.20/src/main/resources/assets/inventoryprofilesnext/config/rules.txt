@@ -26,6 +26,7 @@
     ::display_name
     ::potion_effect
     ::nbt_comparator
+    ::cap_nbt_comparator
 
 @auto_refill_best
     @default_nbt_rule

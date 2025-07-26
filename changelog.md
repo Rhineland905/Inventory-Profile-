@@ -1,5 +1,15 @@
 <!-- latest begin -->
 
+### 1.10.15
+
+- fixed NPE when other mods extend Container in non-container GUIs.
+- backport of relative scrolling from 2.1.10
+- fixed locked slots not properly loading on forge.
+
+<!-- latest end -->
+<!-- rest begin -->
+
+
 ### 1.10.14
 
 - fixed forge builds screw-up hopefully
@@ -15,8 +25,6 @@
 - **1.18.2**
 - **1.19.2**
 - **1.20/.1-4**
-
-<!-- latest end -->
 
 ### 1.10.11
 
@@ -67,8 +75,6 @@ Any problems that are not reproducible on Fabric will be addressed with very low
 - **1.19.2**
 - **1.20/.1**
 - **1.20.2**
-
-<!-- rest begin -->
 
 ### 1.10.7
 

@@ -20,6 +20,8 @@
 
 package org.anti_ad.mc.ipnext.item
 
+import org.anti_ad.mc.common.vanilla.alias.ItemStack as VanillaItemStack
+
 import org.anti_ad.mc.common.vanilla.alias.Item
 import org.anti_ad.mc.common.vanilla.alias.Items
 import org.anti_ad.mc.common.vanilla.alias.NbtCompound
@@ -33,22 +35,15 @@ data class ItemType(val item: Item,
                     val isDamageableFn: (() -> Boolean),
                     var ignoreDurability: Boolean = false,
                     private val isDamageable: Boolean = isDamageableFn(),
-                    private var stackSource: (ItemType) -> ItemStack? = { null }): CountSink<ItemType> {
+                    val sourceStack: VanillaItemStack? = null,
+                    val sourceStackSpecificEquals: VanillaItemStack?.(VanillaItemStack?) -> Boolean = { true } ): CountSink<ItemType> {
 
-    val sourceStack: ItemStack? = stackSource(this)
-
-    val tag: NbtCompound?
+    val tag: NbtCompound? = if (aTag == null && item != Items.AIR) NbtCompound() else aTag
 
     val accumulatedCount: Int
         get() {
             return countSource.count(this)
         }
-
-
-    init {
-        //if (null == aTag) Log.trace("aTag = NULL here", Exception())
-        tag = if (aTag == null && item != Items.AIR) NbtCompound() else aTag
-    }
 
     override fun toString() = item.toString() + "" + (tag ?: "")
 
@@ -60,6 +55,7 @@ data class ItemType(val item: Item,
 
         if (isEmpty() && other.isEmpty()) return true
         if (item != other.item) return false
+        if (!sourceStack.sourceStackSpecificEquals(other.sourceStack)) return false
         if (!ignoreDurability || !isDamageable) {
             if (tag != other.tag) return false
         } else {

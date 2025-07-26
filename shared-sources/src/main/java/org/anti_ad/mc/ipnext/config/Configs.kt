@@ -333,6 +333,9 @@ object EditProfiles : ConfigDeclaration {
 
 object ScrollSettings: ConfigDeclaration {
     override val builder = createBuilder()
+        .CATEGORY("$category.scrolling.general")
+    val DIRECTION_ABSOLUTE                               /**/ by bool(true)
+
         .CATEGORY("$category.scroll.modifiers")
     val SCROLL_FULL_STACK                                /**/ by hotkey("LEFT_SHIFT",
                                                                         KeybindSettings.GUI_EXTRA)
