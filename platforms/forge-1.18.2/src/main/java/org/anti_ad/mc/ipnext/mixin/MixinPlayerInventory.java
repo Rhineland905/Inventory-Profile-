@@ -41,9 +41,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Inventory.class)
 public abstract class MixinPlayerInventory {
 
-
-    @Shadow @Final public NonNullList<ItemStack> items;
-
     private ItemStack addedStack = null;
 
     private boolean skipChecks = false;
@@ -57,7 +54,8 @@ public abstract class MixinPlayerInventory {
                 if (ModSettings.INSTANCE.getENABLE_LOCK_SLOTS().getValue() &&
                         !LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_ALLOW_PICKUP_INTO_EMPTY().getValue()
                         && !Debugs.INSTANCE.getFORCE_SERVER_METHOD_FOR_LOCKED_SLOTS().getValue()) {
-                    for (int i = 0; i < this.items.size(); ++i) {
+                    var items = ((Inventory) (Object) this).items;
+                    for (int i = 0; i < items.size(); ++i) {
                         if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()
                                 && Inventory.isHotbarSlot(i)
                                 && !LockedSlotKeeper.INSTANCE.isOnlyHotbarFree()
@@ -66,7 +64,7 @@ public abstract class MixinPlayerInventory {
                             continue;
                         }
                         if (!LockSlotsHandler.INSTANCE.isSlotLocked(i)) {
-                            if ((this.items.get(i)).isEmpty()) {
+                            if ((items.get(i)).isEmpty()) {
 
                                 info.setReturnValue(i);
                                 return;

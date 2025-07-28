@@ -35,8 +35,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ServerboundInteractPacket.class)
 public class MixinServerBoundInteractPacket {
 
-    @Shadow @Final private int entityId;
-
     @Inject(method = "createInteractionPacket(Lnet/minecraft/world/entity/Entity;ZLnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/network/protocol/game/ServerboundInteractPacket;",
             at = @At("HEAD"))
     private static void createInteractionPacket(Entity entity,
