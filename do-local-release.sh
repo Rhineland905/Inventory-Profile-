@@ -63,7 +63,7 @@ cd ${PROJECT_NAME}
 
 git checkout $PROJECT_BRANCH
 
-cd ${PROJECT_NAME}/description
+cd description
 
 python build_html.py
 python build_release_notes.py
