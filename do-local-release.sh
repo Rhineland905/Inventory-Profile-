@@ -46,15 +46,15 @@ if [[ -e /tmp/IPN/${PROJECT_NAME} ]]; then
   rm -rf /tmp/IPN/${PROJECT_NAME}
 fi
 
-if [[ ! -e ../venv ]]; then
-  python -m venv ../venv
-  . ../venv/bin/activate
+if [[ ! -e venv ]]; then
+  python -m venv venv
+  . venv/bin/activate
   pip install pandoc
   pip install pypandoc
   pip install premailer
   pip install pandoc_include
 else
-  . ../venv/bin/activate
+  . venv/bin/activate
 fi
 
 git clone ${PROJECT_URL} ${PROJECT_NAME}
