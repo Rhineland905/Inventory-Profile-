@@ -90,6 +90,10 @@ fi
 
 GRADLE_ARG="--max-workers 32 ${GRADLE_ARG}"
 
+echo will run "./gradlew ${BUILD_PATH}createMcpToSrg"
+
+./gradlew ${BUILD_PATH}createMcpToSrg
+
 echo will run "./gradlew ${GRADLE_ARG}"
 echo
 

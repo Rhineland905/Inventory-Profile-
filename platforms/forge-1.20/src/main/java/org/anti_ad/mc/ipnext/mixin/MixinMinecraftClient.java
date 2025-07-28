@@ -44,27 +44,20 @@ import javax.annotation.Nullable;
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraftClient {
 
-    @Shadow
-    public LocalPlayer player;
-
-    @Shadow
-    @Final
-    public Options options;
-
-    @Shadow
-    @Nullable
-    public Screen screen;
 
     @Inject(at = @At("HEAD"),
             method = "handleKeybinds()V")
     public void handleInputEvents(CallbackInfo info) {
-        if (this.player != null) {
+        var screen = ((Minecraft)((Object)this)).screen;
+        var player = ((Minecraft)((Object)this)).player;
+        var options = ((Minecraft)((Object)this)).options;
+        if (player != null) {
             IMixinKeyBinding drop = (IMixinKeyBinding) options.keyDrop;
             if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_DISABLE_THROW_FOR_NON_STACKABLE().getValue()
-                    && Inventory.isHotbarSlot(this.player.getInventory().selected)
+                    && Inventory.isHotbarSlot(player.getInventory().selected)
                     && drop.getTimesPressed() > 0) {
 
-                if (!LockSlotsHandler.INSTANCE.isHotbarQMoveActionAllowed(this.player.getInventory().selected + 36, true)) {
+                if (!LockSlotsHandler.INSTANCE.isHotbarQMoveActionAllowed(player.getInventory().selected + 36, true)) {
 
                     drop.setPressed(false);
                     drop.setTimesPressed(0);
@@ -72,11 +65,11 @@ public abstract class MixinMinecraftClient {
             }
 
             if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()) {
-                KeyMapping keySwapHands = this.options.keySwapOffhand;
+                KeyMapping keySwapHands = options.keySwapOffhand;
                 IMixinKeyBinding keySwapHandsAccessor = (IMixinKeyBinding) keySwapHands;
 
-                if (this.screen == null
-                        && Inventory.isHotbarSlot(this.player.getInventory().selected)
+                if (screen == null
+                        && Inventory.isHotbarSlot(player.getInventory().selected)
                         && keySwapHandsAccessor.getTimesPressed() > 0) {
 
                     LockedSlotKeeper.INSTANCE.setPickingItem(true);

@@ -39,12 +39,6 @@ import java.util.Iterator;
 @Mixin(MerchantScreen.class)
 public class MixinMerchantScreen {
 
-    @Final
-    @Shadow
-    public MerchantScreen.TradeOfferButton[] tradeOfferButtons;
-
-
-
     @SuppressWarnings({"DataFlowIssue", "rawtypes"})
     @Inject(method = "render",
             at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V", ordinal = 0),
