@@ -156,8 +156,10 @@ dependencies {
     implementation(fg.deobf("curse.maven:easy-villagers-400514:4584220"))
 
 
+/*
     implementation(fg.deobf("curse.maven:patchouli-306770:6164575"))
     implementation(fg.deobf("curse.maven:tfc-302973:6103204"))
+*/
 
 }
 

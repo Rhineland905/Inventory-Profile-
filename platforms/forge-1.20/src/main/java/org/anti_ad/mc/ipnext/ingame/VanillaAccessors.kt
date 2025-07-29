@@ -65,8 +65,14 @@ import org.anti_ad.mc.common.vanilla.alias.ItemStack as VanillaItemStack
 
 fun VanillaItemStack?.capsEquals(other: Any?): Boolean {
     if (this === other) return true
+    if (this == null && other == null) return true
+    if (this != null && other == null) return false
+    if (this == null && other != null) return false
     if (this == null || other !is VanillaItemStack) return false
-    return (this as IMixinSerializedCapsAccessor).`IPN$serializeCaps`().equals((other as IMixinSerializedCapsAccessor).`IPN$serializeCaps`())
+    val self = (this as IMixinSerializedCapsAccessor).`IPN$serializeCaps`()
+    val otherSelf = (other as IMixinSerializedCapsAccessor).`IPN$serializeCaps`()
+    return self == otherSelf
+
 }
 
 inline val VanillaItemStack.`(itemType)`: ItemType

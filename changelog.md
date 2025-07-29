@@ -1,14 +1,18 @@
 <!-- latest begin -->
 
+### 1.10.17
+
+- Fixed NPE when taking items from the creative inventory and dropping them in the hotbar on forge 1.20.1 
+
+<!-- latest end -->
+<!-- rest begin -->
+
+
 ### 1.10.15
 
 - fixed NPE when other mods extend Container in non-container GUIs.
 - backport of relative scrolling from 2.1.10
 - fixed locked slots not properly loading on forge.
-
-<!-- latest end -->
-<!-- rest begin -->
-
 
 ### 1.10.14
 

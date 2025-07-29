@@ -5,6 +5,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilityProviderImpl;
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinSerializedCapsAccessor;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 @SuppressWarnings({"UnstableApiUsage"})
@@ -19,7 +20,7 @@ public abstract class MixinCapabilitiesProvider<B extends ICapabilityProviderImp
         super(baseClass, isLazy);
     }
 
-    public CompoundTag IPN$serializeCaps() {
+    public @Nullable CompoundTag IPN$serializeCaps() {
         return serializeCaps();
     }
 }
