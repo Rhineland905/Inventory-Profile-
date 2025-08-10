@@ -21,6 +21,10 @@ public abstract class MixinCapabilitiesProvider<B extends ICapabilityProviderImp
     }
 
     public @Nullable CompoundTag IPN$serializeCaps() {
-        return serializeCaps();
+        var caps = serializeCaps();
+        if (caps == null) {
+            caps = new CompoundTag();
+        }
+        return caps;
     }
 }

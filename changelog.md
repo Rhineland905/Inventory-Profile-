@@ -1,11 +1,17 @@
 <!-- latest begin -->
 
-### 1.10.17
+### 1.10.18
 
-- Fixed NPE when taking items from the creative inventory and dropping them in the hotbar on forge 1.20.1 
+- fixed item matching not working on some rare occasions.
+- fixed crash on forge when Villager Screen is shown and when Inventorio is present.
+- fiexd crash on forge due to missing mixin handling changes in ForgeGradle
 
 <!-- latest end -->
 <!-- rest begin -->
+
+### 1.10.17
+
+- Fixed NPE when taking items from the creative inventory and dropping them in the hotbar on forge 1.20.1 
 
 
 ### 1.10.15
