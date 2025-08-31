@@ -22,6 +22,60 @@ package org.anti_ad.mc.ipnext
 import org.anti_ad.mc.common.LogBase
 
 object Log: LogBase() {
+
     override val id: String
         get() = "Inventory Profiles Next"
+
+    class TimedMessage(val message: String,
+                       val start: Long,
+                       val indent: Int,
+                       var end: Long,
+                       val children: MutableList<TimedMessage> = mutableListOf())
+    @PublishedApi
+    internal val indent = ThreadLocal.withInitial { 0 }
+    @PublishedApi
+    internal val parentMessage = ThreadLocal<TimedMessage?>()
+
+
+    inline fun <T> traceTimed(message: String, action: () -> T): T {
+        return if (shouldTrace()) {
+
+            val start = System.nanoTime()
+            val offset = indent.get()
+            val indentStr = "  ".repeat(offset)
+            val tmsg = TimedMessage(message, start, offset, 0L)
+            val parent = parentMessage.get()
+            parent?.children?.add(tmsg)
+            parentMessage.set(tmsg)
+
+            indent.set(offset + 1)
+            //trace { "${indentStr}$message... {" }
+            try {
+                action()
+            } finally {
+                indent.set(offset)
+                tmsg.end = System.nanoTime()
+                parentMessage.set(parent)
+                if (parent == null) {
+                    traceTimedTree(tmsg)
+                }
+                //trace { "${indentStr}} ($message). ${(System.nanoTime() - start) / 1000000} ms" }
+            }
+        } else {
+            action()
+        }
+    }
+
+    fun traceTimedTree(message: TimedMessage) {
+        val indentStr = "  ".repeat(message.indent)
+        if (message.children.isEmpty()) {
+            trace { "${indentStr}${message.message} (${(message.end - message.start) / 1000000F} ms)" }
+        } else {
+            trace { "${indentStr}${message.message} {" }
+            for (child in message.children) {
+                traceTimedTree(child)
+            }
+            trace { "${indentStr}} (${(message.end - message.start) / 1000000F} ms)" }
+        }
+    }
 }

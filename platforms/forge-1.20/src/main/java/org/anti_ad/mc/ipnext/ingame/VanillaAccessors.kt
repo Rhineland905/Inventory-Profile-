@@ -47,6 +47,7 @@ import org.anti_ad.mc.common.vanilla.alias.StonecutterContainer
 import org.anti_ad.mc.common.vanilla.alias.Window
 import org.anti_ad.mc.common.vanilla.alias.items.ArmorItem
 import org.anti_ad.mc.common.vanilla.alias.items.EquipmentSlot
+import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.item.EMPTY
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.ItemType
@@ -80,7 +81,9 @@ inline val VanillaItemStack.`(itemType)`: ItemType
                      tag,
                      { this.isDamageableItem },
                      sourceStack = this,
-                     sourceStackSpecificEquals = { capsEquals(it) })
+                     sourceStackSpecificEquals = {
+                         capsEquals(it)
+                     })
 inline val VanillaItemStack.`(itemStack)`: ItemStack
     get() = if (isEmpty) ItemStack.EMPTY else ItemStack(`(itemType)`,
                                                         count)

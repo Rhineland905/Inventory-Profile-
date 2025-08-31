@@ -20,6 +20,7 @@
 
 package org.anti_ad.mc.ipnext.item.rule
 
+import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.item.ItemType
 import org.anti_ad.mc.ipnext.item.rule.parameter.reverse
 import org.anti_ad.mc.ipnext.item.rule.parameter.sub_rule
@@ -74,18 +75,22 @@ abstract class BaseRule : Rule {
         return@lazy if (noSubComparator) {
             fun(itemType1: ItemType,
                 itemType2: ItemType): Int {
-                return comparator(itemType1,
-                                  itemType2) * mul
+                return Log.traceTimed("compare $itemType1 to $itemType2 with $comparator") {
+                    comparator(itemType1, itemType2) * mul
+                }
             }
         } else {
             val subComparator = arguments[sub_rule]
             fun(itemType1: ItemType,
                 itemType2: ItemType): Int {
-                val result = comparator(itemType1,
-                                        itemType2)
+
+                val result = Log.traceTimed("compare $itemType1 to $itemType2 with $comparator") {
+                    comparator(itemType1, itemType2)
+                }
                 if (result != 0) return result * mul
-                return subComparator.compare(itemType1,
-                                             itemType2)
+                return Log.traceTimed("compare $itemType1 to $itemType2 with $subComparator") {
+                    subComparator.compare(itemType1, itemType2)
+                }
             }
         }
     }

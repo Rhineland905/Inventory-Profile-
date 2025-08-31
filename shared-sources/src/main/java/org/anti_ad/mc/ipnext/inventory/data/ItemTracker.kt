@@ -20,6 +20,7 @@
 
 package org.anti_ad.mc.ipnext.inventory.data
 
+import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.MutableItemStack
 
@@ -38,11 +39,11 @@ class MutableItemTracker(override val cursor: MutableItemStack,
                          override val slots: List<MutableItemStack>,
                          override val thrownItems: MutableItemBucket = MutableItemBucket()) : ItemTracker {
 
-    override fun copyAsMutable() = MutableItemTracker(
-        cursor.copyAsMutable(),
-        slots.copyAsMutable(),
-        thrownItems.copyAsMutable()
-    )
+    override fun copyAsMutable(): MutableItemTracker {
+        return Log.traceTimed("MutableItemTracker copyAsMutable") {
+            MutableItemTracker(cursor.copyAsMutable(), slots.copyAsMutable(), thrownItems.copyAsMutable())
+        }
+    }
 
     override fun toString(): String {
         return "cursor: $cursor, slots: $slots, thrownItems: $thrownItems"

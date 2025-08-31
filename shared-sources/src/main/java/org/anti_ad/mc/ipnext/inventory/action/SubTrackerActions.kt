@@ -20,6 +20,7 @@
 
 package org.anti_ad.mc.ipnext.inventory.action
 
+import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.config.PostAction
 import org.anti_ad.mc.ipnext.config.PostAction.*
@@ -157,28 +158,34 @@ fun MutableSubTracker.sort(sortingRule: Rule,
                            width: Int = 0,
                            height: Int = 0) {
     val slots = this.slots
-    slots.sortItems(sortingRule).postAction(postAction,
-                                            isRectangular,
-                                            width,
-                                            height).writeTo(slots)
+    val si = Log.traceTimed("slots.Sorting items...") {
+        slots.sortItems(sortingRule)
+    }
+
+    si.postAction(postAction,
+                  isRectangular,
+                  width,
+                  height).writeTo(slots)
 }
 
 private fun List<ItemStack>.sortItems(sortingRule: Rule): List<ItemStack> {
 
     val overStackedMap = mutableMapOf<Int, ItemStack>()
-    val overStacked = this.filterIndexed { index, itemStack ->
-        val keep = itemStack.overstacked
-        if (keep) overStackedMap[index] = itemStack
-        keep
+    val overStacked = Log.traceTimed("filtering oversized stack") {
+        this.filterIndexed { index, itemStack ->
+            val keep = itemStack.overstacked
+            if (keep) overStackedMap[index] = itemStack
+            keep
+        }.toSet()
     }
-    val bucket = (this - overStacked).collect()
-    val sorted =  bucket.elementSet.toList().sortedWith(sortingRule)
-        .map { itemType ->
-            itemType to pack(bucket.count(itemType),
-                             itemType.maxCount)
-        }
-        .flatten(this.size)
-        .toMutableList()
+    val bucket = Log.traceTimed("collecting oversized stacks") {
+        (this - overStacked).collect()
+    }
+    val sorted = Log.traceTimed("Real sorting and collecting") {
+        bucket.elementSet.toList().sortedWith(sortingRule).map { itemType ->
+                itemType to pack(bucket.count(itemType), itemType.maxCount)
+            }.flatten(this.size).toMutableList()
+    }
 
     overStackedMap.forEach { (i, itemStack) ->
         sorted.add(i, itemStack)

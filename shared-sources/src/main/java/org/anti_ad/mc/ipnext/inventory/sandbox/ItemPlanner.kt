@@ -21,6 +21,7 @@
 package org.anti_ad.mc.ipnext.inventory.sandbox
 
 import org.anti_ad.mc.common.annotation.MayThrow
+import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.inventory.data.ItemTracker
 import org.anti_ad.mc.ipnext.inventory.data.MutableItemTracker
 import org.anti_ad.mc.ipnext.inventory.data.collect
@@ -58,7 +59,9 @@ class ItemPlanner(items: MutableItemTracker) {
     fun tracker(action: (MutableItemTracker) -> Unit) { // tracker is copy of original
         val syncId = innerSandbox.clickCount
         val before = itemTracker
-        val after = itemTracker.copyAsMutable().also(action)
+        val after = Log.traceTimed("Start sort planing...") {
+            itemTracker.copyAsMutable().also(action)
+        }
         if (syncId != innerSandbox.clickCount)
             error("ContainerSandbox out of sync expected $syncId current ${innerSandbox.clickCount}")
         if (before.collect() != after.collect())

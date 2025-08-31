@@ -19,7 +19,8 @@
         "MixinMerchantScreen",
         "MixinTraderTileEntityBase",
         "MixinAnvilMenu",
-        "MixinCapabilitiesProvider"
+        "MixinCapabilitiesProvider",
+        "MixinItemIndexValue"
     ],
     "injectors":          {
         "defaultRequire": 1

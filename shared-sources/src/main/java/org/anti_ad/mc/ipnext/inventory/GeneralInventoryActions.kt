@@ -412,16 +412,20 @@ private object InnerActions {
                     target = slots.get()
                     if (ModSettings.RESTOCK_HOTBAR.booleanValue) {
                         // priority: mainhand -> offhand -> hotbar 1-9
-                        (playerHands + playerHotbar).get().asSubTracker.restockFrom(target.asSubTracker)
+                        Log.traceTimed("restockFrom") {
+                            (playerHands + playerHotbar).get().asSubTracker.restockFrom(target.asSubTracker)
+                        }
                     }
                 } else {
                     target = sortableItemStorage.get()
                 }
-                target.asSubTracker.sort(sortingRule,
-                                         postAction,
-                                         target.isRectangular,
-                                         target.width,
-                                         target.height)
+                Log.traceTimed("target.asSubTracker.sort") {
+                    target.asSubTracker.sort(sortingRule,
+                                             postAction,
+                                             target.isRectangular,
+                                             target.width,
+                                             target.height)
+                }
             }
         }
     }

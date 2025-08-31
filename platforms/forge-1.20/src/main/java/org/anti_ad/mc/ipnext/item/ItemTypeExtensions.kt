@@ -25,6 +25,7 @@ package org.anti_ad.mc.ipnext.item
 import net.minecraft.network.chat.contents.TranslatableContents
 import net.minecraft.world.effect.MobEffectCategory
 import net.minecraftforge.common.extensions.IForgeFluid
+import org.anti_ad.mc.common.extensions.alsoIf
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.vanilla.Vanilla
@@ -33,6 +34,7 @@ import org.anti_ad.mc.common.vanilla.alias.EnchantmentHelper
 import org.anti_ad.mc.common.vanilla.alias.FoodComponent
 import org.anti_ad.mc.common.vanilla.alias.ForgeRegistries
 import org.anti_ad.mc.common.vanilla.alias.Identifier
+import org.anti_ad.mc.common.vanilla.alias.Item
 import org.anti_ad.mc.common.vanilla.alias.ItemGroup
 import org.anti_ad.mc.common.vanilla.alias.ItemGroupType
 import org.anti_ad.mc.common.vanilla.alias.ItemGroups
@@ -55,6 +57,7 @@ import org.anti_ad.mc.ipnext.ingame.`(getIdentifier)`
 import org.anti_ad.mc.ipnext.ingame.`(getRawId)`
 import org.anti_ad.mc.ipnext.ingame.`(itemType)`
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemGroup
+import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemIndexValue
 import org.anti_ad.mc.common.vanilla.alias.ItemStack as VanillaItemStack
 
 // ============
@@ -206,8 +209,10 @@ private fun initGroupIndex(): Boolean {
     val lookup = Vanilla.mc().player?.level()?.registryAccess() //getRegistryManager()
     val opTabEnabled = Vanilla.mc().options.operatorItemsTab().get() && Vanilla.playerNullable()?.canUseGameMasterBlocks() ?: false
     return if (features != null && lookup != null) {
-        ItemGroups.tryRebuildTabContents(features, opTabEnabled, lookup);
-        true
+        val updated = Log.traceTimed("rebuilding item group index") {
+            ItemGroups.tryRebuildTabContents(features, opTabEnabled, lookup);
+        }
+        updated
     } else {
         false
     }
@@ -215,15 +220,20 @@ private fun initGroupIndex(): Boolean {
 
 val ItemType.searchTabIndex: Int
     get() {
-        initGroupIndex()
-
-        val index = ItemGroups.searchTab().searchTabDisplayItems.indexOfFirst { it ->
-            it != null && it.`(itemType)`.item == this.item
+        if (initGroupIndex()) {
+            Log.traceTimed("update search tab index cache") {
+                ItemGroups.searchTab().searchTabDisplayItems.forEachIndexed { index, itemStack ->
+                    itemStack?.`(itemType)`?.item?.let { item ->
+                        item as IMixinItemIndexValue
+                        item.`ipn$setIndex`(index)
+                    }
+                }
+            }
         }
-        if (index == -1) {
+
+        return (this.item as IMixinItemIndexValue).`ipn$getIndex`().alsoIf({ it == -1 }) {
             Log.warn("Item ${this.itemId} not present in the Creative Inventory Search Tab!")
         }
-        return index
     }
 
 val ItemType.groupIndex: Int

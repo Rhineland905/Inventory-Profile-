@@ -26,6 +26,7 @@ import net.minecraft.block.ShulkerBoxBlock
 import net.minecraft.entity.effect.StatusEffectCategory
 import net.minecraft.item.BlockItem
 import net.minecraft.text.TranslatableTextContent
+import org.anti_ad.mc.common.extensions.alsoIf
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.vanilla.Vanilla
@@ -57,6 +58,7 @@ import org.anti_ad.mc.ipnext.mixin.IMixinBucketItem
 import org.anti_ad.mc.ipnext.mixin.IMixinEntityBucketItem
 import org.anti_ad.mc.ipnext.mixin.IMixinFluid
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemGroup
+import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemIndexValue
 import org.anti_ad.mc.common.vanilla.alias.ItemStack as VanillaItemStack
 
 // ============
@@ -226,8 +228,9 @@ private fun initGroupIndex(): Boolean {
     val lookup = Vanilla.mc().player?.world?.getRegistryManager()
     val opTabEnabled = Vanilla.mc().options.getOperatorItemsTab().getValue() && Vanilla.playerNullable()?.isCreativeLevelTwoOp ?: false
     return if (features != null && lookup != null) {
-        ItemGroups.updateDisplayContext(features, opTabEnabled, lookup);
-        true
+        Log.traceTimed("rebuilding item group index") {
+            ItemGroups.updateDisplayContext(features, opTabEnabled, lookup);
+        }
     } else {
         false
     }
@@ -235,14 +238,20 @@ private fun initGroupIndex(): Boolean {
 
 val ItemType.searchTabIndex: Int
     get() {
-        initGroupIndex()
-        val index = ItemGroups.getSearchGroup().searchTabStacks.indexOfFirst { it ->
-            it != null && it.`(itemType)`.item == this.item
+        if (initGroupIndex()) {
+            Log.traceTimed("Determining items order in creative search tab") {
+                ItemGroups.getSearchGroup().searchTabStacks.forEachIndexed { index, itemStack ->
+                    itemStack?.`(itemType)`?.item?.let { item ->
+                        item as IMixinItemIndexValue
+                        item.`ipn$setIndex`(index)
+                    }
+                }
+            }
         }
-        if (index == -1) {
+        return (this.item as IMixinItemIndexValue).`ipn$getIndex`().alsoIf({ it == -1 }) {
             Log.warn("Item ${this.itemId} not present in the Creative Inventory Search Tab!")
         }
-        return index
+
     }
 
 val ItemType.groupIndex: Int
