@@ -1,13 +1,17 @@
 <!-- latest begin -->
 
+### 1.10.19
+
+- fixed a performance issue with unreasonably huge modpacks with an insane number of modded items.
+
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 1.10.18
 
 - fixed item matching not working on some rare occasions.
 - fixed crash on forge when Villager Screen is shown and when Inventorio is present.
 - fiexd crash on forge due to missing mixin handling changes in ForgeGradle
-
-<!-- latest end -->
-<!-- rest begin -->
 
 ### 1.10.17
 
