@@ -169,13 +169,13 @@ fun Project.fabricCommonDependency(minecraft_version: Any,
         "modImplementation"("net.fabricmc.fabric-api:fabric-api:$fabric_api_version")
 
         yacl_version?.let {
-            "modCompileOnly"("dev.isxander:yet-another-config-lib:$it") {
+            "modImplementation"("dev.isxander:yet-another-config-lib:$it") {
                 exclude("maven.modrinth")
                 exclude(module = "reeses-sodium-options")
             }
         }
         controlify_version?.let {
-            "modCompileOnly"("dev.isxander:controlify:$it") {
+            "modImplementation"("dev.isxander:controlify:$it") {
                 exclude("maven.modrinth")
                 exclude(module = "reeses-sodium-options")
             }

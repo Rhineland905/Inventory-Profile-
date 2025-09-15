@@ -17,7 +17,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*ackage org.anti_ad.mc.ipnext.mixin;
+package org.anti_ad.mc.ipnext.mixin;
 
 import dev.isxander.controlify.api.vmousesnapping.SnapPoint;
 import dev.isxander.controlify.virtualmouse.VirtualMouseHandler;
@@ -48,4 +48,3 @@ public class MixinVirtualMouseHandler {
         });
     }
 }
-*/
