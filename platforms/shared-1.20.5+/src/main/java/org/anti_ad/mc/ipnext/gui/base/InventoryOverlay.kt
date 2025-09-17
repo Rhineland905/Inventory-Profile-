@@ -30,7 +30,7 @@ import org.anti_ad.mc.common.math2d.intersects
 
 import org.anti_ad.mc.common.vanilla.render.glue.IdentifierHolder
 import org.anti_ad.mc.common.vanilla.render.glue.Sprite
-import org.anti_ad.mc.ipnext.ModInfo
+import org.anti_ad.mc.ipnext.gen.ModInfo
 import org.anti_ad.mc.ipnext.event.MouseTracer
 import org.anti_ad.mc.ipnext.ingame.`(containerBounds)`
 

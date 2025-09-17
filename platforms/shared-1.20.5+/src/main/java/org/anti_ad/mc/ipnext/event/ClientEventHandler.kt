@@ -20,13 +20,9 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.input.GlobalInputHandler
-import org.anti_ad.mc.common.vanilla.Vanilla
-import org.anti_ad.mc.common.vanilla.Vanilla.mc
 import org.anti_ad.mc.common.vanilla.VanillaUtil
 import org.anti_ad.mc.ipnext.IPNInfoManager
-import org.anti_ad.mc.ipnext.ModInfo
 import org.anti_ad.mc.ipnext.access.IPNImpl
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings
@@ -35,9 +31,6 @@ import org.anti_ad.mc.ipnext.config.Tweaks
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
 import org.anti_ad.mc.ipnext.parser.CustomDataFileLoader
 import org.anti_ad.mc.ipnext.specific.event.PClientEventHandler
-import org.anti_ad.mc.ipnext.versionCheckUrl
-import kotlin.concurrent.timer
-
 
 object ClientEventHandler: PClientEventHandler {
 

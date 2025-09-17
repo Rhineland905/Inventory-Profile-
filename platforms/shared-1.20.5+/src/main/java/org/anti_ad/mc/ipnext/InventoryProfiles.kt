@@ -29,23 +29,14 @@ import org.anti_ad.mc.ipnext.gui.inject.InsertWidgetHandler
 import org.anti_ad.mc.ipnext.input.InputHandler
 import org.anti_ad.mc.ipnext.specific.initInfoManager
 import java.net.URI
+import java.net.URL
 
-var initGlueProc: (() -> Unit) = ::initGlues;
-
-val versionCheckUrl = URI("https://ipn.anti-ad.org/ipn/ipnVersionCheckV3").toURL()
-
-private fun initGlues() {
-    IPNImpl.init()
-    initGlueProc = ::nop
-
-}
-
-fun nop() { }
+val versionCheckUrl: URL = URI("https://ipn.anti-ad.org/ipn/ipnVersionCheckV3").toURL()
 
 @Suppress("unused")
 fun init() {
 
-    initGlueProc()
+    IPNImpl.init()
 
     specificInit()
 

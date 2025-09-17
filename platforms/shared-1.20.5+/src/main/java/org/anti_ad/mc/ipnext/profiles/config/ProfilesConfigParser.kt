@@ -28,8 +28,8 @@ import org.anti_ad.mc.alias.util.IdentifierOf
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.annotation.MayThrow
 import org.anti_ad.mc.common.extensions.tryOrPrint
-import org.anti_ad.mc.common.gen.ProfilesLexer
-import org.anti_ad.mc.common.gen.ProfilesParser
+import org.anti_ad.mc.ipnext.gen.ProfilesLexer
+import org.anti_ad.mc.ipnext.gen.ProfilesParser
 import org.anti_ad.mc.ipnext.ingame.`(asString)`
 import org.anti_ad.mc.ipnext.item.NbtUtils
 import org.anti_ad.mc.ipnext.parser.parseBy

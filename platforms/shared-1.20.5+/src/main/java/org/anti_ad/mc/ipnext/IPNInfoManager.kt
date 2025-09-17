@@ -20,6 +20,7 @@
 package org.anti_ad.mc.ipnext
 
 import org.anti_ad.mc.common.TellPlayer
+import org.anti_ad.mc.ipnext.gen.ModInfo
 import org.anti_ad.mc.common.gui.widgets.ConfigButtonInfo
 import org.anti_ad.mc.common.gui.widgets.CustomButtonWidget
 import org.anti_ad.mc.common.moreinfo.InfoManagerBase

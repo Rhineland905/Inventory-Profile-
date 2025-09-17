@@ -30,7 +30,7 @@ import org.anti_ad.mc.alias.registry.Registries
 import org.anti_ad.mc.alias.registry.entry.RegistryEntryListNamed
 import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.common.vanilla.VanillaUtil
-import org.anti_ad.mc.ipnext.ModInfo
+import org.anti_ad.mc.ipnext.gen.ModInfo
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.name
 

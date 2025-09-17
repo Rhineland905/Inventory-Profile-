@@ -18,40 +18,38 @@
  */
 
 
+
+
 rootProject.name = "InventoryProfilesNext"
 
 
 include("platforms:fabric-1.21.6")
-/*include("platforms:fabric-1.21.5")*/
+/*
 include("platforms:fabric-1.21")
 include("platforms:forge-1.21")
+include("platforms:forge-1.21.5")
 include("platforms:neoforge-1.21.6")
 include("platforms:neoforge-1.21")
-
+*/
 
 
 
 
 pluginManagement {
     repositories {
-        maven(url = "https://maven.fabricmc.net") {
-            name = "Fabric"
-        }
-        maven ("https://maven.neoforged.net/releases")
-        mavenCentral()
-        google()
         gradlePluginPortal()
-        mavenLocal()
+        mavenCentral().content {
+            excludeGroup("net.jodah")
+        }
+        maven { url = uri("https://repo.spongepowered.org/repository/maven-public/") }
+        maven { url = uri("https://maven.minecraftforge.net") }
+        maven { url = uri("https://maven.fabricmc.net/") }
+        maven { url = uri("https://maven.neoforged.net/releases/") }
+
         maven {
             name = "libIPN-Snapshots"
             mavenContent {
                 snapshotsOnly()
-            }
-            content {
-                includeGroup ("libipn-gradle")
-                includeGroup ("org.anti_ad.mc")
-                includeGroup ("org.anti_ad.mc.plugins")
-                includeGroup ("ca.solo-studios")
             }
             url = uri("https://maven.ipn-mod.org/snapshots")
         }
@@ -60,17 +58,48 @@ pluginManagement {
             mavenContent {
                 releasesOnly()
             }
-            content {
-                includeGroup ("libipn-gradle")
-                includeGroup ("org.anti_ad.mc")
-                includeGroup ("org.anti_ad.mc.plugins")
-                includeGroup ("ca.solo-studios")
-            }
             url = uri("https://maven.ipn-mod.org/releases")
         }
 
     }
 }
+
+dependencyResolutionManagement {
+    repositories {
+
+        gradlePluginPortal()
+        google()
+        maven { url = uri("https://maven.minecraftforge.net") }
+        maven { url = uri("https://maven.fabricmc.net/") }
+        maven { url = uri("https://maven.neoforged.net/releases/") }
+        mavenCentral()
+        maven { url = uri("https://plugins.gradle.org/m2/") }
+        maven { url = uri("https://repo.spongepowered.org/repository/maven-public/") }
+
+        maven {
+            name = "Forge"
+            url = uri("https://maven.minecraftforge.net")
+        }
+
+        maven {
+            url = uri("https://maven.ipn-mod.org/snapshots")
+        }
+        maven {
+            url = uri("https://maven.ipn-mod.org/releases")
+        }
+        exclusiveContent {
+            forRepository {
+                maven { url = mavenCentral().url }
+            }
+            filter {
+                includeVersion("org.lwjgl", "lwjgl-freetype", "3.3.3")
+            }
+        }
+
+    }
+}
+
+
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.+"

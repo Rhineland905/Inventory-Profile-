@@ -22,7 +22,7 @@ package org.anti_ad.mc.ipnext.debug
 import org.anti_ad.mc.common.extensions.div
 import org.anti_ad.mc.common.gui.widgets.ConfigButtonInfo
 import org.anti_ad.mc.common.vanilla.VanillaUtil
-import org.anti_ad.mc.ipnext.ModInfo
+import org.anti_ad.mc.ipnext.gen.ModInfo
 import java.io.BufferedWriter
 
 abstract class AbstractBlockScreenScriptGenerator: ConfigButtonInfo() {

@@ -27,7 +27,7 @@ import org.anti_ad.mc.common.config.builder.ConfigSaveLoadManager
 import org.anti_ad.mc.common.config.builder.toMultiConfig
 import org.anti_ad.mc.common.gui.screen.BaseConfigScreenSettings
 import org.anti_ad.mc.common.vanilla.VanillaUtil
-import org.anti_ad.mc.ipnext.ModInfo
+import org.anti_ad.mc.ipnext.gen.ModInfo
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
 
 private const val CONFIG_SCREEN_LABELS_PREFIX = "inventoryprofiles.gui.config."

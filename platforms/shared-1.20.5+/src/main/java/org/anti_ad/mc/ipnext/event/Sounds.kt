@@ -20,12 +20,10 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import org.anti_ad.mc.alias.client.PositionedSoundInstance
 import org.anti_ad.mc.alias.client.PositionedSoundInstance_Master
-import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.alias.util.*
 import org.anti_ad.mc.common.vanilla.VanillaSound
-import org.anti_ad.mc.ipnext.ModInfo.MOD_ID
+import org.anti_ad.mc.ipnext.gen.ModInfo.MOD_ID
 
 enum class Sounds(private val loc: String, pitch: Float = 1.0F) {
 

@@ -23,7 +23,7 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.loading.FMLEnvironment
 import org.anti_ad.mc.ipnext.Log
-import org.anti_ad.mc.ipnext.ModInfo
+import org.anti_ad.mc.ipnext.gen.ModInfo
 import org.anti_ad.mc.ipnext.event.ClientInitHandler.register
 
 @Mod(ModInfo.MOD_ID)

@@ -45,7 +45,6 @@ import org.anti_ad.mc.common.vanilla.render.g
 import org.anti_ad.mc.common.vanilla.render.green
 import org.anti_ad.mc.common.vanilla.render.r
 import org.anti_ad.mc.common.vanilla.render.red
-import org.anti_ad.mc.ipnext.ModInfo
 import org.anti_ad.mc.ipnext.integration.MergePriority
 import org.anti_ad.mc.ipnext.config.defaults.AUTO_REFILL_WAIT_TICK_DEFAULT
 import org.anti_ad.mc.ipnext.config.defaults.AUTO_REFILL_WAIT_TICK_MINIMUM
@@ -70,15 +69,15 @@ object ModSettings : ConfigDeclaration {
 
         .CATEGORY("§§hide")
     val CREATIVE_SORT_ORDER_TYPE                  /**/ by enumForMinMCVersion(1193,
-                                                                              ModInfo.MINECRAFT_VERSION,
+                                                                              1193,
                                                                               CreativeMenuSortOrder.SEARCH_TAB)
 
     val CATEGORY_PRIORITY_LIST                    /**/ by handledStringForMinMCVersion(1193,
-                                                                                       ModInfo.MINECRAFT_VERSION,
+                                                                                       1193,
                                                                                        "itemGroup.tools, itemGroup.combat, itemGroup.redstone, itemGroup.coloredBlocks, itemGroup.functional, itemGroup.natural, itemGroup.buildingBlocks, itemGroup.foodAndDrink, itemGroup.ingredients, itemGroup.spawnEggs",
                                                                                        ItemTypeExtensionsObject::priorityListChanged)
     val CATEGORY_ORIGINAL_ORDER                   /**/ by handledStringForMinMCVersion(1193,
-                                                                                       ModInfo.MINECRAFT_VERSION,
+                                                                                       1193,
                                                                                        ItemTypeExtensionsObject.makeDefaultList(),
                                                                                        ItemTypeExtensionsObject::defaultOrderListChanged)
         .CATEGORY("$category.move_matching_items")
