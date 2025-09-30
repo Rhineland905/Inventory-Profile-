@@ -23,27 +23,24 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.loading.FMLEnvironment
 import org.anti_ad.mc.ipnext.Log
-import org.anti_ad.mc.ipnext.ModInfo
-import org.anti_ad.mc.ipnext.event.ClientInitHandler.register
+import org.anti_ad.mc.ipnext.gen.ModInfo
 
-@Mod(ModInfo.MOD_ID)
+@Mod(value = "${ModInfo.MOD_ID}")
 class IPNForgeModInit {
 
     private val toInit: Runnable = if (FMLEnvironment.dist === Dist.CLIENT) KotlinClientInit() else KotlinServerInit()
 
     init {
+        doInit()
+    }
+
+    fun doInit() {
         try {
             toInit.run()
             Log.info("Inventory Profiles Next - init in Kotlin")
         } catch (t: Throwable) {
             t.printStackTrace()
         }
-
-        register {
-            ModInfo.MOD_VERSION = ModInfo.modVersion
-        }
-
     }
-
 
 }

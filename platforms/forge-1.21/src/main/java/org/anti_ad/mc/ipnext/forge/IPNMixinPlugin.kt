@@ -19,7 +19,8 @@
 package org.anti_ad.mc.ipnext.forge
 
 import net.minecraftforge.fml.loading.FMLLoader
-import org.anti_ad.mc.ipnext.ModInfo
+import org.anti_ad.mc.ipnext.gen.ModInfo.MOD_ID
+import org.anti_ad.mc.ipnext.gen.ModInfo.MOD_NAME
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.objectweb.asm.tree.ClassNode
@@ -43,13 +44,13 @@ class IPNMixinPlugin: IMixinConfigPlugin {
     private fun resolveMyDependencies() {
         if (shouldLoad) {
 
-            logger.warn("${ModInfo.MOD_NAME}: Doing our own dependency resolving! Because Forge is being Forge....: https://github.com/MinecraftForge/MinecraftForge/issues/9088")
+            logger.warn("${MOD_NAME}: Doing our own dependency resolving! Because Forge is being Forge....: https://github.com/MinecraftForge/MinecraftForge/issues/9088")
 
-            val modFile = FMLLoader.getLoadingModList().getModFileById(ModInfo.MOD_ID)
+            val modFile = FMLLoader.getLoadingModList().getModFileById(MOD_ID)
 
             if (modFile != null) {
                 modFile.mods.find {
-                    it.modId == ModInfo.MOD_ID
+                    it.modId == MOD_ID
                 }?.dependencies?.forEach {
                     //logger.error("\tFound dependencies: ${it.modId}, mandatory: ${it.isMandatory}")
                     if (it.isMandatory) {
@@ -57,14 +58,14 @@ class IPNMixinPlugin: IMixinConfigPlugin {
                         //logger.error("Found depFile: ${depFile.file.fileName}")
                         shouldLoad = depFile != null
                         if (!shouldLoad) {
-                            logger.info("${ModInfo.MOD_NAME} dependency resolution failed! Probably missing libIPN.")
+                            logger.info("${MOD_NAME} dependency resolution failed! Probably missing libIPN.")
                             resolved = true
                             return
                         }
                     }
                 }
             } else {
-                logger.info("${ModInfo.MOD_NAME} dependency resolution failed! Probably missing libIPN.")
+                logger.info("${MOD_NAME} dependency resolution failed! Probably missing libIPN.")
                 shouldLoad = false
             }
             resolved = true

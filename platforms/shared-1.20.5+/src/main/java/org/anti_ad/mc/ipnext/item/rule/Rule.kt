@@ -21,6 +21,7 @@
 package org.anti_ad.mc.ipnext.item.rule
 
 import org.anti_ad.mc.ipnext.Log
+import org.anti_ad.mc.ipnext.config.Debugs
 import org.anti_ad.mc.ipnext.item.ItemType
 import org.anti_ad.mc.ipnext.item.rule.parameter.reverse
 import org.anti_ad.mc.ipnext.item.rule.parameter.sub_rule
@@ -65,18 +66,24 @@ abstract class BaseRule : Rule {
 
     var comparator: (ItemType, ItemType) -> Int = defaultComparator
         set(value) {
-            if (field !== defaultComparator) {
-                Log.trace("Overwriting comparator form  $field to $value", Exception())
+            if (Debugs.INSANE_TRACE_LOGS.value) {
+                if (field !== defaultComparator) {
+                    Log.trace("Overwriting comparator form  $field to $value", Exception())
+                }
+                if (value !== defaultComparator) createdHere = Exception()
             }
             field = value
-            if (value !== defaultComparator) createdHere = Exception()
         }
         get() {
-            val createdHere = createdHere
-            if (field === defaultComparator) {
-                Log.trace("Using default comparator")
-            } else {
-                Log.trace("Using comparator set by user: $field, created at:", createdHere!!)
+            if (Debugs.INSANE_TRACE_LOGS.value) {
+                val createdHere = createdHere
+                if (field === defaultComparator) {
+                    Log.trace("Using default comparator")
+                } else if (createdHere != null) {
+                    Log.trace("Using comparator set by user: $field, created at:", createdHere!!)
+                } else {
+                    Log.trace("Using comparator set by user: RELOAD CONFIG FOR EVEN MORE SPAM")
+                }
             }
             return field
         }

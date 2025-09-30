@@ -466,6 +466,7 @@ object Debugs : ConfigDeclaration {
 
         .CATEGORY("$category.debugs")
     val TRACE_LOGS                                /**/ by bool(false)
+    val INSANE_TRACE_LOGS                         /**/ by bool(false)
     val DEBUG_RENDER                              /**/ by bool(false)
     val FORCE_NO_CLEAN_CURSOR                     /**/ by bool(false)
     val FORCE_SERVER_METHOD_FOR_LOCKED_SLOTS      /**/ by bool(false)

@@ -20,17 +20,25 @@
 
 
 
+
+
 rootProject.name = "InventoryProfilesNext"
 
 
-include("platforms:fabric-1.21.6")
 /*
+include("platforms:fabric-1.21.6")
 include("platforms:fabric-1.21")
+*/
+/*
 include("platforms:forge-1.21")
 include("platforms:forge-1.21.5")
+*/
+
 include("platforms:neoforge-1.21.6")
+/*
 include("platforms:neoforge-1.21")
 */
+
 
 
 
@@ -87,6 +95,12 @@ dependencyResolutionManagement {
         maven {
             url = uri("https://maven.ipn-mod.org/releases")
         }
+
+        maven {
+            url = uri("https://maven.isxander.dev/releases")
+            name = "Xander Maven"
+        }
+
         exclusiveContent {
             forRepository {
                 maven { url = mavenCentral().url }

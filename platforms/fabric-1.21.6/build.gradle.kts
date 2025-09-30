@@ -30,6 +30,7 @@ val yacl_version: String? = "3.7.1+1.21.6-fabric"
 plugins {
     alias(libs.plugins.easymod)
     antlr
+    id("org.barfuin.gradle.taskinfo") version "2+"
 }
 
 

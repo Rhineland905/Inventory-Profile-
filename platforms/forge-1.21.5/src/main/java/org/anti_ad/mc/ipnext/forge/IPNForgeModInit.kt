@@ -39,10 +39,6 @@ class IPNForgeModInit {
             t.printStackTrace()
         }
 
-        register {
-            ModInfo.MOD_VERSION = ModInfo.modVersion
-        }
-
     }
 
 

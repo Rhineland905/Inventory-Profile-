@@ -18,13 +18,27 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+val antlrVersion: String by project
+
 plugins {
     idea
     alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.kotlinSer) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.shadow) apply false
+    //id("net.minecraftforge.gradle") version "6.0.43" apply false
     alias(libs.plugins.easymod)
+
+    id("org.barfuin.gradle.taskinfo") version "2+"
+    antlr
+}
+
+dependencies {
+    antlr("org.antlr:antlr4:$antlrVersion") {
+        version {
+            strictly(antlrVersion)
+        }
+    }
 }
 
 
