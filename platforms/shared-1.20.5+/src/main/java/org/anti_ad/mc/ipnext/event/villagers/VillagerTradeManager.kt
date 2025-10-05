@@ -44,6 +44,7 @@ import org.anti_ad.mc.alias.village.VillagerData
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.gui.NativeContext
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.VanillaUtil
@@ -241,7 +242,8 @@ object VillagerTradeManager: IInputHandler {
         return false
     }
 
-    override fun onInput(lastKey: Int,
+    override fun onInput(context: NativeInputContextBase<*>,
+                         lastKey: Int,
                          lastAction: Int): Boolean {
 
         if (!ModSettings.VILLAGER_TRADING_ENABLE.booleanValue) return false

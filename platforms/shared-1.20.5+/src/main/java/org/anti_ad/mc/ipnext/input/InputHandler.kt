@@ -23,6 +23,7 @@ package org.anti_ad.mc.ipnext.input
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.config.options.ConfigKeyToggleBoolean
 import org.anti_ad.mc.common.extensions.tryCatch
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.gui.debug.DepthTestScreen
 import org.anti_ad.mc.common.gui.debug.SpriteTestScreen
 import org.anti_ad.mc.common.gui.screen.ConfigScreenBase
@@ -44,11 +45,12 @@ object InputHandler : IInputHandler {
 
     // public static Keybind debugKey = new Keybind("RIGHT_CONTROL,BACKSPACE", KeybindSettings.ANY_DEFAULT);
 
-    override fun onInput(lastKey: Int,
+    override fun onInput(context: NativeInputContextBase<*>,
+                         lastKey: Int,
                          lastAction: Int): Boolean {
         return tryCatch(false) {
 
-            if (ModpackInputHandler.onInput(lastKey, lastAction)) {
+            if (ModpackInputHandler.onInput(context, lastKey, lastAction)) {
                 return true
             }
 
@@ -64,7 +66,8 @@ object InputHandler : IInputHandler {
             }
 
             // todo fix hotkey while typing text field
-            if (InventoryInputHandler.onInput(lastKey,
+            if (InventoryInputHandler.onInput(context,
+                                              lastKey,
                                               lastAction)) {
                 return true
             }

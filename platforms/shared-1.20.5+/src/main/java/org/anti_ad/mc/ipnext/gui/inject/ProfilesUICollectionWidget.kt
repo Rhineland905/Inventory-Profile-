@@ -22,6 +22,7 @@ package org.anti_ad.mc.ipnext.gui.inject
 
 import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.common.gui.NativeContext
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.gui.TooltipsManager
 import org.anti_ad.mc.common.gui.layout.Axis
 import org.anti_ad.mc.common.gui.layout.BiFlex
@@ -219,10 +220,11 @@ class ProfilesUICollectionWidget(override val screen: ContainerScreen<*>,
                                            mouseY)
             }
         }
-        override fun mouseClicked(x: Int,
+        override fun mouseClicked(context: NativeInputContextBase<*>,
+                                  x: Int,
                                   y: Int,
                                   button: Int): Boolean {
-            return super.mouseClicked(x,y,button) && visible
+            return super.mouseClicked(context, x, y, button) && visible
         }
     }
 }

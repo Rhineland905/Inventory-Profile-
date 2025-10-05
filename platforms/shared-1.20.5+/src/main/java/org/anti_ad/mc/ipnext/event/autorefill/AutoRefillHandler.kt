@@ -36,8 +36,10 @@ import org.anti_ad.mc.alias.registry.Registries //import org.anti_ad.mc.alias.it
 import org.anti_ad.mc.alias.registry.tag.ItemTags
 import org.anti_ad.mc.alias.text.fromSerializedJson
 import org.anti_ad.mc.alias.world.GameType
+import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.extensions.tryCatch
 import org.anti_ad.mc.common.gui.NativeContext
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.math2d.Point
 import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.common.math2d.Size
@@ -116,7 +118,7 @@ import org.anti_ad.mc.ipnext.item.rule.parameter.Match
 import org.anti_ad.mc.ipnext.parser.RefillSlotsLoader
 import java.util.function.Predicate
 
-object AutoRefillHandler: InventoryOverlay {
+object AutoRefillHandler: InventoryOverlay, IInputHandler {
 
 
     class IdAndIndex(val id: () -> Int, val index: () -> Int)
@@ -882,7 +884,7 @@ object AutoRefillHandler: InventoryOverlay {
     fun preRenderHud(context: NativeContext) {
     }
 
-    fun onInput(lastKey: Int, lastAction: Int): Boolean {
+    override fun onInput(context: NativeInputContextBase<*>, lastKey: Int, lastAction: Int): Boolean {
         if (!enabledForeground) return false
         val screen = Vanilla.screen() as? ContainerScreen<*>
         if (VanillaUtil.inGame() && screen == null && Hotkeys.AUTO_REFILL_GAME_TOGGLE_FOR_SLOT.isActivated()) {

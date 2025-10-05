@@ -22,8 +22,11 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.matthewprenger.cursegradle.CurseExtension
 import com.matthewprenger.cursegradle.CurseProject
 import com.modrinth.minotaur.dependencies.ModDependency
+import net.neoforged.gradle.common.runtime.tasks.DefaultExecute
 import net.neoforged.gradle.dsl.common.runs.RunSpecification
 import net.neoforged.gradle.dsl.common.runs.run.Run
+import net.neoforged.gradle.dsl.common.tasks.specifications.ExecuteSpecification
+import net.neoforged.gradle.neoform.runtime.tasks.Patch
 import org.anti_ad.mc.ipnext.buildsrc.configureCommon
 import org.anti_ad.mc.ipnext.buildsrc.neoForgeCommonAfterEvaluate
 import org.anti_ad.mc.ipnext.buildsrc.neoForgeCommonDependency
@@ -136,7 +139,9 @@ dependencies {
     runtimeOnly("curse.maven:resourcefullib-570073:5483169")
     */
     compileOnly("curse.maven:easy-villagers-400514:4584220")
-    compileOnly("curse.maven:workshop-for-handsome-adventurer-875843:5752681")
+    compileOnly("curse.maven:workshop-for-handsome-adventurer-875843:5752681") {
+        exclude("org.quiltmc")
+    }
     //implementation("maven.modrinth:workshop-for-handsome-adventurer:1.31.2")
 }
 
@@ -170,6 +175,28 @@ tasks.named<AntlrTask>("generateGrammarSource").configure {
         "-visitor", "-package", pkg,
         "-Xexact-output-dir"
                       )
+}
+
+project.gradle.taskGraph.whenReady {
+
+    allTasks.forEach {
+        if (it is net.neoforged.gradle.userdev.runtime.tasks.ClasspathSerializer) {
+            it.doLast {
+                val file = it.targetFile.get().asFile
+                file.readLines().filter { line ->
+                    !line.contains("org.jetbrains.kotlin")
+                }.also { lines ->
+                    file.writeText(lines.joinToString("\n"))
+                }
+            }
+        }
+        if (it is Patch) {
+            it.isVerbose.set(true)
+        }
+        if (it is DefaultExecute)
+            it.logLevel.set(ExecuteSpecification.LogLevel.TRACE)
+    }
+
 }
 
 afterEvaluate {

@@ -28,6 +28,7 @@ import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.vanilla.alias.*
 import org.anti_ad.mc.common.extensions.plus
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.Vanilla.`(sendCommandMessage)`
 import org.anti_ad.mc.ipnext.config.ModSettings
@@ -175,7 +176,8 @@ fun extractAllItems(items: MutableMap<String, MutableList<String>>) {
 
 object ModpackInputHandler: IInputHandler {
 
-    override fun onInput(lastKey: Int,
+    override fun onInput(context: NativeInputContextBase<*>,
+                         lastKey: Int,
                          lastAction: Int): Boolean {
         if (ModSettings.FOR_MODPACK_DEVS.value) {
             Modpacks.GEN_TEST_ARENA.isActivated().ifTrue {

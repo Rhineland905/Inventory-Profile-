@@ -31,6 +31,7 @@ import org.anti_ad.mc.alias.nbt.NbtList
 import org.anti_ad.mc.alias.registry.`(get)`
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.extensions.transformOrNull
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.profiles.config.ProfileData
 import org.anti_ad.mc.ipnext.profiles.config.ProfileItemData
@@ -169,7 +170,8 @@ object ProfileSwitchHandler: IInputHandler {
         }
     }
 
-    override fun onInput(lastKey: Int,
+    override fun onInput(context: NativeInputContextBase<*>,
+                         lastKey: Int,
                          lastAction: Int): Boolean {
 
         if (!VanillaUtil.inGame()) return false

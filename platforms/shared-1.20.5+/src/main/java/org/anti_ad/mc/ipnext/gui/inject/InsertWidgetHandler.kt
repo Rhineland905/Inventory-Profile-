@@ -23,6 +23,7 @@ package org.anti_ad.mc.ipnext.gui.inject
 import org.anti_ad.mc.alias.client.gui.screen.Screen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.vanillaScreens
 import org.anti_ad.mc.common.ScreenEventListener
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.gui.widgets.Widget
 import org.anti_ad.mc.common.input.GlobalScreenEventListener
 import org.anti_ad.mc.common.math2d.Size
@@ -63,56 +64,61 @@ object InsertWidgetHandler : ScreenEventListener {
         }
     }
 
-    override fun mouseClicked(x: Double,
+    override fun mouseClicked(context: NativeInputContextBase<*>,
+                              x: Double,
                               y: Double,
                               button: Int): Boolean {
         var r = false
         if (checkIfValidScreen()) {
             currentWidgets.forEach {
-                r = r || it.mouseClicked(x.toInt(), y.toInt(), button)
+                r = r || it.mouseClicked(context, x.toInt(), y.toInt(), button)
             }
         }
         return r
     }
 
-    override fun mouseRelease(x: Double,
+    override fun mouseRelease(context: NativeInputContextBase<*>,
+                              x: Double,
                               y: Double,
                               button: Int): Boolean {
 
         var r = false
         if (checkIfValidScreen()) {
             currentWidgets.forEach {
-                r = r || it.mouseReleased(x.toInt(), y.toInt(), button)
+                r = r || it.mouseReleased(context, x.toInt(), y.toInt(), button)
             }
         }
         return r
     }
 
-    override fun keyPressed(keyCode: Int,
+    override fun keyPressed(context: NativeInputContextBase<*>,
+                            keyCode: Int,
                             scanCode: Int,
                             modifiers: Int): Boolean {
         var r = false
         if (checkIfValidScreen()) {
             currentWidgets.forEach {
-                r = r || it.keyPressed(keyCode, scanCode, modifiers)
+                r = r || it.keyPressed(context, keyCode, scanCode, modifiers)
             }
         }
         return r
     }
 
-    override fun keyReleased(keyCode: Int,
+    override fun keyReleased(context: NativeInputContextBase<*>,
+                             keyCode: Int,
                              scanCode: Int,
                              modifiers: Int): Boolean {
         var r = false
         if (checkIfValidScreen()) {
             currentWidgets.forEach {
-                r = r || it.keyReleased(keyCode, scanCode, modifiers)
+                r = r || it.keyReleased(context, keyCode, scanCode, modifiers)
             }
         }
         return r
     }
 
-    override fun mouseDragged(x: Double,
+    override fun mouseDragged(context: NativeInputContextBase<*>,
+                              x: Double,
                               y: Double,
                               button: Int,
                               dx: Double,
@@ -120,31 +126,31 @@ object InsertWidgetHandler : ScreenEventListener {
         var r = false
         if (checkIfValidScreen()) {
             currentWidgets.forEach {
-                r = r || it.mouseDragged(x, y, button, dx, dy)
+                r = r || it.mouseDragged(context, x, y, button, dx, dy)
             }
         }
         return r
     }
 
-    override fun mouseScrolled(x: Double,
+    override fun mouseScrolled(context: NativeInputContextBase<*>,x: Double,
                                y: Double,
                                horizontal: Double,
                                vertical: Double): Boolean {
         var r = false
         if (checkIfValidScreen()) {
             currentWidgets.forEach {
-                r = r || it.mouseScrolled(x.toInt(), y.toInt(), horizontal, vertical)
+                r = r || it.mouseScrolled(context, x.toInt(), y.toInt(), horizontal, vertical)
             }
         }
         return r
     }
 
-    override fun charTyped(charIn: Char,
+    override fun charTyped(context: NativeInputContextBase<*>,charIn: Char,
                            modifiers: Int): Boolean {
         var r = false
         if (checkIfValidScreen()) {
             currentWidgets.forEach {
-                r = r || it.charTyped(charIn, modifiers)
+                r = r || it.charTyped(context, charIn, modifiers)
             }
         }
         return r

@@ -21,29 +21,30 @@
 package org.anti_ad.mc.ipnext.input
 
 import org.anti_ad.mc.common.IInputHandler
-import org.anti_ad.mc.common.config.options.ConfigKeyToggleBoolean
 import org.anti_ad.mc.common.extensions.tryCatch
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
 import org.anti_ad.mc.ipnext.event.LockSlotsHandler
 import org.anti_ad.mc.ipnext.event.ProfileSwitchHandler
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager
 
 object CancellableInputHandler : IInputHandler {
-    override fun onInput(lastKey: Int,
+    override fun onInput(context: NativeInputContextBase<*>,
+                         lastKey: Int,
                          lastAction: Int): Boolean {
         return tryCatch(false) {
             if (LockSlotsHandler.onCancellableInput()) {
                 return true
             }
-            if (ProfileSwitchHandler.onInput(lastKey, lastAction)) {
+            if (ProfileSwitchHandler.onInput(context, lastKey, lastAction)) {
                 return true
             }
 
-            if (VillagerTradeManager.onInput(lastKey, lastAction)) {
+            if (VillagerTradeManager.onInput(context, lastKey, lastAction)) {
                 return true
             }
 
-            if (AutoRefillHandler.onInput(lastKey, lastAction)) {
+            if (AutoRefillHandler.onInput(context, lastKey, lastAction)) {
                 return true
             }
 

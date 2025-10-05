@@ -1,13 +1,22 @@
 <!-- latest begin -->
 
+### 2.2.0
+
+- Adds support for fabric and neoforge 1.21.9
+
+## WARNING
+
+**The neoforge 1.21.9 port is probably wishful thinking. Since at the time of this release, KotlinForForge for 1.21.9 has not been released. And no testing has been done.**
+
+<!-- latest end -->
+<!-- rest begin -->
+
+
 ### 2.1.11
 
 - Fixed profiles save/load problem where the serialised NBT contains escaped `'`.
 - Overlay buttons will now hide themselves when the anvil GUI shows cost value. \
   This will not take into account if the buttons have been moved or if they don't really overlap with the cost label.
-
-<!-- latest end -->
-<!-- rest begin -->
 
 ### 2.1.10
 

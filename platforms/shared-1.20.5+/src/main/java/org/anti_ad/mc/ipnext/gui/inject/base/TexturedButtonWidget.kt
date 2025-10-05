@@ -21,6 +21,7 @@
 package org.anti_ad.mc.ipnext.gui.inject.base
 
 import org.anti_ad.mc.common.gui.NativeContext
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.gui.widgets.IPNButtonWidget
 
 import org.anti_ad.mc.common.input.KeyCodes
@@ -65,13 +66,15 @@ abstract class TexturedButtonWidget : IPNButtonWidget, Hintable {
                     screenY)
     }
 
-    override fun mouseClicked(x: Int,
+    override fun mouseClicked(context: NativeInputContextBase<*>,
+                              x: Int,
                               y: Int,
                               button: Int): Boolean {
-        return super.mouseClicked(x,y,button) && visible
+        return super.mouseClicked(context, x, y, button) && visible
     }
 
-    override fun mouseScrolled(x: Int,
+    override fun mouseScrolled(context: NativeInputContextBase<*>,
+                               x: Int,
                                y: Int,
                                horizontal: Double,
                                vertical: Double): Boolean {
@@ -83,7 +86,8 @@ abstract class TexturedButtonWidget : IPNButtonWidget, Hintable {
                 if (vertical > 0) onClick(KeyCodes.MOUSE_SCROLL_UP) else onClick(KeyCodes.MOUSE_SCROLL_DOWN)
             }
         }
-        return super.mouseScrolled(x,
+        return super.mouseScrolled(context,
+                                   x,
                                    y,
                                    horizontal,
                                    vertical) && visible
