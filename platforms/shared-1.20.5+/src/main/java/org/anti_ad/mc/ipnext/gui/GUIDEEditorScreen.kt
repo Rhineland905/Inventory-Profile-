@@ -27,6 +27,7 @@ import org.anti_ad.mc.alias.screen.vanillaContainers
 import org.anti_ad.mc.common.config.IConfigOption
 import org.anti_ad.mc.common.config.options.ConfigBoolean
 import org.anti_ad.mc.common.gui.NativeContext
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.gui.screen.BaseOverlay
 import org.anti_ad.mc.common.gui.layout.Overflow
 import org.anti_ad.mc.common.gui.layout.fillParent
@@ -349,10 +350,11 @@ class GUIDEEditorScreen(private val target: Screen,
         }
     }
 
-    override fun keyReleased(keyCode: Int,
+    override fun keyReleased(context: NativeInputContextBase<*>,
+                             keyCode: Int,
                              scanCode: Int,
                              modifiers: Int): Boolean {
-        val res = super.keyReleased(keyCode, scanCode, modifiers)
+        val res = super.keyReleased(context, keyCode, scanCode, modifiers)
         if (!res) {
             val step = if (SHIFT.isPressing()) 10 else 1
             when (keyCode) {
@@ -384,10 +386,11 @@ class GUIDEEditorScreen(private val target: Screen,
         return res
     }
 
-    override fun keyPressed(keyCode: Int,
+    override fun keyPressed(context: NativeInputContextBase<*>,
+                            keyCode: Int,
                             scanCode: Int,
                             modifiers: Int): Boolean {
-        val res = super.keyPressed(keyCode, scanCode, modifiers)
+        val res = super.keyPressed(context, keyCode, scanCode, modifiers)
         if (!res) {
             when (keyCode) {
                 KEY_LEFT, KEY_A  -> {

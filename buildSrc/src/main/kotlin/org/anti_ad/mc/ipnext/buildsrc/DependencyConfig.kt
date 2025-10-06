@@ -303,6 +303,7 @@ fun Project.neoForgeCommonDependency(minecraft_version: Any,
             exclude("maven.modrinth")
             exclude("org.quiltmc.parsers")
             exclude("org.quiltmc.*")
+            exclude("org.quiltmc")
             exclude(module = "reeses-sodium-options")
             exclude("thedarkcolour")
             exclude("org.jetbrains.kotlin")
@@ -312,6 +313,7 @@ fun Project.neoForgeCommonDependency(minecraft_version: Any,
             exclude("maven.modrinth")
             exclude("org.quiltmc.parsers")
             exclude("org.quiltmc.*")
+            exclude("org.quiltmc")
             exclude(module = "reeses-sodium-options")
         }
 

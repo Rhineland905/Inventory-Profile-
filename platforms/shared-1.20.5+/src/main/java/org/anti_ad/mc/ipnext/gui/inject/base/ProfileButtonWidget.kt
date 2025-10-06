@@ -20,6 +20,7 @@
 
 package org.anti_ad.mc.ipnext.gui.inject.base
 
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.ipnext.config.GuiSettings
 
 open class ProfileButtonWidget: SortButtonWidget {
@@ -28,9 +29,10 @@ open class ProfileButtonWidget: SortButtonWidget {
     constructor(clickEvent: () -> Unit) : super(clickEvent)
     constructor() : super()
 
-    override fun mouseClicked(x: Int,
+    override fun mouseClicked(context: NativeInputContextBase<*>,
+                              x: Int,
                               y: Int,
                               button: Int): Boolean {
-        return super.mouseClicked(x,y,button) && visible
+        return super.mouseClicked(context, x, y, button) && visible
     }
 }

@@ -27,6 +27,7 @@ import org.anti_ad.mc.alias.client.gui.widget.TextFieldWidget
 import org.anti_ad.mc.alias.screen.Container
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.config.options.ConfigHotkey
+import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.ipnext.integration.HintsManagerNG
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.VanillaUtil
@@ -36,7 +37,8 @@ import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions
 
 object InventoryInputHandler : IInputHandler {
 
-    override fun onInput(lastKey: Int,
+    override fun onInput(context: NativeInputContextBase<*>,
+                         lastKey: Int,
                          lastAction: Int): Boolean {
         if (!VanillaUtil.inGame()) return false
         val scr = Vanilla.screen()

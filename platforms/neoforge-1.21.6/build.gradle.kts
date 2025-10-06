@@ -23,6 +23,9 @@ import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 val controlify_version: String? = "2.4.1+1.21.8-neoforge"
 val yacl_version: String? = "3.7.1+1.21.6-neoforge"
+import net.neoforged.gradle.common.runtime.tasks.DefaultExecute
+import net.neoforged.gradle.dsl.common.tasks.specifications.ExecuteSpecification
+import net.neoforged.gradle.neoform.runtime.tasks.Patch
 
 val antlrVersion: String by project
 
@@ -48,6 +51,8 @@ dependencies {
     shadedApi("org.antlr:antlr4-runtime:$antlrVersion") {
         version {
             strictly(antlrVersion)
+        exclude("org.quiltmc")
+    }
         }
     }
     implementation("org.antlr:antlr4-runtime:$antlrVersion") {
@@ -59,6 +64,28 @@ dependencies {
     antlr("org.antlr:antlr4:$antlrVersion") {
         version {
             strictly(antlrVersion)
+}
+
+project.gradle.taskGraph.whenReady {
+
+    allTasks.forEach {
+        if (it is net.neoforged.gradle.userdev.runtime.tasks.ClasspathSerializer) {
+            it.doLast {
+                val file = it.targetFile.get().asFile
+                file.readLines().filter { line ->
+                    !line.contains("org.jetbrains.kotlin")
+                }.also { lines ->
+                    file.writeText(lines.joinToString("\n"))
+                }
+            }
+        }
+        if (it is Patch) {
+            it.isVerbose.set(true)
+        }
+        if (it is DefaultExecute)
+            it.logLevel.set(ExecuteSpecification.LogLevel.TRACE)
+    }
+
         }
     }
 
