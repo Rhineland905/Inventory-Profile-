@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMultiPlayerGameMode {
 
 
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleInventoryMouseClick(IIILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "handleInventoryMouseClick(IIILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V", cancellable = true)
     public void clickSlotPre(int syncId, int slotId, int clickData, ClickType actionType, Player player, CallbackInfo ci) {
         if (slotId == 1 && (CuttersDispatcher.INSTANCE.isAnyStillCrafting()
                 || CuttersDispatcher.INSTANCE.isAnyRefillTick())) {
@@ -42,7 +42,7 @@ public class MixinMultiPlayerGameMode {
         }
     }
 
-    @Inject(at = @At("TAIL"), method = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleInventoryMouseClick(IIILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V")
+    @Inject(at = @At("TAIL"), method = "handleInventoryMouseClick(IIILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V")
     public void clickSlot(int syncId, int slotId, int clickData, ClickType actionType, Player player, CallbackInfo ci) {
         if (slotId == 1 && CuttersDispatcher.INSTANCE.isAnyOldScreen()) {
             CuttersDispatcher.INSTANCE.onCrafted();

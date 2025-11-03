@@ -24,7 +24,6 @@ package org.anti_ad.mc.ipnext.item
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import org.anti_ad.mc.alias.block.ShulkerBoxBlock
-import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.alias.component.*
 import org.anti_ad.mc.alias.component.type.*
 import org.anti_ad.mc.alias.enchantment.Enchantment
@@ -32,16 +31,9 @@ import org.anti_ad.mc.alias.enchantment.EnchantmentHelper
 import org.anti_ad.mc.alias.entity.EquipmentSlot
 import org.anti_ad.mc.alias.entity.effect.StatusEffectCategory
 import org.anti_ad.mc.alias.entity.effect.StatusEffectInstance
-import org.anti_ad.mc.alias.item.BlockItem
-import org.anti_ad.mc.alias.item.BucketItem
-import org.anti_ad.mc.alias.item.ItemGroup
-import org.anti_ad.mc.alias.item.ItemGroupType
+import org.anti_ad.mc.alias.item.*
 import org.anti_ad.mc.alias.item.ItemGroups
-import org.anti_ad.mc.alias.item.Items
-import org.anti_ad.mc.alias.item.PowderSnowBucketItem
-import org.anti_ad.mc.alias.item.consume.ApplyEffectsConsumeEffect
-import org.anti_ad.mc.alias.item.consume.ConsumeEffect
-import org.anti_ad.mc.alias.item.consume.ConsumeEffect_Type
+import org.anti_ad.mc.alias.item.consume.*
 import org.anti_ad.mc.alias.nbt.NbtElement
 import org.anti_ad.mc.alias.nbt.NbtOps
 import org.anti_ad.mc.alias.registry.Registries
@@ -49,19 +41,49 @@ import org.anti_ad.mc.alias.registry.RegistryKey
 import org.anti_ad.mc.alias.registry.tag.EnchantmentTags
 import org.anti_ad.mc.alias.text.TranslatableTextContent
 import org.anti_ad.mc.alias.util.Identifier
+import org.anti_ad.mc.common.extensions.ifTrue
+import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.alias.glue.I18n
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.compat.integrations.Integrations
 import org.anti_ad.mc.ipnext.config.CreativeMenuSortOrder
 import org.anti_ad.mc.ipnext.config.ModSettings
-import org.anti_ad.mc.ipnext.ingame.`(getIdentifier)`
-import org.anti_ad.mc.ipnext.ingame.`(getRawId)`
-import org.anti_ad.mc.ipnext.ingame.`(itemType)`
-import org.anti_ad.mc.ipnext.mixin.IMixinBucketItem
-import org.anti_ad.mc.ipnext.mixin.IMixinEntityBucketItem
-import org.anti_ad.mc.ipnext.mixin.IMixinFluid
+import org.anti_ad.mc.ipnext.ingame.*
+import org.anti_ad.mc.ipnext.mixin.*
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemGroup
 import java.util.*
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.MutableMap
+import kotlin.collections.associateTo
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.contains
+import kotlin.collections.filter
+import kotlin.collections.fold
+import kotlin.collections.forEach
+import kotlin.collections.forEachIndexed
+import kotlin.collections.get
+import kotlin.collections.indexOfFirst
+import kotlin.collections.isNotEmpty
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.minus
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.sortedWith
+import kotlin.collections.toList
+import kotlin.sequences.contains
+import kotlin.sequences.filter
+import kotlin.sequences.forEachIndexed
+import kotlin.sequences.indexOfFirst
+import kotlin.sequences.minus
+import kotlin.sequences.sortedWith
+import kotlin.text.filter
+import kotlin.text.forEachIndexed
+import kotlin.text.indexOfFirst
+import kotlin.text.split
+import kotlin.text.trim
 import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
 
 // ============
@@ -235,15 +257,19 @@ private class ItemGroupComparator: Comparator<ItemGroup> {
     }
 }
 
-private fun initGroupIndex(): Boolean {
-    val features = Vanilla.mc().player?.networkHandler?.enabledFeatures
-    val lookup = Vanilla.mc().player?.world?.getRegistryManager()
+private fun initGroupIndex() {
+    val player = Vanilla.playerNullable()
+    val features = player?.networkHandler?.enabledFeatures
+    val lookup = player?.world?.getRegistryManager()
     val opTabEnabled = Vanilla.mc().options.getOperatorItemsTab().getValue() && Vanilla.playerNullable()?.isCreativeLevelTwoOp ?: false
-    return if (features != null && lookup != null) {
-        ItemGroups.updateDisplayContext(features, opTabEnabled, lookup);
-        true
-    } else {
-        false
+    if (features != null && lookup != null) {
+        //CreativeInventoryScreen(player, features, opTabEnabled)
+        ItemGroups.updateDisplayContext(features, opTabEnabled, lookup).ifTrue {
+            val sm = player.networkHandler.searchManager
+            val list = ItemGroups.getSearchGroup().displayStacks.toList()
+            sm.addItemTooltipReloader(lookup, list)
+            sm.addItemTagReloader(list)
+        }
     }
 }
 

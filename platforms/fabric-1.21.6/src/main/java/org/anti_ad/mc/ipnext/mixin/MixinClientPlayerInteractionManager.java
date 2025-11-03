@@ -26,7 +26,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
-import org.anti_ad.mc.common.vanilla.Vanilla;
 import org.anti_ad.mc.ipnext.event.ClientEventHandler;
 import org.anti_ad.mc.ipnext.event.CuttersDispatcher;
 import org.anti_ad.mc.ipnext.event.LockedSlotKeeper;

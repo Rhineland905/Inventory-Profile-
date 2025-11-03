@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AnvilMenu.class)
 
 public class MixinAnvilMenu {
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/world/inventory/AnvilMenu;onTake(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "onTake(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V", cancellable = true)
     public void onTakeOutputPre(Player p_150474_, ItemStack p_150475_, CallbackInfo ci) {
         if (Vanilla.INSTANCE.mc().isSameThread()) {
             if (AnvilHandler.INSTANCE.onTakeOutPre((AnvilMenu) ((Object)this))) {
@@ -41,7 +41,7 @@ public class MixinAnvilMenu {
         }
     }
 
-    @Inject(at = @At("TAIL"), method = "Lnet/minecraft/world/inventory/AnvilMenu;onTake(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V")
+    @Inject(at = @At("TAIL"), method = "onTake(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V")
     public void onTakeOutputPost(Player p_150474_, ItemStack p_150475_, CallbackInfo ci) {
         if (Vanilla.INSTANCE.mc().isSameThread()) {
             AnvilHandler.INSTANCE.onTakeOutPost((AnvilMenu) ((Object)this));

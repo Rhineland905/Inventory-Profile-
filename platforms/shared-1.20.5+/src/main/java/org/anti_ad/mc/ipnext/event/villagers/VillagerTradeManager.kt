@@ -27,12 +27,12 @@ import org.anti_ad.mc.alias.client.gui.screen.ingame.`(syncRecipeIndex)`
 import org.anti_ad.mc.alias.client.gui.screen.ingame.MerchantScreen
 import org.anti_ad.mc.alias.client.gui.widget.`(isHovered)`
 import org.anti_ad.mc.alias.entity.`(uuidString)`
+import org.anti_ad.mc.alias.entity.Entity
 import org.anti_ad.mc.alias.entity.passive.`(profession)`
 import org.anti_ad.mc.alias.entity.passive.MerchantEntity
 import org.anti_ad.mc.alias.entity.passive.VillagerEntity
-import org.anti_ad.mc.alias.nbt.NbtCompound
+import org.anti_ad.mc.alias.entity.passive.WanderingTraderEntity
 import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.nbt.NbtList
 import org.anti_ad.mc.alias.screen.MerchantContainer
 import org.anti_ad.mc.alias.village.`(isDisabled)`
 import org.anti_ad.mc.alias.village.`(originalFirstBuyItem)`
@@ -40,7 +40,6 @@ import org.anti_ad.mc.alias.village.`(professionId)`
 import org.anti_ad.mc.alias.village.`(secondBuyItem)`
 import org.anti_ad.mc.alias.village.`(sellItem)`
 import org.anti_ad.mc.alias.village.TradeOffer
-import org.anti_ad.mc.alias.village.VillagerData
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.gui.NativeContext
@@ -77,11 +76,21 @@ object VillagerTradeManager: IInputHandler {
             field = value
             if (value != null) {
                 currentVillagerBookmarks = VillagerDataManager.getLocal(value.`(uuidString)`)
-                currentGlobalBookmarks = VillagerDataManager.getGlobal(value.profesion)
                 currentVillagerBookmarks1 = VillagerDataManager.getLocal1(value.`(uuidString)`)
-                currentGlobalBookmarks1 = VillagerDataManager.getGlobal1(value.profesion)
                 currentVillagerBookmarks2 = VillagerDataManager.getLocal2(value.`(uuidString)`)
-                currentGlobalBookmarks2 = VillagerDataManager.getGlobal2(value.profesion)
+                when (val prof = value.profession) {
+                    null -> {
+                        currentGlobalBookmarks = defaultEmpty
+                        currentGlobalBookmarks1 = defaultEmpty
+                        currentGlobalBookmarks2 = defaultEmpty
+                    }
+                    else -> {
+                        currentGlobalBookmarks = VillagerDataManager.getGlobal(prof)
+                        currentGlobalBookmarks1 = VillagerDataManager.getGlobal1(prof)
+                        currentGlobalBookmarks2 = VillagerDataManager.getGlobal2(prof)
+
+                    }
+                }
             } else {
                 VillagerDataManager.saveIfDirty()
                 currentGlobalBookmarks = defaultEmpty
@@ -104,18 +113,31 @@ object VillagerTradeManager: IInputHandler {
 
 
 
-    private val MerchantEntity.profesion: String
+    private val Entity.profession: String?
         get() {
+            return when (this) {
+                is VillagerEntity        -> this.`(profession)`.`(professionId)`
+                is WanderingTraderEntity -> "___+++___ wandering ___+++___"
+                else                     -> null
+            }
+
+/*
             return if (this is VillagerEntity) {
                 `(profession)`.`(professionId)`
             } else {
                 "___+++___ wandering ___+++___"
             }
+*/
         }
 
-    private val MerchantEntity.isLocalAvailable: Boolean
+    val Entity.isLocalAvailable: Boolean
         get() {
             return this is VillagerEntity
+        }
+
+    val Entity.isOnlyLocal: Boolean
+        get() {
+            return this !is VillagerEntity && this !is WanderingTraderEntity
         }
 
 
@@ -467,11 +489,11 @@ object VillagerTradeManager: IInputHandler {
                          tr2Nbt: NbtElement?,
                          sellId: String,
                          sellNbt: NbtElement?,
-                         villager: MerchantEntity) {
+                         villager: Entity) {
 
         if (doGlobal) {
             val found = currentGlobalBookmarks.search(tr1, tr1Nbt, tr2, tr2Nbt, sellId, sellNbt)
-            val profession = villager.profesion
+            val profession = villager.profession ?: villager.`(uuidString)`
 
             currentGlobalBookmarks = if (found == null) {
                 VillagerDataManager.addGlobal(profession,
@@ -519,7 +541,7 @@ object VillagerTradeManager: IInputHandler {
                           villager: MerchantEntity) {
         if (doGlobal) {
             val found = currentGlobalBookmarks1.search(tr1, tr1Nbt, tr2, tr2Nbt, sellId, sellNbt)
-            val profession = villager.profesion
+            val profession = villager.profession ?: villager.`(uuidString)`
 
             currentGlobalBookmarks1 = if (found == null) {
                 VillagerDataManager.addGlobal1(profession,
@@ -566,7 +588,7 @@ object VillagerTradeManager: IInputHandler {
                           villager: MerchantEntity) {
         if (doGlobal) {
             val found = currentGlobalBookmarks2.search(tr1, tr1Nbt, tr2, tr2Nbt, sellId, sellNbt)
-            val profession = villager.profesion
+            val profession = villager.profession ?: villager.`(uuidString)`
 
             currentGlobalBookmarks2 = if (found == null) {
                 VillagerDataManager.addGlobal2(profession,

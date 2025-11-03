@@ -23,9 +23,7 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.fml.common.Mod
 import net.neoforged.fml.loading.FMLEnvironment
 import org.anti_ad.mc.ipnext.Log
-import org.anti_ad.mc.ipnext.ModInfo
-import org.anti_ad.mc.ipnext.event.ClientInitHandler.register
-
+import org.anti_ad.mc.ipnext.gen.ModInfo
 
 @Mod(ModInfo.MOD_ID)
 class IPNForgeModInit {
@@ -39,10 +37,5 @@ class IPNForgeModInit {
         } catch (t: Throwable) {
             t.printStackTrace()
         }
-
-        register {
-            ModInfo.MOD_VERSION = ModInfo.modVersion
-        }
-
     }
 }

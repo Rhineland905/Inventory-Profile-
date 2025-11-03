@@ -67,7 +67,7 @@ public abstract class MixinMinecraftClient {
         ClientEventHandler.INSTANCE.onTick();
     }
 
-    @Inject(at = @At("RETURN"), method = "joinWorld(Lnet/minecraft/client/world/ClientWorld;)V")
+    @Inject(at = @At("RETURN"), method = "method_1481(Lnet/minecraft/client/world/ClientWorld;)V")
     public void joinWorld(ClientWorld world, CallbackInfo ci) {
         if (MinecraftClient.getInstance().getCurrentServerEntry() != null) {
             ClientEventHandler.INSTANCE.onJoinWorld();

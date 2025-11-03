@@ -104,7 +104,7 @@ public class ForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void onBackgroundRender(ContainerScreenEvent.Render.Background e) {
+    public void onBackgroundRender(ScreenEvent.Render.Background e) {
         var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
         ContainerScreenEventHandler.INSTANCE.onBackgroundRender(context, e.getMouseX(), e.getMouseY(), 0);
     }

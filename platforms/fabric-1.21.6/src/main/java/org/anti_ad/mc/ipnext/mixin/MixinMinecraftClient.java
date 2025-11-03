@@ -20,8 +20,8 @@
 
 package org.anti_ad.mc.ipnext.mixin;
 
+import net.minecraft.class_434;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.GameOptions;
@@ -67,8 +67,9 @@ public abstract class MixinMinecraftClient {
     public void tick2(CallbackInfo info) {
         ClientEventHandler.INSTANCE.onTick();
     }
-    @Inject(at = @At("RETURN"), method = "joinWorld(Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/client/gui/screen/DownloadingTerrainScreen$WorldEntryReason;)V")
-    public void joinWorld(ClientWorld world, DownloadingTerrainScreen.WorldEntryReason worldEntryReason, CallbackInfo ci) {
+
+    @Inject(at = @At("RETURN"), method = "method_1481(Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/class_434$class_9678;)V")
+    public void joinWorld(ClientWorld world, class_434.class_9678 worldEntryReason, CallbackInfo ci) {
         if (MinecraftClient.getInstance().getCurrentServerEntry() != null) {
             ClientEventHandler.INSTANCE.onJoinWorld();
         }

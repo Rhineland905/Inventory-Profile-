@@ -21,7 +21,6 @@ package org.anti_ad.mc.ipnext.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;

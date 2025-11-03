@@ -40,6 +40,8 @@ import org.anti_ad.mc.ipn.api.IPNButton
 import org.anti_ad.mc.ipnext.config.Debugs
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager
+import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager.isLocalAvailable
+import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager.isOnlyLocal
 import org.anti_ad.mc.ipnext.gui.inject.base.InsertableWidget
 import org.anti_ad.mc.ipnext.gui.inject.base.VillagerBookmarkButtonWidget
 import org.anti_ad.mc.ipnext.ingame.`(container)`
@@ -121,6 +123,9 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             tooltipText = I18n.translate("inventoryprofiles.tooltip.do_global_trades_button")
             id = "do_global_trades_button"
             hintableList.add(this)
+            visibleOverride = { _ ->
+                !(VillagerTradeManager.currentVillager?.isOnlyLocal ?: false)
+            }
         }
 
         private val doGlobalButton1 = VillagerBookmarkButtonWidget( { ModSettings.VILLAGER_TRADING_GLOBAL_COLOR1.value } ) { ->
@@ -140,7 +145,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             id = "do_global_trades_button"
             hintableList.add(this)
             visibleOverride = { _ ->
-                ModSettings.VILLAGER_TRADING_GROUP_1.booleanValue
+                ModSettings.VILLAGER_TRADING_GROUP_1.booleanValue && !(VillagerTradeManager.currentVillager?.isOnlyLocal ?: false)
             }
         }
 
@@ -161,7 +166,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             id = "do_global_trades_button"
             hintableList.add(this)
             visibleOverride = { _ ->
-                ModSettings.VILLAGER_TRADING_GROUP_2.booleanValue
+                ModSettings.VILLAGER_TRADING_GROUP_2.booleanValue && !(VillagerTradeManager.currentVillager?.isOnlyLocal ?: false)
             }
         }
 
@@ -183,6 +188,9 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             tooltipText = I18n.translate("inventoryprofiles.tooltip.do_local_trades_button")
             id = "do_local_trades_button"
             hintableList.add(this)
+            visibleOverride = { src ->
+                src && VillagerTradeManager.currentVillager?.isLocalAvailable ?: true
+            }
         }
 
         private val doLocalButton1 = VillagerBookmarkButtonWidget ({ModSettings.VILLAGER_TRADING_LOCAL_COLOR1.value}) { ->
@@ -203,8 +211,8 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             tooltipText = I18n.translate("inventoryprofiles.tooltip.do_local_trades_button1")
             id = "do_local_trades_button"
             hintableList.add(this)
-            visibleOverride = { _ ->
-                ModSettings.VILLAGER_TRADING_GROUP_1.booleanValue
+            visibleOverride = { src ->
+                ModSettings.VILLAGER_TRADING_GROUP_1.booleanValue && (VillagerTradeManager.currentVillager?.isLocalAvailable ?: true) && src
             }
         }
 
@@ -226,8 +234,8 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             tooltipText = I18n.translate("inventoryprofiles.tooltip.do_local_trades_button2")
             id = "do_local_trades_button"
             hintableList.add(this)
-            visibleOverride = { _ ->
-                ModSettings.VILLAGER_TRADING_GROUP_2.booleanValue
+            visibleOverride = { src ->
+                ModSettings.VILLAGER_TRADING_GROUP_2.booleanValue && (VillagerTradeManager.currentVillager?.isLocalAvailable ?: true) && src
             }
         }
 
@@ -324,6 +332,9 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
         }.apply {
             this.init("inventoryprofiles.tooltip.set_global_bookmark",
                       "globalBookmark_button")
+            visibleOverride = { _ ->
+                !(VillagerTradeManager.currentVillager?.isOnlyLocal ?: false)
+            }
         }
 
         private val globalBookmark1 = VillagerBookmarkButtonWidget({ModSettings.VILLAGER_TRADING_GLOBAL_COLOR1.value}) { ->
@@ -341,7 +352,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             this.init("inventoryprofiles.tooltip.set_global_bookmark1",
                       "globalBookmark_button")
             visibleOverride = { _ ->
-                ModSettings.VILLAGER_TRADING_GROUP_1.booleanValue
+                ModSettings.VILLAGER_TRADING_GROUP_1.booleanValue && !(VillagerTradeManager.currentVillager?.isOnlyLocal ?: false)
             }
         }
 
@@ -360,14 +371,14 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             this.init("inventoryprofiles.tooltip.set_global_bookmark2",
                       "globalBookmark_button")
             visibleOverride = { _ ->
-                ModSettings.VILLAGER_TRADING_GROUP_2.booleanValue
+                ModSettings.VILLAGER_TRADING_GROUP_2.booleanValue && !(VillagerTradeManager.currentVillager?.isOnlyLocal ?: false)
             }
         }
 
 
 
         private fun VillagerBookmarkButtonWidget.init(tooltipId: String,
-                                                  id: String) {
+                                                      id: String) {
             this@VillagerOverlayWidget.snapableList.add(this)
             hints = this@InitWidgets.hints.hintFor(IPNButton.VILLAGER_GLOBAL_BOOKMARK)
             tx = 0

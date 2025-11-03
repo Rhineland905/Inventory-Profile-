@@ -44,7 +44,7 @@ public class MixinMerchantScreen {
 
 
     @SuppressWarnings({"DataFlowIssue", "rawtypes"})
-    @Inject(method = "render",
+    @Inject(method = "renderContents",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen;renderAndDecorateCostA(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;II)V", ordinal = 0))
     void render(GuiGraphics matrices, int mouseX, int mouseY, float delta, CallbackInfo ci, @Local(ordinal = 2) int i, @Local(ordinal = 3) int j, @Local(ordinal = 4) int k, @Local(ordinal = 5) int l, @Local(ordinal = 6) int m, @Local MerchantOffer tradeOffer) {
         MerchantScreen self = (MerchantScreen)((Object)this);

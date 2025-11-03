@@ -20,7 +20,7 @@ package org.anti_ad.mc.ipnext.neoforge
 
 import net.neoforged.fml.loading.FMLLoader
 import net.neoforged.neoforgespi.language.IModInfo.DependencyType
-import org.anti_ad.mc.ipnext.ModInfo
+import org.anti_ad.mc.ipnext.gen.ModInfo
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.objectweb.asm.tree.ClassNode
