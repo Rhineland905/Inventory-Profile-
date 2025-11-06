@@ -20,12 +20,13 @@
 #
 
 if [[ n$IPNEXT_RELEASE != "n" ]]; then
-  . ~/.config/secrets/modrinth.sh
-  . ~/.config/secrets/curseforge.sh
+  . "${HOME}/.config/secrets/modrinth.sh"
+  . "${HOME}/.config/secrets/curseforge.sh"
 fi
 
 
 PROJECT_URL=$(git remote get-url origin)
+PROJECT_BRANCH=$(git branch --show-current)
 PROJECT_NAME="IPN"
 
 BUILD_PATH=""
@@ -39,26 +40,30 @@ echo "BUILD_PATH=${BUILD_PATH}"
 pushd .
 
 mkdir /tmp/IPN
-cd /tmp/IPN
+cd /tmp/IPN || exit
 
 if [[ -e /tmp/IPN/${PROJECT_NAME} ]]; then
   rm -rf /tmp/IPN/${PROJECT_NAME}
 fi
 
-git clone ${PROJECT_URL} ${PROJECT_NAME}
-
-if [[ ! -e ../venv ]]; then
-  python -m venv ../venv
-  . ../venv/bin/activate
+if [[ ! -e venv ]]; then
+  python -m venv venv
+  . venv/bin/activate
   pip install pandoc
   pip install pypandoc
   pip install premailer
   pip install pandoc_include
 else
-  . ../venv/bin/activate
+  . venv/bin/activate
 fi
 
-cd ${PROJECT_NAME}/description
+git clone "${PROJECT_URL}" "${PROJECT_NAME}"
+
+cd ${PROJECT_NAME} || exit
+
+git checkout "${PROJECT_BRANCH}"
+
+cd description || exit
 
 python build_html.py
 python build_release_notes.py
@@ -88,9 +93,13 @@ GRADLE_ARG="--max-workers 32 ${GRADLE_ARG}"
 echo will run "./gradlew ${GRADLE_ARG}"
 echo
 
+# shellcheck disable=SC2086
 ./gradlew ${GRADLE_ARG}
 
 
 pwd
 
+# shellcheck disable=SC2164
 popd
+
+
