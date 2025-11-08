@@ -50,6 +50,11 @@ pluginManagement {
         maven { url = uri("https://maven.neoforged.net/releases/") }
 
         maven {
+            name = "Modrinth"
+            url = uri("https://api.modrinth.com/maven")
+        }
+
+        maven {
             name = "libIPN-Snapshots"
             mavenContent {
                 snapshotsOnly()
@@ -95,6 +100,24 @@ dependencyResolutionManagement {
             url = uri("https://maven.isxander.dev/releases")
             name = "Xander Maven"
         }
+
+        maven {
+            name = "Modrinth"
+            url = uri("https://api.modrinth.com/maven")
+        }
+
+
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://cursemaven.com")
+                }
+            }
+            filter {
+                includeGroup("curse.maven")
+            }
+        }
+
 
         exclusiveContent {
             forRepository {

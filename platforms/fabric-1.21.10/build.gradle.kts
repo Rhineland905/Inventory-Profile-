@@ -64,6 +64,12 @@ dependencies {
             exclude(group = "net.fabricmc.fabric-api")
         }
     }
+
+/*
+    modImplementation("curse.maven:metal-bundles-891325:7084307")
+    modImplementation("curse.maven:puzzles-lib-495476:7132147")
+    modImplementation("curse.maven:forge-config-api-port-fabric-547434:7081288")
+*/
 }
 
 easyMod {
