@@ -3,7 +3,8 @@
     "minVersion":         "0.8",
     "package":            "org.anti_ad.mc.ipnext.mixin",
     "compatibilityLevel": "JAVA_21",
-    "mixins":             [],
+    "mixins":             [
+    ],
     "client":             [
         "IMixinBucketItem",
         "IMixinContainerScreen",
@@ -25,7 +26,8 @@
         "MixinPlayerInteractEntityC2SPacket",
         "MixinPlayerInteractionManagerForLockedSlotsMovePrevention",
         "MixinPlayerInventory",
-        "MixinScreen"
+        "MixinScreen",
+        "MixinVirtualMouseHandler"
     ],
     "injectors":          {
         "defaultRequire": 1
