@@ -209,15 +209,18 @@ private class ItemGroupComparator: Comparator<ItemGroup> {
     }
 }
 
-private fun initGroupIndex(): Boolean {
-    val features = Vanilla.mc().player?.connection?.enabledFeatures()
-    val lookup = Vanilla.mc().player?.level()?.registryAccess() //getRegistryManager()
-    val opTabEnabled = Vanilla.mc().options.operatorItemsTab().get() && Vanilla.playerNullable()?.canUseGameMasterBlocks() ?: false
-    return if (features != null && lookup != null) {
-        ItemGroups.tryRebuildTabContents(features, opTabEnabled, lookup);
-        true
-    } else {
-        false
+private fun initGroupIndex() {
+    val player = Vanilla.playerNullable()
+    val features = player?.connection?.enabledFeatures()
+    val lookup = player?.level()?.registryAccess() //getRegistryManager()
+    val opTabEnabled = Vanilla.mc().options.operatorItemsTab().get() && player?.canUseGameMasterBlocks() ?: false
+    if (features != null && lookup != null) {
+        ItemGroups.tryRebuildTabContents(features, opTabEnabled, lookup).ifTrue {
+            val sm = player.connection.searchTrees()
+            val list = ItemGroups.searchTab().searchTabDisplayItems.toList()
+            sm.updateCreativeTooltips(lookup, list)
+            sm.updateCreativeTags(list)
+        }
     }
 }
 

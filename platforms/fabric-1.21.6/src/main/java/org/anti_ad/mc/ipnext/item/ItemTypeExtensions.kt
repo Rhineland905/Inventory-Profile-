@@ -244,7 +244,6 @@ private fun initGroupIndex() {
     val lookup = player?.world?.getRegistryManager()
     val opTabEnabled = Vanilla.mc().options.getOperatorItemsTab().getValue() && Vanilla.playerNullable()?.isCreativeLevelTwoOp ?: false
     if (features != null && lookup != null) {
-        //CreativeInventoryScreen(player, features, opTabEnabled)
         ItemGroups.updateDisplayContext(features, opTabEnabled, lookup).ifTrue {
             val sm = player.networkHandler.searchManager
             val list = ItemGroups.getSearchGroup().displayStacks.toList()

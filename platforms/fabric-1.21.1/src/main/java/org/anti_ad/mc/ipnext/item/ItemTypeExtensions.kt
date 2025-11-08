@@ -50,6 +50,7 @@ import org.anti_ad.mc.alias.registry.RegistryKey
 import org.anti_ad.mc.alias.registry.tag.EnchantmentTags
 import org.anti_ad.mc.alias.text.TranslatableTextContent
 import org.anti_ad.mc.alias.util.Identifier
+import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.vanilla.alias.glue.I18n
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.compat.integrations.Integrations
@@ -236,15 +237,18 @@ private class ItemGroupComparator: Comparator<ItemGroup> {
     }
 }
 
-private fun initGroupIndex(): Boolean {
-    val features = Vanilla.mc().player?.networkHandler?.enabledFeatures
-    val lookup = Vanilla.mc().player?.world?.getRegistryManager()
+private fun initGroupIndex() {
+    val player = Vanilla.playerNullable()
+    val features = player?.networkHandler?.enabledFeatures
+    val lookup = player?.world?.getRegistryManager()
     val opTabEnabled = Vanilla.mc().options.getOperatorItemsTab().getValue() && Vanilla.playerNullable()?.isCreativeLevelTwoOp ?: false
-    return if (features != null && lookup != null) {
-        ItemGroups.updateDisplayContext(features, opTabEnabled, lookup);
-        true
-    } else {
-        false
+    if (features != null && lookup != null) {
+        ItemGroups.updateDisplayContext(features, opTabEnabled, lookup).ifTrue {
+            val sm = player.networkHandler.searchManager
+            val list = ItemGroups.getSearchGroup().displayStacks.toList()
+            sm.addItemTooltipReloader(lookup, list)
+            sm.addItemTagReloader(list)
+        }
     }
 }
 
