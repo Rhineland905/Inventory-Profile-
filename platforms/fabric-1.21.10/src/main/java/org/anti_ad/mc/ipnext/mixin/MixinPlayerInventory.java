@@ -24,6 +24,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
+import org.anti_ad.mc.ipnext.Log;
 import org.anti_ad.mc.ipnext.config.Debugs;
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings;
 import org.anti_ad.mc.ipnext.config.ModSettings;
@@ -57,6 +58,7 @@ public abstract class MixinPlayerInventory {
                 if (ModSettings.INSTANCE.getENABLE_LOCK_SLOTS().getValue() &&
                         !LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_ALLOW_PICKUP_INTO_EMPTY().getValue()
                         && !Debugs.INSTANCE.getFORCE_SERVER_METHOD_FOR_LOCKED_SLOTS().getValue()) {
+                    Log.INSTANCE.trace("Added stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
                     for (int i = 0; i < this.main.size(); ++i) {
                         if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()
                                 && PlayerInventory.isValidHotbarIndex(i)
@@ -78,14 +80,14 @@ public abstract class MixinPlayerInventory {
         }
     }
 
-    @Inject(at = @At(value = "HEAD", target = "Lnet/minecraft/entity/player/PlayerInventory;addStack(Lnet/minecraft/item/ItemStack;)I"),
-            method = "addStack(Lnet/minecraft/item/ItemStack;)I")
+    @Inject(at = @At(value = "HEAD"),
+            method = "insertStack(Lnet/minecraft/item/ItemStack;)Z")
     public void addStackPre(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         addedStack = stack;
     }
 
-    @Inject(at = @At(value = "TAIL", target = "Lnet/minecraft/entity/player/PlayerInventory;addStack(Lnet/minecraft/item/ItemStack;)I"),
-            method = "addStack(Lnet/minecraft/item/ItemStack;)I")
+    @Inject(at = @At(value = "TAIL"),
+            method = "insertStack(Lnet/minecraft/item/ItemStack;)Z")
     public void addStackPost(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         addedStack = null;
     }

@@ -78,14 +78,14 @@ public abstract class MixinPlayerInventory {
         }
     }
 
-    @Inject(at = @At(value = "HEAD", target = "Lnet/minecraft/entity/player/PlayerInventory;addStack(Lnet/minecraft/item/ItemStack;)I"),
-            method = "addStack(Lnet/minecraft/item/ItemStack;)I")
+    @Inject(at = @At(value = "HEAD"),
+            method = "insertStack(Lnet/minecraft/item/ItemStack;)Z")
     public void addStackPre(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         addedStack = stack;
     }
 
-    @Inject(at = @At(value = "TAIL", target = "Lnet/minecraft/entity/player/PlayerInventory;addStack(Lnet/minecraft/item/ItemStack;)I"),
-            method = "addStack(Lnet/minecraft/item/ItemStack;)I")
+    @Inject(at = @At(value = "TAIL"),
+            method = "insertStack(Lnet/minecraft/item/ItemStack;)Z")
     public void addStackPost(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         addedStack = null;
     }
