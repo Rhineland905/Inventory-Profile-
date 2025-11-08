@@ -1,5 +1,15 @@
 <!-- latest begin -->
 
+### 2.2.1
+
+- fixed support for neoforge 1.21.10
+- fixed search not working in creative inventory
+- fixed hotbar whitelisting in single player fabric
+- fixes Controllify integration for 1.21.10 fabric
+
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.2.0
 
 - Adds support for fabric and neoforge 1.21.9
@@ -8,8 +18,6 @@
 
 **The neoforge 1.21.9 port is probably wishful thinking. Since at the time of this release, KotlinForForge for 1.21.9 has not been released. And no testing has been done.**
 
-<!-- latest end -->
-<!-- rest begin -->
 
 
 ### 2.1.11
