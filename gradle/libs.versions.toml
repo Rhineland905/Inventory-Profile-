@@ -2,7 +2,7 @@
 detekt = "1+"
 kotlin = "2.1.21"
 shadowVer = "8.+"
-easyModVer = "1.1.0-SNAPSHOT"
+easyModVer = "1.1.1-SNAPSHOT"
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt"}
