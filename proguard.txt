@@ -19,7 +19,7 @@
 #-dontusemixedcaseclassnames
 
 -keepattributes *Annotation*
--verbose
+#-verbose
 
 
 #-dontoptimize
