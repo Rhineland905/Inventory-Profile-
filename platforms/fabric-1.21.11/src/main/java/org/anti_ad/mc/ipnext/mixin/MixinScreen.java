@@ -47,8 +47,8 @@ public abstract class MixinScreen {
     private List<Selectable> selectables;
 
     @SuppressWarnings("ConstantConditions")
-    @Inject(at = @At("RETURN"), method = "init(Lnet/minecraft/client/MinecraftClient;II)V")
-    public void init(MinecraftClient minecraftClient, int i, int j, CallbackInfo ci) {
+    @Inject(at = @At("RETURN"), method = "init(II)V")
+    public void init(int i, int j, CallbackInfo ci) {
         Screen self = (Screen) (Object) this;
         ScreenEventHandler.INSTANCE.onScreenInit(self, x -> {
             addSelectableChild(x);

@@ -23,9 +23,9 @@ import net.darkhax.curseforgegradle.Constants
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 
-val carpet_version: String? = "1.21.9-1.4.185+v250930"
+val carpet_version: String? = "1.21.11-1.4.193+v251211"
 val controlify_version: String? = "2.4.1+1.21.10-fabric"
-val yacl_version: String? = "3.8.0+1.21.9-fabric"
+val yacl_version: String? = "3.8.1+1.21.11-fabric"
 
 plugins {
     alias(libs.plugins.easymod)
@@ -58,7 +58,7 @@ dependencies {
         }
     }
     controlify_version?.let {
-        "modImplementation"("dev.isxander:controlify:$it") {
+        "modCompileOnly"("dev.isxander:controlify:$it") {
             exclude("maven.modrinth")
             exclude(module = "reeses-sodium-options")
             exclude(group = "net.fabricmc.fabric-api")

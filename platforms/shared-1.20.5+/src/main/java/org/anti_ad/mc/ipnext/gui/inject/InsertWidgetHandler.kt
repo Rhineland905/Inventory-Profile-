@@ -70,7 +70,7 @@ object InsertWidgetHandler : ScreenEventListener {
                               button: Int): Boolean {
         var r = false
         if (checkIfValidScreen()) {
-            currentWidgets.forEach {
+            currentWidgets.filter { it.visible }.forEach {
                 r = r || it.mouseClicked(context, x.toInt(), y.toInt(), button)
             }
         }
@@ -84,7 +84,7 @@ object InsertWidgetHandler : ScreenEventListener {
 
         var r = false
         if (checkIfValidScreen()) {
-            currentWidgets.forEach {
+            currentWidgets.filter { it.visible }.forEach {
                 r = r || it.mouseReleased(context, x.toInt(), y.toInt(), button)
             }
         }
@@ -97,7 +97,7 @@ object InsertWidgetHandler : ScreenEventListener {
                             modifiers: Int): Boolean {
         var r = false
         if (checkIfValidScreen()) {
-            currentWidgets.forEach {
+            currentWidgets.filter { it.visible }.forEach {
                 r = r || it.keyPressed(context, keyCode, scanCode, modifiers)
             }
         }
@@ -110,7 +110,7 @@ object InsertWidgetHandler : ScreenEventListener {
                              modifiers: Int): Boolean {
         var r = false
         if (checkIfValidScreen()) {
-            currentWidgets.forEach {
+            currentWidgets.filter { it.visible }.forEach {
                 r = r || it.keyReleased(context, keyCode, scanCode, modifiers)
             }
         }
@@ -125,7 +125,7 @@ object InsertWidgetHandler : ScreenEventListener {
                               dy: Double): Boolean {
         var r = false
         if (checkIfValidScreen()) {
-            currentWidgets.forEach {
+            currentWidgets.filter { it.visible }.forEach {
                 r = r || it.mouseDragged(context, x, y, button, dx, dy)
             }
         }
@@ -138,7 +138,7 @@ object InsertWidgetHandler : ScreenEventListener {
                                vertical: Double): Boolean {
         var r = false
         if (checkIfValidScreen()) {
-            currentWidgets.forEach {
+            currentWidgets.filter { it.visible }.forEach {
                 r = r || it.mouseScrolled(context, x.toInt(), y.toInt(), horizontal, vertical)
             }
         }
@@ -149,7 +149,7 @@ object InsertWidgetHandler : ScreenEventListener {
                            modifiers: Int): Boolean {
         var r = false
         if (checkIfValidScreen()) {
-            currentWidgets.forEach {
+            currentWidgets.filter { it.visible }.forEach {
                 r = r || it.charTyped(context, charIn, modifiers)
             }
         }

@@ -24,7 +24,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import org.anti_ad.mc.common.gui.NativeContext;
 import org.anti_ad.mc.ipnext.gui.inject.ScreenEventHandler;

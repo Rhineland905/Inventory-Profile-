@@ -23,32 +23,19 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
 import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TradeOfferList;
 import org.anti_ad.mc.common.gui.NativeContext;
-import org.anti_ad.mc.ipnext.Log;
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.Iterator;
 
 @Mixin(MerchantScreen.class)
 public class MixinMerchantScreen {
 
-    @Final
-    @Shadow
-    public MerchantScreen.WidgetButtonPage[] offers;
 
-    @SuppressWarnings({"DataFlowIssue", "rawtypes"})
+    @SuppressWarnings("DataFlowIssue")
     @Inject(method = "renderMain",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/MerchantScreen;renderFirstBuyItem(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;II)V", ordinal = 0))
     void render(DrawContext drawContext, int mouseX, int mouseY, float delta, CallbackInfo ci, @Local(ordinal = 2) int i, @Local(ordinal = 3) int j, @Local(ordinal = 4) int k, @Local(ordinal = 5) int l, @Local(ordinal = 6) int m, @Local TradeOffer tradeOffer) {

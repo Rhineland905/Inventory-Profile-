@@ -456,7 +456,7 @@ inline val ItemType.comparablePotionEffects: List<PotionEffect>
 
 @Suppress("ObjectPropertyName")
 inline val StatusEffectInstance.`(asComparable)`: PotionEffect
-    get() = PotionEffect(Registries.STATUS_EFFECT.getId(this.effectType.value()).toString(),
+    get() = PotionEffect(Registries.STATUS_EFFECT.getId(this.effectType.value())!!.toString(),
                          this.amplifier,
                          this.duration)
 

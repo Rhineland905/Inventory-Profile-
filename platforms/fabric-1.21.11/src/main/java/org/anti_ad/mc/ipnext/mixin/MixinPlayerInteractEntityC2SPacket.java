@@ -20,8 +20,6 @@
 package org.anti_ad.mc.ipnext.mixin;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -37,8 +35,6 @@ public class MixinPlayerInteractEntityC2SPacket {
     @Inject(method = "interactAt(Lnet/minecraft/entity/Entity;ZLnet/minecraft/util/Hand;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket;",
             at = @At("HEAD"))
     private static void interactAt(Entity entity, boolean playerSneaking, Hand hand, Vec3d pos, CallbackInfoReturnable<PlayerInteractEntityC2SPacket> cir) {
-        if (entity instanceof MerchantEntity) {
-            VillagerTradeManager.INSTANCE.setCurrentVillager((MerchantEntity) entity);
-        }
+        VillagerTradeManager.INSTANCE.setCurrentVillager(entity);
     }
 }

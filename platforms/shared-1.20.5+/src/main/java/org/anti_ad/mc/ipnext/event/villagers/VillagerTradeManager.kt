@@ -34,6 +34,7 @@ import org.anti_ad.mc.alias.entity.passive.VillagerEntity
 import org.anti_ad.mc.alias.entity.passive.WanderingTraderEntity
 import org.anti_ad.mc.alias.nbt.NbtElement
 import org.anti_ad.mc.alias.screen.MerchantContainer
+import org.anti_ad.mc.alias.util.TimeSupplier
 import org.anti_ad.mc.alias.village.`(isDisabled)`
 import org.anti_ad.mc.alias.village.`(originalFirstBuyItem)`
 import org.anti_ad.mc.alias.village.`(professionId)`
@@ -70,11 +71,16 @@ object VillagerTradeManager: IInputHandler {
 
     private val defaultEmpty: List<VillagerTradeData> = emptyList()
 
-    var currentVillager: MerchantEntity? = null
+    private var entityCacheTime = Long.MAX_VALUE - System.nanoTime()
+
+    private const val entityCacheTimeOut: Long = 1000 * 1000 * 1000 * 10
+
+    var currentVillager: Entity? = null
         set(value) {
             if (!ModSettings.VILLAGER_TRADING_ENABLE.booleanValue) return
             field = value
             if (value != null) {
+                entityCacheTime = Long.MAX_VALUE - System.nanoTime()
                 currentVillagerBookmarks = VillagerDataManager.getLocal(value.`(uuidString)`)
                 currentVillagerBookmarks1 = VillagerDataManager.getLocal1(value.`(uuidString)`)
                 currentVillagerBookmarks2 = VillagerDataManager.getLocal2(value.`(uuidString)`)
@@ -92,6 +98,7 @@ object VillagerTradeManager: IInputHandler {
                     }
                 }
             } else {
+                entityCacheTime = Long.MIN_VALUE
                 VillagerDataManager.saveIfDirty()
                 currentGlobalBookmarks = defaultEmpty
                 currentVillagerBookmarks = defaultEmpty
@@ -99,6 +106,17 @@ object VillagerTradeManager: IInputHandler {
                 currentVillagerBookmarks1 = defaultEmpty
                 currentGlobalBookmarks2 = defaultEmpty
                 currentVillagerBookmarks2 = defaultEmpty
+            }
+        }
+        get() {
+            if (Vanilla.screen() !is MerchantScreen) {
+                val realTime = Long.MAX_VALUE - System.nanoTime()
+                if (realTime - entityCacheTime > entityCacheTimeOut) {
+                    field = null
+                }
+                return field
+            } else {
+                return field
             }
         }
 
@@ -403,7 +421,7 @@ object VillagerTradeManager: IInputHandler {
 
     private fun handleBookmarkKeys(screen: MerchantScreen,
                                    doGlobal: Boolean,
-                                   villager: MerchantEntity,
+                                   villager: Entity,
                                    group: Int): Boolean {
         screen.`(offers)`.firstOrNull { offer ->
             offer.`(isHovered)`
@@ -423,7 +441,7 @@ object VillagerTradeManager: IInputHandler {
     fun toggleBookmark(screen: MerchantScreen,
                        index: Int,
                        doGlobal: Boolean,
-                       villager: MerchantEntity,
+                       villager: Entity,
                        group: Int) {
         val trade = screen.`(recipes)`[index]
 
@@ -538,7 +556,7 @@ object VillagerTradeManager: IInputHandler {
                           tr2Nbt: NbtElement?,
                           sellId: String,
                           sellNbt: NbtElement?,
-                          villager: MerchantEntity) {
+                          villager: Entity) {
         if (doGlobal) {
             val found = currentGlobalBookmarks1.search(tr1, tr1Nbt, tr2, tr2Nbt, sellId, sellNbt)
             val profession = villager.profession ?: villager.`(uuidString)`
@@ -585,7 +603,7 @@ object VillagerTradeManager: IInputHandler {
                           tr2Nbt: NbtElement?,
                           sellId: String,
                           sellNbt: NbtElement?,
-                          villager: MerchantEntity) {
+                          villager: Entity) {
         if (doGlobal) {
             val found = currentGlobalBookmarks2.search(tr1, tr1Nbt, tr2, tr2Nbt, sellId, sellNbt)
             val profession = villager.profession ?: villager.`(uuidString)`

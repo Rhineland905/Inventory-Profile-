@@ -25,11 +25,13 @@
 rootProject.name = "InventoryProfilesNext"
 
 
+include("platforms:fabric-1.21.11")
 include("platforms:fabric-1.21.10")
 include("platforms:fabric-1.21.6")
 include("platforms:fabric-1.21.1")
 include("platforms:forge-1.21.1")
 include("platforms:forge-1.21.5")
+include("platforms:neoforge-1.21.11")
 include("platforms:neoforge-1.21.10")
 include("platforms:neoforge-1.21.6")
 include("platforms:neoforge-1.21.1")

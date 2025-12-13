@@ -107,7 +107,6 @@ public abstract class MixinMinecraftClient {
             method = "handleInputEvents()V")
     public void handleInputEventsPost(CallbackInfo info) {
 
-
     }
 
     @Inject(at = @At("HEAD"), method = "doItemPick()V")
