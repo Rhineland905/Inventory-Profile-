@@ -38,7 +38,7 @@ interface SpecificEnchantmentOrder {
 
     private companion object {
 
-        fun <T> Set<Object2IntMap.Entry<Holder<T>>>.sortByListOrder(order: MutableList<Holder<T>>): MutableList<Object2IntMap.Entry<Holder<T>>> {
+        fun <T: Any> Set<Object2IntMap.Entry<Holder<T>>>.sortByListOrder(order: MutableList<Holder<T>>): MutableList<Object2IntMap.Entry<Holder<T>>> {
             return toMutableList().also { mutable ->
                 mutable.sortWith(compareBy {
                     order.indexOf(it.key)
@@ -70,7 +70,7 @@ interface SpecificEnchantmentOrder {
         return enchantmentsB.size - enchantmentsA.size
     }
 
-    fun <T> getTooltipOrderList(registries: HolderLookup.Provider?, registryRef: ResourceKey<Registry<T>>, tagKey: TagKey<T>): HolderSet<T> {
+    fun <T: Any> getTooltipOrderList(registries: HolderLookup.Provider?, registryRef: ResourceKey<Registry<T>>, tagKey: TagKey<T>): HolderSet<T> {
         return registries?.lookupOrThrow<T>(registryRef)?.get(tagKey)?.getOrNull() ?: HolderSet.direct()
     }
 

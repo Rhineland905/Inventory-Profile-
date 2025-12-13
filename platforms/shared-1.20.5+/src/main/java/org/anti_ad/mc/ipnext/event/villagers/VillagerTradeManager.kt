@@ -29,12 +29,10 @@ import org.anti_ad.mc.alias.client.gui.widget.`(isHovered)`
 import org.anti_ad.mc.alias.entity.`(uuidString)`
 import org.anti_ad.mc.alias.entity.Entity
 import org.anti_ad.mc.alias.entity.passive.`(profession)`
-import org.anti_ad.mc.alias.entity.passive.MerchantEntity
 import org.anti_ad.mc.alias.entity.passive.VillagerEntity
 import org.anti_ad.mc.alias.entity.passive.WanderingTraderEntity
 import org.anti_ad.mc.alias.nbt.NbtElement
 import org.anti_ad.mc.alias.screen.MerchantContainer
-import org.anti_ad.mc.alias.util.TimeSupplier
 import org.anti_ad.mc.alias.village.`(isDisabled)`
 import org.anti_ad.mc.alias.village.`(originalFirstBuyItem)`
 import org.anti_ad.mc.alias.village.`(professionId)`
@@ -55,7 +53,6 @@ import org.anti_ad.mc.ipnext.config.Hotkeys
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.ingame.`(asString)`
 import org.anti_ad.mc.ipnext.ingame.`(container)`
-//import org.anti_ad.mc.ipnext.ingame.`(getIdentifier)`
 import org.anti_ad.mc.ipnext.ingame.`(itemStack)`
 import org.anti_ad.mc.ipnext.ingame.`(itemType)`
 import org.anti_ad.mc.ipnext.ingame.`(slots)`

@@ -310,7 +310,7 @@ inline val FoodComponent.`(saturationModifier)`
 val COMPONENTS_CHANGES_CODEC: Codec<VanillaItemStack> = Codec.lazyInitialized {
     RecordCodecBuilder.create { instance ->
         instance.group(ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter {
-                stack -> stack?.componentsPatch
+                stack -> @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") stack?.componentsPatch
         }).apply(instance) { changes: ComponentChanges ->
             VanillaItemStack( Registries.ITEM.get(Registries.ITEM.getKey(Items.AIR)).get(), 0, changes)
         }
@@ -422,7 +422,7 @@ inline val ItemType.comparablePotionEffects: List<PotionEffect>
 
 @Suppress("ObjectPropertyName")
 inline val StatusEffectInstance.`(asComparable)`: PotionEffect
-    get() = PotionEffect(Registries.MOB_EFFECT.getKey(this.effect.value()).toString(),
+    get() = PotionEffect(Registries.MOB_EFFECT.getKey(this.effect.value())!!.toString(),
                          this.amplifier,
                          this.duration)
 

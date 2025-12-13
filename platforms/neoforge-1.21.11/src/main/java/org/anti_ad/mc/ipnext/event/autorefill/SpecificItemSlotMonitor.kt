@@ -27,7 +27,7 @@ import net.minecraft.tags.TagKey
 
 interface SpecificItemSlotMonitor {
 
-    fun <T> DefaultedRegistry<T>.getEntry(id: T): Holder<T> = wrapAsHolder(id)
+    fun <T: Any> DefaultedRegistry<T>.getEntry(id: T): Holder<T> = wrapAsHolder(id)
 
-    fun <T> Holder<T>.isIn(id: TagKey<T>): Boolean = `is`(id)
+    fun <T: Any> Holder<T>.isIn(id: TagKey<T>): Boolean = `is`(id)
 }

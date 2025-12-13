@@ -23,7 +23,6 @@ package org.anti_ad.mc.ipnext.neoforge;
 import com.mojang.blaze3d.platform.InputConstants;
 import kotlin.Unit;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;

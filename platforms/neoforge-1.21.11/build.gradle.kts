@@ -65,7 +65,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:[1.7.0,2)")
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-core:[1.7.0,2)")
 
-    compileOnly("curse.maven:easy-villagers-400514:4584220")
+    compileOnly("curse.maven:easy-villagers-400514:7312615")
     compileOnly("curse.maven:workshop-for-handsome-adventurer-875843:5752681")
 
     yacl_version?.let {

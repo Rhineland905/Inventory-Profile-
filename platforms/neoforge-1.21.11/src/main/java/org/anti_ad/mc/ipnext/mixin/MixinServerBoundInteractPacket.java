@@ -22,7 +22,6 @@ package org.anti_ad.mc.ipnext.mixin;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.phys.Vec3;
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager;
 import org.spongepowered.asm.mixin.Final;
@@ -44,9 +43,6 @@ public class MixinServerBoundInteractPacket {
                                                 InteractionHand p_179615_,
                                                 Vec3 p_179616_,
                                                 CallbackInfoReturnable<ServerboundInteractPacket> cir) {
-
-        if (entity instanceof AbstractVillager) {
-            VillagerTradeManager.INSTANCE.setCurrentVillager((AbstractVillager) entity);
-        }
+        VillagerTradeManager.INSTANCE.setCurrentVillager(entity);
     }
 }

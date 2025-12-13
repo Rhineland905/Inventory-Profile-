@@ -65,7 +65,7 @@ object GenerateTagVanillaTxtButtonInfoDelegate : ConfigButtonClickHandler() {
         Registries.ITEM.tags.forEach { namedTag ->
             val tagId = namedTag.key().location
             m[tagId] = namedTag.mapNotNullTo(mutableListOf()) { item ->
-                item?.key?.location()
+                item?.key?.identifier()
             }
         }
         with (fileDatapack.bufferedWriter()) {
@@ -86,7 +86,7 @@ object GenerateTagVanillaTxtButtonInfoDelegate : ConfigButtonClickHandler() {
                 Log.indent(4) {
                     namedTag.forEach { item ->
                         Log.trace {
-                            "${item?.key?.location()}"
+                            "${item?.key?.identifier()}"
                         }
                     }
                 }
