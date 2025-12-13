@@ -1,5 +1,14 @@
 <!-- latest begin -->
 
+### 2.2.2
+
+- added support for neoforge 1.21.11 fabric and neoforge
+- fixed villager trading bookmarks will work on non-villager entities that open trading screens.
+- fixed a crash when using scroll wheel in the creative inventory. 
+
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.2.1
 
 - fixed support for neoforge 1.21.10
@@ -7,8 +16,6 @@
 - fixed hotbar whitelisting in single player fabric
 - fixes Controllify integration for 1.21.10 fabric
 
-<!-- latest end -->
-<!-- rest begin -->
 
 ### 2.2.0
 
