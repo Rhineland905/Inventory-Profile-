@@ -18,6 +18,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("ObjectPropertyName")
 
 package org.anti_ad.mc.ipnext.item
 
@@ -48,6 +49,7 @@ import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.compat.integrations.Integrations
 import org.anti_ad.mc.ipnext.config.CreativeMenuSortOrder
 import org.anti_ad.mc.ipnext.config.ModSettings
+import org.anti_ad.mc.ipnext.config.SortSettings
 import org.anti_ad.mc.ipnext.ingame.*
 import org.anti_ad.mc.ipnext.mixin.*
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemGroup
@@ -58,30 +60,18 @@ import kotlin.collections.MutableMap
 import kotlin.collections.associateTo
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.contains
 import kotlin.collections.filter
 import kotlin.collections.fold
 import kotlin.collections.forEach
 import kotlin.collections.forEachIndexed
-import kotlin.collections.get
 import kotlin.collections.indexOfFirst
 import kotlin.collections.isNotEmpty
 import kotlin.collections.listOf
 import kotlin.collections.map
-import kotlin.collections.minus
 import kotlin.collections.mutableListOf
 import kotlin.collections.mutableMapOf
 import kotlin.collections.sortedWith
 import kotlin.collections.toList
-import kotlin.sequences.contains
-import kotlin.sequences.filter
-import kotlin.sequences.forEachIndexed
-import kotlin.sequences.indexOfFirst
-import kotlin.sequences.minus
-import kotlin.sequences.sortedWith
-import kotlin.text.filter
-import kotlin.text.forEachIndexed
-import kotlin.text.indexOfFirst
 import kotlin.text.split
 import kotlin.text.trim
 import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
@@ -250,7 +240,7 @@ private class ItemGroupComparator: Comparator<ItemGroup> {
             }
         }
 
-        return if (ModSettings.CREATIVE_SORT_ORDER_TYPE.value == CreativeMenuSortOrder.SEARCH_TAB)
+        return if (SortSettings.CREATIVE_SORT_ORDER_TYPE.value == CreativeMenuSortOrder.SEARCH_TAB)
             defaultCompare()
         else
             priorityCompare()
@@ -393,7 +383,7 @@ inline val ItemType.isDamageable: Boolean
 inline val ItemType.maxDamage: Int
     get() = vanillaStack.maxDamage
 inline val ItemType.durability: Int
-    get() = if (isDamageableFn())  maxDamage - damage else 0
+    get() = if (isDamageableFn())  maxDamage - damage else -1
 
 inline val ItemType.isBucket: Boolean
     get() = item is BucketItem || item is IMixinEntityBucketItem || item is PowderSnowBucketItem
@@ -481,7 +471,7 @@ object ItemTypeExtensionsObject {
         ItemGroups.getGroups().forEach {
             (it as IMixinItemGroup).ipnPriorityIndex = -1;
         }
-        ModSettings.CATEGORY_PRIORITY_LIST.value.split(",").forEach {
+        SortSettings.CATEGORY_PRIORITY_LIST.value.split(",").forEach {
             translationKeysPriorityList.add(it.trim())
         }
     }
@@ -492,7 +482,7 @@ object ItemTypeExtensionsObject {
         if (local.get()) {
             initGroupIndex()
             local.set(false)
-            ModSettings.CATEGORY_ORIGINAL_ORDER.value = makeDefaultList()
+            SortSettings.CATEGORY_ORIGINAL_ORDER.value = makeDefaultList()
             local.set(true)
         }
     }

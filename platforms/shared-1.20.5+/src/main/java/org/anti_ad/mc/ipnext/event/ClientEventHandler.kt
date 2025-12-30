@@ -24,6 +24,7 @@ import org.anti_ad.mc.common.input.GlobalInputHandler
 import org.anti_ad.mc.common.vanilla.VanillaUtil
 import org.anti_ad.mc.ipnext.IPNInfoManager
 import org.anti_ad.mc.ipnext.access.IPNImpl
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings
 import org.anti_ad.mc.ipnext.config.ModSettings
@@ -61,7 +62,7 @@ object ClientEventHandler: PClientEventHandler {
             ContinuousCraftingHandler.onTickInGame()
         }
 
-        if (ModSettings.ENABLE_AUTO_REFILL.booleanValue) {
+        if (Features.ENABLE_AUTO_REFILL.booleanValue) {
             AutoRefillHandler.onTickInGame()
         }
 
@@ -79,10 +80,10 @@ object ClientEventHandler: PClientEventHandler {
         CustomDataFileLoader.load()
 
         GlobalInputHandler.pressedKeys.clear() // sometimes left up not captured
-        if (ModSettings.ENABLE_LOCK_SLOTS.booleanValue && !LockedSlotsSettings.LOCKED_SLOTS_ALLOW_PICKUP_INTO_EMPTY.booleanValue) {
+        if (Features.ENABLE_LOCK_SLOTS.booleanValue && !LockedSlotsSettings.LOCKED_SLOTS_ALLOW_PICKUP_INTO_EMPTY.booleanValue) {
             LockedSlotKeeper.onJoinWorld()
         }
-        if (ModSettings.ENABLE_AUTO_REFILL.booleanValue) {
+        if (Features.ENABLE_AUTO_REFILL.booleanValue) {
             AutoRefillHandler.onJoinWorld()
         }
 

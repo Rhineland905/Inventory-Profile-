@@ -48,6 +48,7 @@ import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.compat.integrations.Integrations
 import org.anti_ad.mc.ipnext.config.CreativeMenuSortOrder
 import org.anti_ad.mc.ipnext.config.ModSettings
+import org.anti_ad.mc.ipnext.config.SortSettings
 import org.anti_ad.mc.ipnext.ingame.*
 import org.anti_ad.mc.ipnext.mixin.*
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemGroup
@@ -250,7 +251,7 @@ private class ItemGroupComparator: Comparator<ItemGroup> {
             }
         }
 
-        return if (ModSettings.CREATIVE_SORT_ORDER_TYPE.value == CreativeMenuSortOrder.SEARCH_TAB)
+        return if (SortSettings.CREATIVE_SORT_ORDER_TYPE.value == CreativeMenuSortOrder.SEARCH_TAB)
             defaultCompare()
         else
             priorityCompare()
@@ -393,7 +394,13 @@ inline val ItemType.isDamageable: Boolean
 inline val ItemType.maxDamage: Int
     get() = vanillaStack.maxDamage
 inline val ItemType.durability: Int
-    get() = if (isDamageableFn())  maxDamage - damage else 0
+    get() {
+        return if (isDamageableFn()) {
+            maxDamage - damage
+        } else {
+            0
+        }
+    }
 
 inline val ItemType.isBucket: Boolean
     get() = item is BucketItem || item is IMixinEntityBucketItem || item is PowderSnowBucketItem
@@ -481,7 +488,7 @@ object ItemTypeExtensionsObject {
         ItemGroups.getGroups().forEach {
             (it as IMixinItemGroup).ipnPriorityIndex = -1;
         }
-        ModSettings.CATEGORY_PRIORITY_LIST.value.split(",").forEach {
+        SortSettings.CATEGORY_PRIORITY_LIST.value.split(",").forEach {
             translationKeysPriorityList.add(it.trim())
         }
     }
@@ -492,7 +499,7 @@ object ItemTypeExtensionsObject {
         if (local.get()) {
             initGroupIndex()
             local.set(false)
-            ModSettings.CATEGORY_ORIGINAL_ORDER.value = makeDefaultList()
+            SortSettings.CATEGORY_ORIGINAL_ORDER.value = makeDefaultList()
             local.set(true)
         }
     }

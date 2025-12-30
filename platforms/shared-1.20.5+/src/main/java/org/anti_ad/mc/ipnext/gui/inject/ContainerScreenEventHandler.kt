@@ -31,6 +31,7 @@ import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.ipnext.integration.HintsManagerNG
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.ipn.api.IPNButton
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
@@ -65,7 +66,7 @@ object ContainerScreenEventHandler {
         if (GuiSettings.ENABLE_PROFILES_UI.booleanValue  && !ignore && !hints.hintFor(IPNButton.PROFILE_SELECTOR).hide) {
             widgetsToInset.add(ProfilesUICollectionWidget(target, hints).also { editor.addHintable(it) })
         }
-        if (ModSettings.VILLAGER_TRADING_ENABLE.booleanValue && !ignore && target is MerchantScreen) {
+        if (!ignore && target is MerchantScreen) {
             widgetsToInset.add(VillagerOverlayWidget(target, hints).also { editor.addHintable(it) })
         }
         widgetsToInset.add(settings)

@@ -38,6 +38,7 @@ import org.anti_ad.mc.common.vanilla.render.rClearDepth
 import org.anti_ad.mc.common.vanilla.render.rStandardGlState
 import org.anti_ad.mc.ipn.api.IPNButton
 import org.anti_ad.mc.ipnext.config.Debugs
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager.isLocalAvailable
@@ -70,6 +71,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
                                       mouseX: Int,
                                       mouseY: Int,
                                       partialTicks: Float) {
+        if (!Features.VILLAGER_TRADING_ENABLE.booleanValue) return
         rehint()
         rStandardGlState()
         rClearDepth(context)
@@ -124,7 +126,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             id = "do_global_trades_button"
             hintableList.add(this)
             visibleOverride = { _ ->
-                !(VillagerTradeManager.currentVillager?.isOnlyLocal ?: false)
+                Features.VILLAGER_TRADING_ENABLE.booleanValue && !(VillagerTradeManager.currentVillager?.isOnlyLocal ?: false)
             }
         }
 

@@ -21,9 +21,16 @@
 package org.anti_ad.mc.ipnext.gui.inject.base
 
 import org.anti_ad.mc.common.gui.NativeInputContextBase
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 
 open class ProfileButtonWidget: SortButtonWidget {
+
+    override var visible: Boolean
+        get() = Features.ENABLE_PROFILES.booleanValue && super.visible
+        set(value) {
+            super.visible = value
+        }
 
     constructor(clickEvent: (Int) -> Unit): super(clickEvent)
     constructor(clickEvent: () -> Unit) : super(clickEvent)

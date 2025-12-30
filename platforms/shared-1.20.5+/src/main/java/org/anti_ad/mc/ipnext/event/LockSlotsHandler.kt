@@ -36,6 +36,7 @@ import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.render.glue.Sprite
 import org.anti_ad.mc.common.vanilla.render.glue.rDrawCenteredSprite
 import org.anti_ad.mc.common.vanilla.render.glue.rFillRect
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.config.SwitchType.HOLD
@@ -70,10 +71,10 @@ object LockSlotsHandler: InventoryOverlay {
     var lastMouseClickSlot: Slot? = null
 
     override val enabledForeground: Boolean
-        get() = ModSettings.ENABLE_LOCK_SLOTS.booleanValue && !LockedSlotsSettings.LOCK_SLOTS_QUICK_DISABLE.isPressing()
+        get() = Features.ENABLE_LOCK_SLOTS.booleanValue && !LockedSlotsSettings.LOCK_SLOTS_QUICK_DISABLE.isPressing()
 
     override val enabledBackground: Boolean
-        get() = ModSettings.ENABLE_LOCK_SLOTS.booleanValue && LockedSlotsSettings.SHOW_LOCKED_SLOTS_BACKGROUND.booleanValue
+        get() = Features.ENABLE_LOCK_SLOTS.booleanValue && LockedSlotsSettings.SHOW_LOCKED_SLOTS_BACKGROUND.booleanValue
 
     override val slotLocations: Map<Int, Point>
         get() {

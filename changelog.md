@@ -1,13 +1,25 @@
 <!-- latest begin -->
 
+### 2.2.3
+
+- Fixed sort by item count.
+- Added new settings to treat non-stackable items as full stackable stacks when sorting by item count.
+- Added compatibility with Easy Shulker Boxes and Metal Bundles
+- Major settings screen rework.
+  - Added "**Features**" page where all major features can be enabled/disabled.
+  - Added "**Sort Settings**" page, where all sort-related settings were moved.
+  - Old settings files will be updated automatically. Also, downgrade is possible without loss of information.
+- The number of quick profiles is now 10. 
+  
+
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.2.2
 
 - added support for neoforge 1.21.11 fabric and neoforge
 - fixed villager trading bookmarks will work on non-villager entities that open trading screens.
-- fixed a crash when using scroll wheel in the creative inventory. 
-
-<!-- latest end -->
-<!-- rest begin -->
+- fixed a crash when using scroll wheel in the creative inventory.
 
 ### 2.2.1
 

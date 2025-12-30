@@ -49,7 +49,7 @@ enum class SortingMethodIndividual {
 
     override fun toString(): String =
         if (this == GLOBAL) {
-            val v = ModSettings.SORT_ORDER.value
+            val v = SortSettings.SORT_ORDER.value
             val tostr = v.toString()
             I18n.translate("$ENUM.sorting_method.global",
                            tostr.substringBefore('(').trim())

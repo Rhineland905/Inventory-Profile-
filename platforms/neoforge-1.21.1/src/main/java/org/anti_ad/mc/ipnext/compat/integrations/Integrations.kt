@@ -23,6 +23,8 @@ import org.anti_ad.mc.common.extensions.trySwallow
 
 object Integrations {
 
+    val isEasyShulkerBoxesLoaded: Boolean = false
+
     val carpetEmptyShulkersStackSize = 1
 
     fun init(): Boolean {

@@ -28,6 +28,7 @@ import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.VanillaUtil
 import org.anti_ad.mc.ipnext.config.Debugs
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
@@ -99,7 +100,7 @@ object LockedSlotKeeper {
                 skipTick = true
             }
         }
-        if (ModSettings.ENABLE_LOCK_SLOTS.booleanValue && !LockedSlotsSettings.LOCKED_SLOTS_ALLOW_PICKUP_INTO_EMPTY.booleanValue && isMultiPlayer) {
+        if (Features.ENABLE_LOCK_SLOTS.booleanValue && !LockedSlotsSettings.LOCKED_SLOTS_ALLOW_PICKUP_INTO_EMPTY.booleanValue && isMultiPlayer) {
             if (worldJoined) {
                 if (ticksAfterJoin > LockedSlotsSettings.LOCKED_SLOTS_DELAY_KEEPER_REINIT_TICKS.integerValue) {
                     Log.trace("Initialising because of timeout!")
@@ -121,9 +122,9 @@ object LockedSlotKeeper {
                 }
                 ticksAfterJoin++
             }
-            //only do stuff if we are in game and there is no open screen
-            // this will allow for item pickup into locked slots while the inventory is open
-            // however there is no easy way to distinguish between player moved items and picked up ones
+            //only do stuff if we are in a game and there is no open screen
+            // this will allow for item pickup into locked slots while the inventory is open.
+            // However, there is no easy way to distinguish between player moved items and picked-up ones,
             // so people will have to live with that.
             if (VanillaUtil.inGame() && Vanilla.screen() != null) {
                 screenOpening = true

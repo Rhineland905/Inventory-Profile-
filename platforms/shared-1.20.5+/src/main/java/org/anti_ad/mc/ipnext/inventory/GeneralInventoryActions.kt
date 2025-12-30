@@ -60,6 +60,8 @@ import org.anti_ad.mc.ipnext.inventory.action.restockFrom
 import org.anti_ad.mc.ipnext.inventory.action.sort
 import org.anti_ad.mc.ipn.features.scrolling.ScrollDirection
 import org.anti_ad.mc.ipn.features.scrolling.ScrollingUtils
+import org.anti_ad.mc.ipnext.config.Features
+import org.anti_ad.mc.ipnext.config.SortSettings
 import org.anti_ad.mc.ipnext.item.ComponentUtils.toFullNbtOrNull
 import org.anti_ad.mc.ipnext.item.EMPTY
 import org.anti_ad.mc.ipnext.item.ItemStack
@@ -74,6 +76,7 @@ object GeneralInventoryActions {
 
     @Suppress("UNUSED_PARAMETER")
     fun doSort(container: Container, gui: Boolean = false, forcePlayer: Boolean = false) {
+        if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
         with(GuiSettings) {
             doSort(REGULAR_SORT_ORDER,
                    REGULAR_CUSTOM_RULE,
@@ -86,6 +89,7 @@ object GeneralInventoryActions {
     fun doSortInColumns(container: Container,
                         gui: Boolean = false,
                         forcePlayer: Boolean = false) {
+        if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
         with(GuiSettings) {
             doSort(IN_COLUMNS_SORT_ORDER,
                    IN_COLUMNS_CUSTOM_RULE,
@@ -98,6 +102,7 @@ object GeneralInventoryActions {
     fun doSortInRows(container: Container,
                      gui: Boolean = false,
                      forcePlayer: Boolean = false) {
+        if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
         with(GuiSettings) {
             doSort(IN_ROWS_SORT_ORDER,
                    IN_ROWS_CUSTOM_RULE,
@@ -123,7 +128,7 @@ object GeneralInventoryActions {
     // MOVE_ALL_AT_CURSOR off = to container, on -> (pointing container -> to player) else to container
     // use MOVE_ALL_AT_CURSOR instead of SORT_AT_CURSOR
     fun doMoveMatch() {
-
+        if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
         val types = ContainerTypes.getTypes(Vanilla.container())
         if (types.contains(CREATIVE)) return // no do creative menu
         if (!types.containsAny(setOf(SORTABLE_STORAGE,
@@ -159,6 +164,7 @@ object GeneralInventoryActions {
 
     // THROWS_ALL_AT_CURSOR off
     fun doThrowMatch() {
+        if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
         val vanillaContainer = Vanilla.container()
         val types = ContainerTypes.getTypes(vanillaContainer)
         if (types.contains(CREATIVE)) {
@@ -408,29 +414,37 @@ object GeneralInventoryActions {
     }
 
     fun scrollUp() {
-        val focusedSlot = vFocusedSlot()
-        val focusedItem = focusedSlot?.`(itemStack)` ?: ItemStack.EMPTY
-        if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
-            scrollToChest(focusedItem)
-        } else {
-            if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+        if (Features.ITEM_SCROLLING.booleanValue) {
+            val focusedSlot = vFocusedSlot()
+            val focusedItem =
+                    focusedSlot?.`(itemStack)`
+                        ?: ItemStack.EMPTY
+            if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
                 scrollToChest(focusedItem)
             } else {
-                scrollToPlayer(focusedItem)
+                if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+                    scrollToChest(focusedItem)
+                } else {
+                    scrollToPlayer(focusedItem)
+                }
             }
         }
     }
 
     fun scrollDown() {
-        val focusedSlot = vFocusedSlot()
-        val focusedItem = focusedSlot?.`(itemStack)` ?: ItemStack.EMPTY
-        if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
-            scrollToPlayer(focusedItem)
-        } else {
-            if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+        if (Features.ITEM_SCROLLING.booleanValue) {
+            val focusedSlot = vFocusedSlot()
+            val focusedItem =
+                    focusedSlot?.`(itemStack)`
+                        ?: ItemStack.EMPTY
+            if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
                 scrollToPlayer(focusedItem)
             } else {
-                scrollToChest(focusedItem)
+                if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+                    scrollToPlayer(focusedItem)
+                } else {
+                    scrollToChest(focusedItem)
+                }
             }
         }
     }
@@ -445,7 +459,7 @@ object GeneralInventoryActions {
 private object InnerActions {
 
     private fun forcePlayerSide(): Boolean { // default container side
-        return (ModSettings.SORT_AT_CURSOR.booleanValue && vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) ||
+        return (SortSettings.SORT_AT_CURSOR.booleanValue && vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) ||
                 HintsManagerNG.isPlayerSideOnly(Vanilla.screen()?.javaClass)
     }
 
@@ -470,7 +484,7 @@ private object InnerActions {
                 if (forcePlayerSide || sortableItemStorage.get().isEmpty()) {
                     val slots = (playerStorage - lockedSlots - container.disabled)
                     target = slots.get()
-                    if (ModSettings.RESTOCK_HOTBAR.booleanValue) {
+                    if (SortSettings.RESTOCK_HOTBAR.booleanValue) {
                         // priority: mainhand -> offhand -> hotbar 1-9
                         (playerHands + playerHotbar).get().asSubTracker.restockFrom(target.asSubTracker)
                     }

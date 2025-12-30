@@ -19,11 +19,14 @@
 
 package org.anti_ad.mc.ipnext.compat.integrations
 
+import net.neoforged.fml.loading.FMLLoader
 import org.anti_ad.mc.common.extensions.trySwallow
 
 object Integrations {
 
     val carpetEmptyShulkersStackSize = 1
+
+    val isEasyShulkerBoxesLoaded = FMLLoader.getCurrent().loadingModList.getModFileById("easyshulkerboxes") != null
 
     fun init(): Boolean {
 

@@ -24,13 +24,14 @@ import org.anti_ad.mc.common.extensions.trySwallow
 
 object Integrations {
 
+    val isEasyShulkerBoxesLoaded = false
+
     var ___getCarpetEmptyShulkersStackSize: () -> Int = { 1 }
 
     val carpetEmptyShulkersStackSize: Int
         get() {
             return ___getCarpetEmptyShulkersStackSize();
         }
-
 
     fun init() {
         trySwallow {

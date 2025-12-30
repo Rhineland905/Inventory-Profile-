@@ -29,6 +29,7 @@ import org.anti_ad.mc.common.extensions.exists
 import org.anti_ad.mc.common.extensions.trySwallow
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.NotificationManager
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.ModSettings
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -191,7 +192,7 @@ object VillagerDataManager {
     var saveTimer: Timer? = null
 
     fun saveIfDirty() {
-        if (!ModSettings.VILLAGER_TRADING_ENABLE.booleanValue) return
+        if (!Features.VILLAGER_TRADING_ENABLE.booleanValue) return
         val task = object: (TimerTask) -> Unit {
 
             val maxTimesEmpty = 15
@@ -206,7 +207,7 @@ object VillagerDataManager {
             }
 
             override fun invoke(timerTask: TimerTask) {
-                if (ModSettings.VILLAGER_TRADING_ENABLE.booleanValue) {
+                if (Features.VILLAGER_TRADING_ENABLE.booleanValue) {
                     val cfg = config.asSanitized()
                     if (cfg.isDirty) {
                         save(cfg)

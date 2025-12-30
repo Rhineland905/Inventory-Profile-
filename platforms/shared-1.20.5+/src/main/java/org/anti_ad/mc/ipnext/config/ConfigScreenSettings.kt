@@ -38,8 +38,10 @@ object ConfigScreenSettings: BaseConfigScreenSettings() {
 
     private const val FILE_NAME = "inventoryprofiles.json"
 
-    val configs = listOf(ModSettings,
+    val configs = listOf(Features,
+                         ModSettings,
                          GuiSettings,
+                         SortSettings,
                          LockedSlotsSettings,
                          AutoRefillSettings,
                          EditProfiles,

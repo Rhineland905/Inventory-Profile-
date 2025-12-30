@@ -26,6 +26,7 @@ import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.render.alpha
 import org.anti_ad.mc.common.vanilla.render.glue.rFillRect
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.gui.base.InventoryOverlay
 import org.anti_ad.mc.ipnext.ingame.`(containerBounds)`
@@ -61,14 +62,14 @@ object SlotHighlightHandler: InventoryOverlay {
         }
 
     override val enabledBackground: Boolean
-        get() = ModSettings.HIGHLIGHT_FOUSED_ITEMS.value && !ModSettings.HIGHLIGHT_FOUSED_ITEMS_FOREGROUND.value
+        get() = Features.HIGHLIGHT_FOUSED_ITEMS.value && !ModSettings.HIGHLIGHT_FOUSED_ITEMS_FOREGROUND.value
 
     override fun drawBackground(context: NativeContext) {
         drawSprite(context)
     }
 
     override val enabledForeground: Boolean
-        get() = ModSettings.HIGHLIGHT_FOUSED_ITEMS.value && ModSettings.HIGHLIGHT_FOUSED_ITEMS_FOREGROUND.value
+        get() = Features.HIGHLIGHT_FOUSED_ITEMS.value && ModSettings.HIGHLIGHT_FOUSED_ITEMS_FOREGROUND.value
 
     override fun drawForeground(context: NativeContext) {
         drawSprite(context)
@@ -142,7 +143,7 @@ object SlotHighlightHandler: InventoryOverlay {
     }
 
     fun onTickInGame() {
-        if (ModSettings.HIGHLIGHT_FOUSED_ITEMS.booleanValue) {
+        if (Features.HIGHLIGHT_FOUSED_ITEMS.booleanValue) {
             val screen = Vanilla.screen() as? ContainerScreen<*> ?: return
             screen.`(focusedSlot)`?.let { slot ->
                 if (toHighlight != slot.`(itemStack)`.itemType) {

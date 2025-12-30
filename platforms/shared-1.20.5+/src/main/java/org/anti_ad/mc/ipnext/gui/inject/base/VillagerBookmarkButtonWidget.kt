@@ -25,6 +25,7 @@ import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.common.vanilla.render.glue.Sprite
 import org.anti_ad.mc.common.vanilla.render.glue.rDrawSprite
 import org.anti_ad.mc.common.vanilla.render.glue.rFillRect
+import org.anti_ad.mc.ipnext.config.Features
 
 open class VillagerBookmarkButtonWidget: SortButtonWidget {
 
@@ -36,6 +37,16 @@ open class VillagerBookmarkButtonWidget: SortButtonWidget {
     var cty: Int = 0
 
     open var checked = { false }
+
+    override var visible: Boolean
+        get() {
+            return if (Features.VILLAGER_TRADING_ENABLE.booleanValue) {
+                super.visible
+            } else false
+        }
+        set(value) {
+            super.visible = value
+        }
 
     override val hoveringTexturePt: Point
         get() = Point(tx, ty)

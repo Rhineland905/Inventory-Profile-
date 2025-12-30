@@ -379,17 +379,15 @@ class EnchantmentsOrder : NativeRule(), SpecificEnchantmentOrder {
         comparator = ::compareItems
     }
 
-    private fun compareNulls(a: Any?, b: Any?): Int =
-        if (a == null) {
-            if (b == null) {
-                0
-            } else {
-                -1
-            }
+    private fun compareNulls(a: Any?, b: Any?): Int {
+        if (a == null && b == null) return 0
+        if (a != null && b != null) return 0
+        return if (a == null) {
+            -1
         } else {
             1
         }
-
+    }
 
     fun compareItems(a: ItemType, b: ItemType): Int {
         val enchType = DataComponentTypes.ENCHANTMENTS

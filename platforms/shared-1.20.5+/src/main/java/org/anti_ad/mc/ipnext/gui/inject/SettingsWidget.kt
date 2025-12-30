@@ -107,7 +107,7 @@ class SettingsWidget(override val screen: ContainerScreen<*>,
     inner class InitWidgets { // todo cleanup code
 
 
-        private val showHideButton = ProfileButtonWidget{ -> onClick() }.apply {
+        private val showHideButton = SortButtonWidget{ -> onClick() }.apply {
             tx = 140
             ty = 0
             hints = this@SettingsWidget.hints

@@ -21,7 +21,7 @@
 import masecla.modrinth4j.model.version.ProjectVersion.*
 import net.darkhax.curseforgegradle.Constants
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
-
+import java.net.URI
 
 val carpet_version: String? = "1.21.11-1.4.193+v251211"
 val controlify_version: String? = "2.4.1+1.21.10-fabric"
@@ -31,6 +31,20 @@ plugins {
     alias(libs.plugins.easymod)
     antlr
     id("org.barfuin.gradle.taskinfo") version "2+"
+}
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = URI("https://api.modrinth.com/maven")
+            }
+        }
+        filter {
+            includeGroup("maven.modrinth")
+        }
+    }
 }
 
 
@@ -64,6 +78,13 @@ dependencies {
             exclude(group = "net.fabricmc.fabric-api")
         }
     }
+
+    implementation("com.electronwill.night-config:toml:3.6.0")
+
+    modApi("maven.modrinth:metal-bundles:a88KETrE")
+    modApi("maven.modrinth:easy-shulker-boxes:bYZtnl61")
+    modApi("maven.modrinth:ohNO6lps:uXrWPsCu")
+    modApi("maven.modrinth:QAGBst4M:papKcBDm")
 
 /*
     modImplementation("curse.maven:metal-bundles-891325:7084307")

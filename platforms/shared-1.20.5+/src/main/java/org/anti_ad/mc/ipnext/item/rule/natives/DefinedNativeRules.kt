@@ -121,7 +121,9 @@ val potion_name     /**/ by type(::StringBasedRule) { it.potionName }/**/.param(
 val raw_id                    /**/ by type(::NumberBasedRule) { it.rawId }
 val creative_menu_group_index /**/ by type(::NumberBasedRule) { it.groupIndex }
 val search_tab_index          /**/ by type(::NumberBasedRule) { it.searchTabIndex }
-val damage                    /**/ by type(::NumberBasedRule) { it.damage }
+val damage                    /**/ by type(::NumberBasedRule) {
+    it.damage
+}
 val max_damage                /**/ by type(::NumberBasedRule) { it.maxDamage }
 val durability                /**/ by type(::NumberBasedRule) { it.durability }
 val enchantments_score        /**/ by type(::NumberBasedRule) { it.`(enchantmentsScore)` }.param(number_order,

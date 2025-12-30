@@ -171,7 +171,7 @@ private fun List<ItemStack>.sortItems(sortingRule: Rule): List<ItemStack> {
         if (keep) overStackedMap[index] = itemStack
         keep
     }
-    val bucket = (this - overStacked).collect()
+    val bucket = (this - overStacked.toSet()).collect()
     val sorted =  bucket.elementSet.toList().sortedWith(sortingRule)
         .map { itemType ->
             itemType to pack(bucket.count(itemType),

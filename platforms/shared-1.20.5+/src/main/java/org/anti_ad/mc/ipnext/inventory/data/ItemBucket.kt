@@ -20,9 +20,12 @@
 
 package org.anti_ad.mc.ipnext.inventory.data
 
+import org.anti_ad.mc.ipnext.config.SortSettings
+import org.anti_ad.mc.ipnext.item.EMPTY
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.ItemType
 import org.anti_ad.mc.ipnext.item.isEmpty
+import org.anti_ad.mc.ipnext.item.maxCount
 import org.anti_ad.mc.ipnext.util.Bucket
 import org.anti_ad.mc.ipnext.util.MutableBucket
 
@@ -60,6 +63,21 @@ class MutableItemBucket : MutableBucket<ItemType>, ItemBucket {
     override fun contains(itemStack: ItemStack) = contains(itemStack.itemType,
                                                            itemStack.count)
 
+    override fun accumulateCount(element: ItemType): Int {
+        return if (SortSettings.TREAT_NON_STACKABLE_AS_FULL_STACKS.booleanValue) {
+            val maxCount = innerMap.maxByOrNull { it.key.maxCount }?.key?.maxCount ?: 1
+            innerMap.filter { entry ->
+                element == entry.key
+            }.map {
+                if (it.key.maxCount == 1) it.value * maxCount
+                else it.value
+            }.sum()
+        } else {
+            innerMap.filter { entry -> element == entry.key }.map { it.value }.sum()
+        }
+    }
+
+
     override fun containsAll(itemStacks: List<ItemStack>): Boolean {
         return itemStacks.all { contains(it) }
     }
@@ -75,6 +93,7 @@ class MutableItemBucket : MutableBucket<ItemType>, ItemBucket {
         copyAsMutable().apply { removeAll(another) }
 
     override fun copy(): ItemBucket = copyAsMutable()
+
     override fun copyAsMutable(): MutableItemBucket {
         return MutableItemBucket(asMap)
     }
@@ -85,4 +104,6 @@ class MutableItemBucket : MutableBucket<ItemType>, ItemBucket {
                       it.value)
         }.toString()
     }
+
+
 }

@@ -28,7 +28,7 @@ import org.anti_ad.mc.ipnext.item.rule.parameter.sub_rule
 
 
 fun interface CountSource<T> {
-    fun count(element: T): Int
+    fun accumulateCount(element: T): Int
 }
 
 interface CountSink<T> {
@@ -69,6 +69,7 @@ abstract class BaseRule : Rule {
             if (Debugs.INSANE_TRACE_LOGS.value) {
                 if (field !== defaultComparator) {
                     Log.trace("Overwriting comparator form  $field to $value", Exception())
+                    Log.trace("Overwriting comparator with type ${value.javaClass.canonicalName}", Exception())
                 }
                 if (value !== defaultComparator) createdHere = Exception()
             }

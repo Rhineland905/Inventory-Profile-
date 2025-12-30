@@ -239,7 +239,7 @@ object SingleType : DiffCalculatorUtil {
 
     // notice maxCount not in hashCode/equals, only c and identities
     class Node(val maxCount: Int,
-               val identities: MutableBucket<Slot> = MutableBucket()) : Comparable<Node> {
+               val identities: MutableBucket<Slot> = MutableBucket() ) : Comparable<Node> {
         var c = 0 // cursor
         var skipThis = false
 

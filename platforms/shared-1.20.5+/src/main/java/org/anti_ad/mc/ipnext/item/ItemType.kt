@@ -53,7 +53,7 @@ data class ItemType(val item: Item,
 
     val accumulatedCount: Int
         get() {
-            return countSource.count(this)
+            return countSource.accumulateCount(this.copy(ignoreDurability = true))
         }
 
 
@@ -77,6 +77,8 @@ data class ItemType(val item: Item,
         other as ItemType
 
         if (isEmpty() && other.isEmpty()) return true
+        if (isEmpty() && !other.isEmpty()) return false
+        if (!isEmpty() && other.isEmpty()) return false
         if (item != other.item) return false
         if (!ignoreDurability || !isDamageable) {
             if (changes != other.changes) return false

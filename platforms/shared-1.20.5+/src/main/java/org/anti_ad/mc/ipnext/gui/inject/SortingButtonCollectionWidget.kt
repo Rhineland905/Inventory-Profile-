@@ -41,8 +41,10 @@ import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.config.ConfigScreenSettings
 import org.anti_ad.mc.ipnext.config.ContinuousCraftingCheckboxValue.*
 import org.anti_ad.mc.ipnext.config.Debugs
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.config.ModSettings
+import org.anti_ad.mc.ipnext.config.SortSettings
 import org.anti_ad.mc.ipnext.gui.inject.base.CheckBoxWidget
 import org.anti_ad.mc.ipnext.gui.inject.base.InsertableWidget
 import org.anti_ad.mc.ipnext.gui.inject.base.SortButtonWidget
@@ -79,6 +81,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                                       mouseX: Int,
                                       mouseY: Int,
                                       partialTicks: Float) {
+        //if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
         rehint()
         //rStandardGlState()
         //rClearDepth(context)
@@ -157,7 +160,9 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
             override var visible: Boolean
                 get() {
                     val container = Vanilla.container()
-                    return if (container is AnvilContainer) {
+                    return if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) {
+                        false
+                    } else if (container is AnvilContainer) {
                         container.`(levelCost)` == 0 && super.visible
                     } else {
                         super.visible
@@ -186,14 +191,14 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                                         if (Vanilla.screen() == null) {
                                             Log.trace("Received scroll event with no active screen", Exception())
                                         }
-                                        ModSettings.SORT_ORDER.togglePrevious();
+                                        SortSettings.SORT_ORDER.togglePrevious()
                                     }
 
                                     KeyCodes.MOUSE_SCROLL_DOWN -> {
                                         if (Vanilla.screen() == null) {
                                             Log.trace("Received scroll event with no active screen", Exception())
                                         }
-                                        ModSettings.SORT_ORDER.toggleNext();
+                                        SortSettings.SORT_ORDER.toggleNext()
                                     }
                                 }
                             } else {
@@ -276,7 +281,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                         StringBuilder()
                             .append(I18n.translate("inventoryprofiles.tooltip.sort_button"))
                             .append(I18n.translate("inventoryprofiles.tooltip.sort_button.current_order",
-                                                   I18n.translate(ModSettings.SORT_ORDER.value.toString()))).also { sb ->
+                                                   I18n.translate(SortSettings.SORT_ORDER.value.toString()))).also { sb ->
                                 if (GuiSettings.CHANGE_SORT_ORDER_WITH_SCROLL_WHEEL.booleanValue) {
                                     sb.append(I18n.translate("inventoryprofiles.tooltip.sort_button.key_help"))
                                 }
@@ -330,7 +335,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
             // extra I18n.translate null is ok
         }
 
-        inner class MoveButton(toPlayer: Boolean = false): SortButtonWidget() {
+        inner class MoveButton(toPlayer: Boolean = false): AutoHideSortButton() {
             init {
                 this@SortingButtonCollectionWidget.snapableList.add(this)
                 clickEvent = { _: Int ->

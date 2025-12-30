@@ -42,6 +42,7 @@ import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.gui.GUIDEEditorScreen
 import org.anti_ad.mc.ipnext.gui.inject.base.InsertableWidget
 import org.anti_ad.mc.ipnext.gui.inject.base.ProfileButtonWidget
+import org.anti_ad.mc.ipnext.gui.inject.base.SortButtonWidget
 
 class EditorWidget(override val screen: ContainerScreen<*>,
                    hintsData: HintClassData = HintsManagerNG.getHints(screen.javaClass)): InsertableWidget(), Hintable {
@@ -114,7 +115,7 @@ class EditorWidget(override val screen: ContainerScreen<*>,
     inner class InitWidgets { // todo cleanup code
 
 
-        private val showHideButton = ProfileButtonWidget{ -> showEditorScreen() }.apply {
+        private val showHideButton = SortButtonWidget{ -> showEditorScreen() }.apply {
             tx = 160
             ty = 40
             hints = this@EditorWidget.hints

@@ -32,8 +32,8 @@
 
 @accumulated_count_descending
     ::accumulated_count(number_order = descending)
-    @default_components_rule
+    @default
 
 @accumulated_count_ascending
     ::accumulated_count(number_order = ascending)
-    @default_components_rule
+    @default

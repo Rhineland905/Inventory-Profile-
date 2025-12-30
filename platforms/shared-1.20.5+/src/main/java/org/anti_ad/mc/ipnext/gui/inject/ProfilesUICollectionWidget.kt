@@ -40,6 +40,7 @@ import org.anti_ad.mc.common.vanilla.render.glue.rDrawOutline
 import org.anti_ad.mc.common.vanilla.render.opaque
 import org.anti_ad.mc.ipn.api.IPNButton
 import org.anti_ad.mc.ipnext.config.Debugs
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.event.ProfileSwitchHandler
 import org.anti_ad.mc.ipnext.gui.inject.base.InsertableWidget
@@ -69,7 +70,7 @@ class ProfilesUICollectionWidget(override val screen: ContainerScreen<*>,
 
     init {
         visible = types.contains(ContainerType.PLAYER)
-        visibleSource = { GuiSettings.ENABLE_PROFILES_UI.value }
+        visibleSource = { Features.ENABLE_PROFILES.booleanValue && GuiSettings.ENABLE_PROFILES_UI.booleanValue }
     }
 
     override fun postBackgroundRender(context: NativeContext,
@@ -85,7 +86,7 @@ class ProfilesUICollectionWidget(override val screen: ContainerScreen<*>,
                                       mouseX: Int,
                                       mouseY: Int,
                                       partialTicks: Float) {
-
+        if (!Features.ENABLE_PROFILES.booleanValue) return
         val parentBounds = screen.`(containerBounds)`
         absoluteBounds = parentBounds.copy(y = parentBounds.bottom + 3 + hints.bottom,
                                            x = parentBounds.x + hints.horizontalOffset,

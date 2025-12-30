@@ -55,6 +55,7 @@ import org.anti_ad.mc.common.vanilla.showSubTitle
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.config.AutoRefillNbtMatchType
 import org.anti_ad.mc.ipnext.config.AutoRefillSettings
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.Hotkeys
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.config.ThresholdUnit.ABSOLUTE
@@ -806,7 +807,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
     }
 
     override val enabledForeground: Boolean
-        get() = ModSettings.ENABLE_AUTO_REFILL.value && AutoRefillSettings.AUTO_REFILL_ENABLE_INDICATOR_ICONS.value && AutoRefillSettings.AUTO_REFILL_ENABLE_PER_SLOT_CONFIG.value
+        get() = Features.ENABLE_AUTO_REFILL.value && AutoRefillSettings.AUTO_REFILL_ENABLE_INDICATOR_ICONS.value && AutoRefillSettings.AUTO_REFILL_ENABLE_PER_SLOT_CONFIG.value
 
     override val enabledBackground: Boolean = false
 

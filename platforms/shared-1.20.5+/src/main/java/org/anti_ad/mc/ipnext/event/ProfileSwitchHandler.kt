@@ -39,18 +39,16 @@ import org.anti_ad.mc.ipnext.profiles.config.ProfileSlot
 import org.anti_ad.mc.ipnext.profiles.config.ProfileSlotId
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.VanillaUtil
-import org.anti_ad.mc.ipnext.config.Configs
 import org.anti_ad.mc.ipnext.config.EditProfiles
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.config.Hotkeys
-import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
 import org.anti_ad.mc.ipnext.ingame.`(itemStack)`
 import org.anti_ad.mc.ipnext.ingame.`(selectedSlot)`
 import org.anti_ad.mc.ipnext.ingame.`(slots)`
 import org.anti_ad.mc.ipnext.ingame.`(vanillaStack)`
 import org.anti_ad.mc.ipnext.ingame.vCursorStack
-import org.anti_ad.mc.ipnext.inventory.AreaTypes
 import org.anti_ad.mc.ipnext.inventory.ContainerClicker
 import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions
 import org.anti_ad.mc.ipnext.item.ComponentUtils.toFilteredNbtOrNull
@@ -86,6 +84,17 @@ object ProfileSwitchHandler: IInputHandler {
             applyProfile()
         }
     }
+
+    val quickProfileKeys = mapOf(Hotkeys.PROFILE_1 to EditProfiles.QUICK_SLOT_1_PROFILE,
+                                 Hotkeys.PROFILE_2 to EditProfiles.QUICK_SLOT_2_PROFILE,
+                                 Hotkeys.PROFILE_3 to EditProfiles.QUICK_SLOT_3_PROFILE,
+                                 Hotkeys.PROFILE_4 to EditProfiles.QUICK_SLOT_4_PROFILE,
+                                 Hotkeys.PROFILE_5 to EditProfiles.QUICK_SLOT_5_PROFILE,
+                                 Hotkeys.PROFILE_6 to EditProfiles.QUICK_SLOT_6_PROFILE,
+                                 Hotkeys.PROFILE_7 to EditProfiles.QUICK_SLOT_7_PROFILE,
+                                 Hotkeys.PROFILE_8 to EditProfiles.QUICK_SLOT_8_PROFILE,
+                                 Hotkeys.PROFILE_9 to EditProfiles.QUICK_SLOT_9_PROFILE,
+                                 Hotkeys.PROFILE_10 to EditProfiles.QUICK_SLOT_10_PROFILE)
 
 
 
@@ -174,6 +183,8 @@ object ProfileSwitchHandler: IInputHandler {
                          lastKey: Int,
                          lastAction: Int): Boolean {
 
+        if (!Features.ENABLE_PROFILES.booleanValue) return false
+
         if (!VanillaUtil.inGame()) return false
 
         val screen = Vanilla.screen()
@@ -191,26 +202,12 @@ object ProfileSwitchHandler: IInputHandler {
                 prevProfile()
                 return true
             }
-            if (Hotkeys.PROFILE_1.isActivated()) {
-                val name = EditProfiles.QUICK_SLOT_1_PROFILE.value
-                if (name != EditProfiles.QUICK_SLOT_1_PROFILE.defaultValue) {
-                    switchToProfileName(name)
+
+            quickProfileKeys.forEach { (key,  string) ->
+                if (key.isActivated() && string.value != string.defaultValue) {
+                    switchToProfileName(string.value)
+                    return true
                 }
-                return true
-            }
-            if (Hotkeys.PROFILE_2.isActivated()) {
-                val name = EditProfiles.QUICK_SLOT_2_PROFILE.value
-                if (name != EditProfiles.QUICK_SLOT_2_PROFILE.defaultValue) {
-                    switchToProfileName(name)
-                }
-                return true
-            }
-            if (Hotkeys.PROFILE_3.isActivated()) {
-                val name = EditProfiles.QUICK_SLOT_3_PROFILE.value
-                if (name != EditProfiles.QUICK_SLOT_3_PROFILE.defaultValue) {
-                    switchToProfileName(name)
-                }
-                return true
             }
 
             if (Hotkeys.SAVE_AS_PROFILE.isActivated()) {
@@ -222,7 +219,6 @@ object ProfileSwitchHandler: IInputHandler {
                 return true
             }
         }
-
 
         return false
     }
@@ -265,7 +261,7 @@ object ProfileSwitchHandler: IInputHandler {
             } else {
                 val preferLocked = true
                 val preferNonHotbar = true
-                var targets = if (ModSettings.ENABLE_LOCK_SLOTS.booleanValue && LockedSlotKeeper.isMultiPlayer) {
+                var targets = if (Features.ENABLE_LOCK_SLOTS.booleanValue && LockedSlotKeeper.isMultiPlayer) {
                     if (preferLocked && LockedSlotKeeper.emptyLockedSlots.isNotEmpty()) {
                         LockedSlotKeeper.emptyLockedSlots.toList()
                     } else {

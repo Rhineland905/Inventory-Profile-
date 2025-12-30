@@ -105,7 +105,11 @@ private fun ProfilesParser.ScriptContext.toProfileList(): List<ProfileData> {
                                                     val id = it.NamespacedId().toString().removeSurrounding("\"").`(asIdentifier)`
                                                     var step1 = it.customName().STRING()?.text
                                                     var step2 = step1?.removeSurrounding("\"")
-                                                    var step3 = step2?.replace("\\\"", "\"")?.replace("\\\\", "\\")
+                                                    var step3 = step2?.replace("\\\"", "\"")
+                                                        ?.replace("\\\\", "\\")
+                                                        ?.replace("\\n", "\n")
+                                                        ?.replace("\\r", "\r")
+                                                        ?.replace("\\t", "\t")
                                                     var nbtString = step3 ?: ""
                                                     //val nbtString = it.customName().STRING()?.text?.removeSurrounding("\"")?.replace("\\\"", "\"") ?: ""
                                                     ProfileComponentData(id, NbtUtils.parseNbtOrEmpty(nbtString))
@@ -161,7 +165,7 @@ data class ProfileComponentData(val id: Identifier,
                                 val componentNbt: NbtElement) {
 
     override fun toString(): String {
-        return "\"$id\"(\"${componentNbt.`(asString)`.replace("\\", "\\\\").replace("\"", "\\\"")}\")"
+        return "\"$id\"(\"${componentNbt.`(asString)`.replace("\\", "\\\\").replace("\"", "\\\"")}\")".replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
     }
 }
 

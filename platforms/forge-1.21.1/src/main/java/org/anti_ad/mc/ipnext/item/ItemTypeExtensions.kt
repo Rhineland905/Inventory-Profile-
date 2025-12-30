@@ -63,6 +63,7 @@ import org.anti_ad.mc.common.vanilla.alias.glue.I18n
 
 import org.anti_ad.mc.ipnext.config.CreativeMenuSortOrder
 import org.anti_ad.mc.ipnext.config.ModSettings
+import org.anti_ad.mc.ipnext.config.SortSettings
 import org.anti_ad.mc.ipnext.ingame.`(getRawId)`
 import org.anti_ad.mc.ipnext.ingame.`(itemType)`
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemGroup
@@ -96,7 +97,7 @@ fun ItemType.isEmpty() : Boolean {
     return item == Items.AIR
 }
 
-inline val ItemType.maxCount: Int
+inline val ItemType.maxCount
     get() = vanillaStack.maxStackSize
 
 inline val ItemType.searchItemStack: VanillaItemStack
@@ -204,7 +205,7 @@ private class ItemGroupComparator: Comparator<ItemGroup> {
             }
         }
 
-        return if (ModSettings.CREATIVE_SORT_ORDER_TYPE.value == CreativeMenuSortOrder.SEARCH_TAB)
+        return if (SortSettings.CREATIVE_SORT_ORDER_TYPE.value == CreativeMenuSortOrder.SEARCH_TAB)
             defaultCompare()
         else
             priorityCompare()
@@ -448,7 +449,7 @@ object ItemTypeExtensionsObject {
         ItemGroups.allTabs().forEach {
             (it as IMixinItemGroup).ipnPriorityIndex = -1;
         }
-        ModSettings.CATEGORY_PRIORITY_LIST.value.split(",").forEach {
+        SortSettings.CATEGORY_PRIORITY_LIST.value.split(",").forEach {
             translationKeysPriorityList.add(it.trim())
         }
     }
@@ -459,7 +460,7 @@ object ItemTypeExtensionsObject {
         if (local.get()) {
             initGroupIndex()
             local.set(false)
-            ModSettings.CATEGORY_ORIGINAL_ORDER.value = makeDefaultList()
+            SortSettings.CATEGORY_ORIGINAL_ORDER.value = makeDefaultList()
             local.set(true)
         }
     }

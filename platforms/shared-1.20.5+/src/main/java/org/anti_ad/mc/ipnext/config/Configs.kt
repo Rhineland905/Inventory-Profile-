@@ -22,14 +22,16 @@
 
 package org.anti_ad.mc.ipnext.config
 
+import org.anti_ad.mc.common.config.IConfigOption
 import org.anti_ad.mc.common.config.builder.CATEGORY
 import org.anti_ad.mc.common.config.builder.ConfigDeclaration
+import org.anti_ad.mc.common.config.builder.ConfigOptionDelegateProvider
+import org.anti_ad.mc.common.config.builder.addTo
 import org.anti_ad.mc.common.config.builder.bool
 import org.anti_ad.mc.common.config.builder.button
 import org.anti_ad.mc.common.config.builder.color
 import org.anti_ad.mc.common.config.builder.createBuilder
 import org.anti_ad.mc.common.config.builder.enum
-import org.anti_ad.mc.common.config.builder.enumForMinMCVersion
 import org.anti_ad.mc.common.config.builder.handledString
 import org.anti_ad.mc.common.config.builder.handledStringForMinMCVersion
 import org.anti_ad.mc.common.config.builder.hotkey
@@ -55,6 +57,34 @@ import org.anti_ad.mc.ipnext.item.ItemTypeExtensionsObject
 
 private const val category = "inventoryprofiles.config.category"
 
+object Features : ConfigDeclaration {
+
+    override val builder = createBuilder()
+
+        .CATEGORY("§§vgap:3")
+        .CATEGORY("$category.features")
+    val ENABLE_SORTING_AND_MOVING                 /**/ by keyToggleBool(ConfigScreenSettings, true,KeybindSettings.ANY_DEFAULT)
+        .CATEGORY("§§vgap:13")
+    val ENABLE_LOCK_SLOTS                         /**/ by keyToggleBool(ConfigScreenSettings, true,KeybindSettings.ANY_DEFAULT)
+        .CATEGORY("§§vgap:13")
+    val ENABLE_AUTO_REFILL                        /**/ by keyToggleBool(ConfigScreenSettings, true,KeybindSettings.ANY_DEFAULT)
+        .CATEGORY("§§vgap:13")
+    val HIGHLIGHT_FOUSED_ITEMS                    /**/ by keyToggleBool(ConfigScreenSettings, true,KeybindSettings.ANY_DEFAULT)
+        .CATEGORY("§§vgap:13")
+    val ENABLE_PROFILES                           /**/ by keyToggleBool(ConfigScreenSettings, true,KeybindSettings.ANY_DEFAULT)
+        .CATEGORY("§§vgap:13")
+    val VILLAGER_TRADING_ENABLE                   /**/ by keyToggleBool(ConfigScreenSettings, true,KeybindSettings.ANY_DEFAULT)
+        .CATEGORY("§§vgap:13")
+    val ITEM_SCROLLING                            /**/ by keyToggleBool(ConfigScreenSettings, true,KeybindSettings.ANY_DEFAULT)
+
+
+}
+
+fun <T : IConfigOption> ConfigDeclaration.sameAs(declaration: T): ConfigOptionDelegateProvider<T> {
+    return declaration.addTo(this)
+}
+
+
 object ModSettings : ConfigDeclaration {
 
     override val builder = createBuilder()
@@ -63,23 +93,7 @@ object ModSettings : ConfigDeclaration {
     val OPEN_CONFIG_FOLDER                        /**/ by button(OpenConfigFolderButtonInfo)
     val RELOAD_RULE_FILES                         /**/ by button(ReloadRuleFileButtonInfo)
 
-        .CATEGORY("$category.inventory_sorting")
-    val SORT_ORDER                                /**/ by enum(SortingMethod.DEFAULT)
-    val CUSTOM_RULE                               /**/ by string("@custom")
-
-        .CATEGORY("§§hide")
-    val CREATIVE_SORT_ORDER_TYPE                  /**/ by enumForMinMCVersion(1193,
-                                                                              1193,
-                                                                              CreativeMenuSortOrder.SEARCH_TAB)
-
-    val CATEGORY_PRIORITY_LIST                    /**/ by handledStringForMinMCVersion(1193,
-                                                                                       1193,
-                                                                                       "itemGroup.tools, itemGroup.combat, itemGroup.redstone, itemGroup.coloredBlocks, itemGroup.functional, itemGroup.natural, itemGroup.buildingBlocks, itemGroup.foodAndDrink, itemGroup.ingredients, itemGroup.spawnEggs",
-                                                                                       ItemTypeExtensionsObject::priorityListChanged)
-    val CATEGORY_ORIGINAL_ORDER                   /**/ by handledStringForMinMCVersion(1193,
-                                                                                       1193,
-                                                                                       ItemTypeExtensionsObject.makeDefaultList(),
-                                                                                       ItemTypeExtensionsObject::defaultOrderListChanged)
+        .CATEGORY("§§vgap:3")
         .CATEGORY("$category.move_matching_items")
     val INCLUDE_HOTBAR_MODIFIER                   /**/ by hotkey("LEFT_ALT",
                                                                  KeybindSettings.GUI_EXTRA)
@@ -94,8 +108,8 @@ object ModSettings : ConfigDeclaration {
     val ALWAYS_MOVE_ALL                           /**/ by bool(false)
     val ALWAYS_THROW_ALL                          /**/ by bool(false)
 
+        .CATEGORY("§§vgap:3")
         .CATEGORY("$category.highlight_focused_items")
-    val HIGHLIGHT_FOUSED_ITEMS                    /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
     val HIGHLIGHT_FOUSED_ITEMS_ANIMATED           /**/ by keyToggleBool(ConfigScreenSettings, false, KeybindSettings.GUI_DEFAULT)
     val HIGHLIGHT_FOUSED_ITEMS_FOREGROUND         /**/ by bool(true)
     val HIGHLIGHT_FOUSED_ITEMS_COLOR              /**/ by color(0x70.asAlpha().red(1).green(0xB6).blue(0x0b))
@@ -107,22 +121,8 @@ object ModSettings : ConfigDeclaration {
         .CATEGORY("$category.randomizer")
     val ENABLE_RANDOMIZER                         /**/ by bool(true)
 */
-        .CATEGORY("$category.profiles")
-    val ENABLE_PROFILES                          /**/ by keyToggleBool(ConfigScreenSettings, true)
-        .CATEGORY("§§hide")
-    val PROFILES_PER_SERVER                      /**/ by bool(true)
-
-        .CATEGORY("$category.lock_slots")
-    val ENABLE_LOCK_SLOTS                         /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
-    val ENABLE_LOCK_SLOTS_PER_SERVER              /**/ by bool(true)
-
-
-        .CATEGORY("$category.auto_refill")
-    val ENABLE_AUTO_REFILL                        /**/ by keyToggleBool(ConfigScreenSettings, true)
-
+        .CATEGORY("§§vgap:3")
         .CATEGORY("$category.villager_trading")
-        //.CATEGORY("§§hide")
-    val VILLAGER_TRADING_ENABLE                   /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
     val VILLAGER_TRADING_GROUP_1                  /**/ by keyToggleBool(ConfigScreenSettings, false, KeybindSettings.GUI_DEFAULT)
     val VILLAGER_TRADING_GROUP_2                  /**/ by keyToggleBool(ConfigScreenSettings, false, KeybindSettings.GUI_DEFAULT)
 
@@ -153,8 +153,7 @@ object ModSettings : ConfigDeclaration {
                                                               1,
                                                               2)
     val HIGHLIGHT_CLICKING_SLOT                   /**/ by bool(true)
-    val RESTOCK_HOTBAR                            /**/ by keyToggleBool(ConfigScreenSettings, false, KeybindSettings.GUI_DEFAULT)
-    val SORT_AT_CURSOR                            /**/ by bool(true)
+
     val MOVE_ALL_AT_CURSOR                        /**/ by bool(true)
     val STOP_AT_SCREEN_CLOSE                      /**/ by bool(false)
     val IGNORE_DURABILITY                         /**/ by bool(true)
@@ -167,9 +166,75 @@ object ModSettings : ConfigDeclaration {
 
         .CATEGORY("§§hide - first run")
     val FIRST_RUN by bool(true)
+        .CATEGORY("§§hide")
+    val ENABLE_PROFILES                           /**/ by sameAs(Features.ENABLE_PROFILES)
+        .CATEGORY("§§hide")
+    val PROFILES_PER_SERVER                       /**/ by sameAs(EditProfiles.PROFILES_PER_SERVER)
+
+        .CATEGORY("§§hide")
+    val ENABLE_LOCK_SLOTS                         /**/ by sameAs(Features.ENABLE_LOCK_SLOTS)
+    val ENABLE_LOCK_SLOTS_PER_SERVER              /**/ by sameAs(LockedSlotsSettings.ENABLE_LOCK_SLOTS_PER_SERVER)
+
+        .CATEGORY("§§hide")
+    val ENABLE_AUTO_REFILL                        /**/ by sameAs(Features.ENABLE_AUTO_REFILL)
+
+
+        .CATEGORY("§§hide")
+    val VILLAGER_TRADING_ENABLE                   /**/ by sameAs(Features.VILLAGER_TRADING_ENABLE)
+        .CATEGORY("§§hide")
+    val RESTOCK_HOTBAR                            /**/ by sameAs(SortSettings.RESTOCK_HOTBAR)
+    val SORT_AT_CURSOR                            /**/ by sameAs(SortSettings.SORT_AT_CURSOR)
+
+        .CATEGORY("§§hide")
+    val SORT_ORDER                                /**/ by sameAs(SortSettings.SORT_ORDER)
+    val CUSTOM_RULE                               /**/ by sameAs(SortSettings.CUSTOM_RULE)
+
+        .CATEGORY("§§hide")
+    val CREATIVE_SORT_ORDER_TYPE                  /**/ by sameAs(SortSettings.CREATIVE_SORT_ORDER_TYPE)
+
+    val CATEGORY_PRIORITY_LIST                    /**/ by sameAs(SortSettings.CATEGORY_PRIORITY_LIST)
+
+    val CATEGORY_ORIGINAL_ORDER                   /**/ by sameAs(SortSettings.CATEGORY_ORIGINAL_ORDER)
+
+    val HIGHLIGHT_FOUSED_ITEMS                    /**/ by sameAs(Features.HIGHLIGHT_FOUSED_ITEMS)
+
+
 }
 
 
+
+object SortSettings : ConfigDeclaration {
+
+    override val builder = createBuilder()
+        .CATEGORY("§§vgap:3")
+        .CATEGORY("$category.inventory_sorting")
+
+    val SORT_ORDER                                /**/ by enum(SortingMethod.DEFAULT)
+    val CUSTOM_RULE                               /**/ by string("@custom")
+
+    val RESTOCK_HOTBAR                            /**/ by keyToggleBool(ConfigScreenSettings, false, KeybindSettings.GUI_DEFAULT)
+    val SORT_AT_CURSOR                            /**/ by bool(true)
+
+
+        .CATEGORY("$category.accumulated_count")
+
+    val TREAT_NON_STACKABLE_AS_FULL_STACKS        /**/ by bool(false)
+
+        .CATEGORY("$category.creative_menu_order_source")
+
+    val CREATIVE_SORT_ORDER_TYPE                  /**/ by enum(CreativeMenuSortOrder.SEARCH_TAB)
+
+    val CATEGORY_PRIORITY_LIST                    /**/ by handledStringForMinMCVersion(1193,
+                                                                                       1193,
+                                                                                       "itemGroup.tools, itemGroup.combat, itemGroup.redstone, itemGroup.coloredBlocks, itemGroup.functional, itemGroup.natural, itemGroup.buildingBlocks, itemGroup.foodAndDrink, itemGroup.ingredients, itemGroup.spawnEggs",
+                                                                                       ItemTypeExtensionsObject::priorityListChanged)
+    val CATEGORY_ORIGINAL_ORDER                   /**/ by handledStringForMinMCVersion(1193,
+                                                                                       1193,
+                                                                                       ItemTypeExtensionsObject.makeDefaultList(),
+                                                                                       ItemTypeExtensionsObject::defaultOrderListChanged)
+
+
+}
 
 object AutoRefillSettings : ConfigDeclaration {
 
@@ -238,7 +303,11 @@ object LockedSlotsSettings : ConfigDeclaration {
 
     override val builder = createBuilder()
 
+        .CATEGORY("$category.lock_slots.general")
         .CATEGORY("§§vgap:3")
+    val ENABLE_LOCK_SLOTS                               /**/ by sameAs(Features.ENABLE_LOCK_SLOTS)
+        .CATEGORY("§§vgap:5")
+    val ENABLE_LOCK_SLOTS_PER_SERVER                    /**/ by bool(true)
     val LOCKED_SLOTS_DISABLE_QUICK_MOVE_THROW           /**/ by bool(true)
     val LOCKED_SLOTS_DISABLE_THROW_FOR_NON_STACKABLE    /**/ by bool(true)
     val LOCK_SLOTS_DISABLE_USER_INTERACTION             /**/ by keyToggleBool(ConfigScreenSettings, false, KeybindSettings.GUI_DEFAULT)
@@ -252,23 +321,23 @@ object LockedSlotsSettings : ConfigDeclaration {
     val LOCKED_SLOTS_EMPTY_HOTBAR_BLACKLIST             /**/ by handledString("carryon", LockedSlotKeeper::updateIgnored)
 
         .CATEGORY("$category.hotkeys")
-    val LOCK_SLOTS_SWITCH_CONFIG_MODIFIER         /**/ by hotkey("LEFT_ALT",
+    val LOCK_SLOTS_SWITCH_CONFIG_MODIFIER               /**/ by hotkey("LEFT_ALT",
                                                                  KeybindSettings.GUI_EXTRA)
-    val LOCK_SLOTS_CONFIG_KEY                     /**/ by hotkey("BUTTON_1",
+    val LOCK_SLOTS_CONFIG_KEY                           /**/ by hotkey("BUTTON_1",
                                                                  KeybindSettings.GUI_EXTRA)
-    val LOCK_SLOTS_QUICK_CONFIG_KEY               /**/ by hotkey("",
+    val LOCK_SLOTS_QUICK_CONFIG_KEY                     /**/ by hotkey("",
                                                                  KeybindSettings.GUI_EXTRA)
-    val LOCK_SLOTS_QUICK_DISABLE                  /**/ by hotkey("",
+    val LOCK_SLOTS_QUICK_DISABLE                        /**/ by hotkey("",
                                                                  KeybindSettings.GUI_EXTRA)
-    val LOCK_SLOTS_CONFIG_SWITCH_TYPE             /**/ by enum(SwitchType.HOLD)
+    val LOCK_SLOTS_CONFIG_SWITCH_TYPE                   /**/ by enum(SwitchType.HOLD)
 
         .CATEGORY("$category.lock_slots.gui")
-    val SHOW_LOCKED_SLOTS_BACKGROUND              /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
-    val SHOW_LOCKED_SLOTS_FOREGROUND              /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
-    val SHOW_LOCKED_SLOTS_BG_COLOR                /**/ by color(192.asAlpha().red(255).green(85).blue(85))
-    val SHOW_LOCKED_SLOTS_HOTBAR_COLOR            /**/ by color(94.asAlpha().red(255).green(94).blue(65))
-    val ALSO_SHOW_LOCKED_SLOTS_IN_HOTBAR          /**/ by keyToggleBool(ConfigScreenSettings, true)
-    val LOCKED_SLOTS_FOREGROUND_STYLE             /**/ by int(2,
+    val SHOW_LOCKED_SLOTS_BACKGROUND                    /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
+    val SHOW_LOCKED_SLOTS_FOREGROUND                    /**/ by keyToggleBool(ConfigScreenSettings, true, KeybindSettings.GUI_DEFAULT)
+    val SHOW_LOCKED_SLOTS_BG_COLOR                      /**/ by color(192.asAlpha().red(255).green(85).blue(85))
+    val SHOW_LOCKED_SLOTS_HOTBAR_COLOR                  /**/ by color(94.asAlpha().red(255).green(94).blue(65))
+    val ALSO_SHOW_LOCKED_SLOTS_IN_HOTBAR                /**/ by keyToggleBool(ConfigScreenSettings, true)
+    val LOCKED_SLOTS_FOREGROUND_STYLE                   /**/ by int(2,
                                                               1,
                                                               6)
 
@@ -322,6 +391,9 @@ object GuiSettings : ConfigDeclaration {
 
 object EditProfiles : ConfigDeclaration {
     override val builder = createBuilder()
+        .CATEGORY("§§vgap:3")
+    val ENABLE_PROFILES                           /**/ by sameAs(Features.ENABLE_PROFILES)
+        .CATEGORY("§§vgap:5")
         .CATEGORY("$category.still_under_construction")
     val OPEN_CONFIG_PROFILES_HELP                 /**/ by button(OpenProfilesHelpButtonInfo)
     val OPEN_SERVER_PROFILES                      /**/ by button(OpenProfilesConfigButtonInfo)
@@ -330,8 +402,17 @@ object EditProfiles : ConfigDeclaration {
     val QUICK_SLOT_1_PROFILE                      /**/ by string("")
     val QUICK_SLOT_2_PROFILE                      /**/ by string("")
     val QUICK_SLOT_3_PROFILE                      /**/ by string("")
+    val QUICK_SLOT_4_PROFILE                      /**/ by string("")
+    val QUICK_SLOT_5_PROFILE                      /**/ by string("")
+    val QUICK_SLOT_6_PROFILE                      /**/ by string("")
+    val QUICK_SLOT_7_PROFILE                      /**/ by string("")
+    val QUICK_SLOT_8_PROFILE                      /**/ by string("")
+    val QUICK_SLOT_9_PROFILE                      /**/ by string("")
+    val QUICK_SLOT_10_PROFILE                     /**/ by string("")
         .CATEGORY("$category.still_under_construction")
     val INCLUDE_CUSTOM_NAME                       /**/ by bool(false)
+        .CATEGORY("§§hide")
+    val PROFILES_PER_SERVER                       /**/ by bool(true)
 
 }
 
@@ -384,21 +465,6 @@ object Hotkeys : ConfigDeclaration {
                                                                  KeybindSettings.GUI_EXTRA)
     val OPEN_GUI_EDITOR                           /**/ by hotkey("R,G",
                                                                  KeybindSettings.GUI_DEFAULT)
-        .CATEGORY("$category.profiles")
-    val APPLY_PROFILE                             /**/ by hotkey("R,H",
-                                                                 KeybindSettings.INGAME_DEFAULT)
-    val NEXT_PROFILE                              /**/ by hotkey("R,Z",
-                                                                 KeybindSettings.INGAME_DEFAULT)
-    val PREV_PROFILE                              /**/ by hotkey("R,X",
-                                                                 KeybindSettings.INGAME_DEFAULT)
-    val PROFILE_1                                 /**/ by hotkey("R,1",
-                                                                 KeybindSettings.INGAME_DEFAULT)
-    val PROFILE_2                                 /**/ by hotkey("R,2",
-                                                                 KeybindSettings.INGAME_DEFAULT)
-    val PROFILE_3                                 /**/ by hotkey("R,3",
-                                                                 KeybindSettings.INGAME_DEFAULT)
-    val SAVE_AS_PROFILE                           /**/ by hotkey("R,P",
-                                                                 KeybindSettings.GUI_DEFAULT)
 
         .CATEGORY("$category.auto_refill")
     val AUTO_REFILL_GUI_TOGGLE_FOR_SLOT           /**/ by hotkey("LEFT_CONTROL,BUTTON_1",
@@ -434,6 +500,37 @@ object Hotkeys : ConfigDeclaration {
                                                                  KeybindSettings.GUI_DEFAULT)
     val DO_LOCAL_TRADE2                            /**/ by hotkey("",
                                                                  KeybindSettings.GUI_DEFAULT)
+
+        .CATEGORY("$category.profiles")
+    val APPLY_PROFILE                             /**/ by hotkey("R,H",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val NEXT_PROFILE                              /**/ by hotkey("R,Z",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PREV_PROFILE                              /**/ by hotkey("R,X",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_1                                 /**/ by hotkey("R,1",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_2                                 /**/ by hotkey("R,2",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_3                                 /**/ by hotkey("R,3",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_4                                 /**/ by hotkey("R,4",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_5                                 /**/ by hotkey("R,5",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_6                                 /**/ by hotkey("R,6",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_7                                 /**/ by hotkey("R,7",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_8                                 /**/ by hotkey("R,8",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_9                                 /**/ by hotkey("R,9",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val PROFILE_10                                /**/ by hotkey("R,0",
+                                                                 KeybindSettings.INGAME_DEFAULT)
+    val SAVE_AS_PROFILE                           /**/ by hotkey("R,P",
+                                                                 KeybindSettings.GUI_DEFAULT)
+
 
         .CATEGORY("$category.misc")
     val DUMP_ITEM_NBT_TO_CHAT                     /**/ by hotkey("",
@@ -497,19 +594,4 @@ object Modpacks : ConfigDeclaration {
                                                                  KeybindSettings.INGAME_DEFAULT)
 
 }
-
-const val FILE_PATH = "inventoryprofiles.json"
-
-val Configs = listOf(
-    ModSettings,
-    GuiSettings,
-    LockedSlotsSettings,
-    AutoRefillSettings,
-    EditProfiles,
-    ScrollSettings,
-    Hotkeys,
-    Tweaks,
-    Debugs,
-    Modpacks
-)
 

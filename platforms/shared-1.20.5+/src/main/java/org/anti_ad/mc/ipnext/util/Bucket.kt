@@ -20,15 +20,18 @@
 
 package org.anti_ad.mc.ipnext.util
 
+import org.anti_ad.mc.ipnext.item.ItemType
 import org.anti_ad.mc.ipnext.item.rule.CountSink
 import org.anti_ad.mc.ipnext.item.rule.CountSource
 
 interface Bucket<T: CountSink<T>>: CountSource<T> {
     val size: Int
-    override fun count(element: T): Int
+    fun count(element: T): Int
     fun contains(element: T): Boolean
     fun contains(element: T,
                  count: Int): Boolean
+
+    override fun accumulateCount(element: T): Int
 
     fun containsAll(another: Bucket<T>): Boolean
     val elementSet: Set<T>
@@ -44,7 +47,7 @@ open class MutableBucket<T: CountSink<T>> protected constructor(innerMap: Map<T,
         return false
     }
 
-    private val innerMap = innerMap.toMutableMap()
+    protected val innerMap = innerMap.toMutableMap()
 
     override val size: Int
         get() = innerMap.entries.sumOf { it.value }
@@ -53,6 +56,7 @@ open class MutableBucket<T: CountSink<T>> protected constructor(innerMap: Map<T,
         return innerMap.getOrDefault(element,
                                      0)
     }
+
 
     fun add(element: T) = add(element,
                               1)
@@ -71,6 +75,10 @@ open class MutableBucket<T: CountSink<T>> protected constructor(innerMap: Map<T,
     override fun contains(element: T,
                           count: Int): Boolean {
         return validateEmpty(element) || count(element) >= count
+    }
+
+    override fun accumulateCount(element: T): Int {
+        return count(element)
     }
 
     fun remove(element: T) = remove(element,

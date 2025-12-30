@@ -31,6 +31,7 @@ object Integrations {
             return ___getCarpetEmptyShulkersStackSize();
         }
 
+    val isEasyShulkerBoxesLoaded: Boolean = FabricLoader.getInstance().isModLoaded("easyshulkerboxes")
 
     fun init() {
         trySwallow {

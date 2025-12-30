@@ -25,6 +25,7 @@ import net.minecraft.world.entity.player.Inventory; //net.minecraft.entity.playe
 import net.minecraft.world.item.ItemStack; //net.minecraft.item.ItemStack;
 import net.minecraft.core.NonNullList; //net.minecraft.util.NonNullList;
 import org.anti_ad.mc.ipnext.config.Debugs;
+import org.anti_ad.mc.ipnext.config.Features;
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings;
 import org.anti_ad.mc.ipnext.config.ModSettings;
 import org.anti_ad.mc.ipnext.event.LockSlotsHandler;
@@ -54,9 +55,9 @@ public abstract class MixinPlayerInventory {
         if (!skipChecks) {
             var inventoryPlayer = ((Inventory)((Object)this)).player;
             if (inventoryPlayer.equals(Minecraft.getInstance().player)) {
-                if (ModSettings.INSTANCE.getENABLE_LOCK_SLOTS().getValue() &&
-                        !LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_ALLOW_PICKUP_INTO_EMPTY().getValue()
-                        && !Debugs.INSTANCE.getFORCE_SERVER_METHOD_FOR_LOCKED_SLOTS().getValue()) {
+                if (Features.INSTANCE.getENABLE_LOCK_SLOTS().getValue() &&
+                    !LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_ALLOW_PICKUP_INTO_EMPTY().getValue()
+                    && !Debugs.INSTANCE.getFORCE_SERVER_METHOD_FOR_LOCKED_SLOTS().getValue()) {
                     for (int i = 0; i < this.items.size(); ++i) {
                         if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()
                                 && Inventory.isHotbarSlot(i)

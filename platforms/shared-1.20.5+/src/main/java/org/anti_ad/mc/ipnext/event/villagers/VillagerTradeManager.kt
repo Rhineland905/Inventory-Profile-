@@ -49,6 +49,7 @@ import org.anti_ad.mc.common.vanilla.VanillaUtil
 import org.anti_ad.mc.common.vanilla.render.glue.rFillGradient
 import org.anti_ad.mc.common.vanilla.render.glue.rFillRect
 import org.anti_ad.mc.ipnext.Log
+import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.Hotkeys
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.ingame.`(asString)`
@@ -74,7 +75,7 @@ object VillagerTradeManager: IInputHandler {
 
     var currentVillager: Entity? = null
         set(value) {
-            if (!ModSettings.VILLAGER_TRADING_ENABLE.booleanValue) return
+            if (!Features.VILLAGER_TRADING_ENABLE.booleanValue) return
             field = value
             if (value != null) {
                 entityCacheTime = Long.MAX_VALUE - System.nanoTime()
@@ -174,7 +175,7 @@ object VillagerTradeManager: IInputHandler {
                       l: Int,
                       m: Int) {
 
-        if (!ModSettings.VILLAGER_TRADING_ENABLE.booleanValue) return
+        if (!Features.VILLAGER_TRADING_ENABLE.booleanValue) return
         var colors = mutableListOf<Pair<Int?,Int?>>()
 
         colors.addColors(if (currentGlobalBookmarks.has(tradeOffer)) ModSettings.VILLAGER_TRADING_GLOBAL_COLOR.value else null,
@@ -283,7 +284,7 @@ object VillagerTradeManager: IInputHandler {
                          lastKey: Int,
                          lastAction: Int): Boolean {
 
-        if (!ModSettings.VILLAGER_TRADING_ENABLE.booleanValue) return false
+        if (!Features.VILLAGER_TRADING_ENABLE.booleanValue) return false
         if (!VanillaUtil.inGame()) return false
         val screen = Vanilla.screen() ?: return false
         if (screen !is MerchantScreen) return false

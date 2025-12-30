@@ -26,7 +26,7 @@ import org.anti_ad.mc.ipnext.parser.TemporaryRuleParser
 
 fun SortingMethodIndividual.rule(customContent: String): Rule {
     return when (this) {
-        SortingMethodIndividual.GLOBAL -> ModSettings.SORT_ORDER.value.rule
+        SortingMethodIndividual.GLOBAL -> SortSettings.SORT_ORDER.value.rule
         SortingMethodIndividual.CUSTOM -> TemporaryRuleParser.parse(customContent)
         else -> SortingMethod.values()[ordinal - 1].rule
     }
@@ -34,4 +34,4 @@ fun SortingMethodIndividual.rule(customContent: String): Rule {
 
 private val SortingMethod.rule: Rule
     get() = ruleName?.let { RuleFileRegister.getCustomRuleOrEmpty(it) }
-            ?: TemporaryRuleParser.parse(ModSettings.CUSTOM_RULE.value)
+            ?: TemporaryRuleParser.parse(SortSettings.CUSTOM_RULE.value)

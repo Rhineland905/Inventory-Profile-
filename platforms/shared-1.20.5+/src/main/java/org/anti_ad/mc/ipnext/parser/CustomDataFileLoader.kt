@@ -51,6 +51,8 @@ import org.anti_ad.mc.common.extensions.loggingPath
 import org.anti_ad.mc.common.extensions.sanitized
 import org.anti_ad.mc.ipnext.gen.ModInfo
 import org.anti_ad.mc.ipnext.NotificationManager
+import org.anti_ad.mc.ipnext.config.EditProfiles
+import org.anti_ad.mc.ipnext.config.LockedSlotsSettings
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
 import org.anti_ad.mc.ipnext.event.ProfileSwitchHandler
 import org.anti_ad.mc.ipnext.event.villagers.VillagerDataManager
@@ -93,14 +95,14 @@ object ProfilesLoader: Loader, Savable {
 
     val file: Path
         get() {
-            val dir = serverIdentifier(ModSettings.PROFILES_PER_SERVER.booleanValue).sanitized()
+            val dir = serverIdentifier(EditProfiles.PROFILES_PER_SERVER.booleanValue).sanitized()
             (configFolder / dir ).createDirectories()
             return configFolder / dir / "profiles-V2.txt"
         }
 
     val oldfile: Path
         get() {
-            val dir = serverIdentifier(ModSettings.PROFILES_PER_SERVER.booleanValue).sanitized()
+            val dir = serverIdentifier(EditProfiles.PROFILES_PER_SERVER.booleanValue).sanitized()
             (configFolder / dir ).createDirectories()
             return configFolder / dir / "profiles.txt"
         }
@@ -205,14 +207,14 @@ object LockSlotsLoader : Loader, Savable {
 
     val file: Path
         get() {
-            val dir = serverIdentifier(ModSettings.ENABLE_LOCK_SLOTS_PER_SERVER.booleanValue).sanitized()
+            val dir = serverIdentifier(LockedSlotsSettings.ENABLE_LOCK_SLOTS_PER_SERVER.booleanValue).sanitized()
             (configFolder / dir ).createDirectories()
             return configFolder / dir / "lockSlots.txt"
         }
 
     val fileOld: Path
         get() {
-            return configFolder / "lockSlots${serverIdentifier(ModSettings.ENABLE_LOCK_SLOTS_PER_SERVER.booleanValue).dashedSanitized()}.txt"
+            return configFolder / "lockSlots${serverIdentifier(LockedSlotsSettings.ENABLE_LOCK_SLOTS_PER_SERVER.booleanValue).dashedSanitized()}.txt"
         }
 
 
@@ -431,7 +433,7 @@ object RefillSlotsLoader : Loader, Savable {
 
     val file: Path
         get() {
-            val dir = serverIdentifier(ModSettings.ENABLE_LOCK_SLOTS_PER_SERVER.booleanValue).sanitized()
+            val dir = serverIdentifier(LockedSlotsSettings.ENABLE_LOCK_SLOTS_PER_SERVER.booleanValue).sanitized()
             (configFolder / dir ).createDirectories()
             return configFolder / dir / "refillDisabledSlots.txt"
         }

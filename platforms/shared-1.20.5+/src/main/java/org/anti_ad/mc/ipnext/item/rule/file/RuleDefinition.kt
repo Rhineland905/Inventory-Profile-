@@ -22,13 +22,19 @@ package org.anti_ad.mc.ipnext.item.rule.file
 
 import org.anti_ad.mc.common.annotation.MayThrow
 import org.anti_ad.mc.common.extensions.compare
+import org.anti_ad.mc.ipnext.Log
+import org.anti_ad.mc.ipnext.config.Debugs
 import org.anti_ad.mc.ipnext.item.rule.BaseRule
 import org.anti_ad.mc.ipnext.item.rule.Rule
 
 class CustomRule(subRules: List<Rule>) : BaseRule() {
     init {
         comparator = subRules::compare
+        if (Debugs.INSANE_TRACE_LOGS.value) {
+            Log.trace("CustomRule created with subRules: $subRules")
+        }
     }
+
 }
 
 class SelfReferenceException(message: String) : RuntimeException(message)
