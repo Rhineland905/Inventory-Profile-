@@ -1,17 +1,21 @@
 <!-- latest begin -->
 
-### 1.10.19
+### 1.10.20
 
-- fixed a performance issue with unreasonably huge modpacks with an insane number of modded items.
+- added support for Vanilla Backports enabled bundles.
 
 <!-- latest end -->
 <!-- rest begin -->
+
+### 1.10.19
+
+- fixed a performance issue with unreasonably huge modpacks with an insane number of modded items.
 
 ### 1.10.18
 
 - fixed item matching not working on some rare occasions.
 - fixed crash on forge when Villager Screen is shown and when Inventorio is present.
-- fiexd crash on forge due to missing mixin handling changes in ForgeGradle
+- fixed crash on forge due to the missing mixin handling changes in ForgeGradle.
 
 ### 1.10.17
 
