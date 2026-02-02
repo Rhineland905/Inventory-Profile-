@@ -394,6 +394,9 @@ inline val StatusEffectInstance.`(asComparable)`: PotionEffect
                          this.amplifier,
                          this.duration)
 
+val ItemType.`(isBundle)`: Boolean
+    get() = this.item == Items.BUNDLE
+
 data class PotionEffect(inline val effect: String,
                         inline val amplifier: Int,
                         inline val duration: Int) : Comparable<PotionEffect> {
@@ -445,5 +448,7 @@ object ItemTypeExtensionsObject {
     }
 
 }
+
+
 
 //endregion
