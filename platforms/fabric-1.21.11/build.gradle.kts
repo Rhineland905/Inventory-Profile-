@@ -85,6 +85,7 @@ dependencies {
     modApi("maven.modrinth:easy-shulker-boxes:bYZtnl61")
     modApi("maven.modrinth:ohNO6lps:uXrWPsCu")
     modApi("maven.modrinth:QAGBst4M:papKcBDm")
+    modRuntimeOnly("maven.modrinth:villager-pickup:bf8Q2X39")
 
 /*
     modImplementation("curse.maven:metal-bundles-891325:7084307")

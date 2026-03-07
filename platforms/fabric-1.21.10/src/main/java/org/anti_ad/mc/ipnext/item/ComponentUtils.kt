@@ -20,6 +20,7 @@
 package org.anti_ad.mc.ipnext.item
 
 import com.mojang.serialization.Codec
+import net.minecraft.entity.TypedEntityData
 import org.anti_ad.mc.alias.component.ComponentChanges
 import org.anti_ad.mc.alias.component.ComponentType
 import org.anti_ad.mc.alias.component.DataComponentTypes
@@ -88,13 +89,23 @@ object ComponentUtils {
         0
     }
 
+    private val typedEntityDataComparator: Comparator<TypedEntityData<*>> = Comparator { a: TypedEntityData<*>, b: TypedEntityData<*> ->
+        if (a.type.javaClass === b.type.javaClass) {
+            a.copyNbtWithoutId().compareTo(b.copyNbtWithoutId())
+        } else {
+            0
+        }
+    }.apply {
+        registry[DataComponentTypes.BLOCK_ENTITY_DATA.toString()] = this as Comparator<Any?>
+        registry[DataComponentTypes.ENTITY_DATA.toString()] = this as Comparator<Any?>
+    }
+
     private val nbtComparator: Comparator<NbtComponent?> = nullsLast { a: NbtComponent, b: NbtComponent ->
         a.copyNbt().compareTo(b.copyNbt())
     }.apply {
-        registry[DataComponentTypes.BLOCK_ENTITY_DATA.toString()] = this as Comparator<Any?>
+
         registry[DataComponentTypes.CUSTOM_DATA.toString()] = this as Comparator<Any?>
         registry[DataComponentTypes.BUCKET_ENTITY_DATA.toString()] = this as Comparator<Any?>
-        registry[DataComponentTypes.ENTITY_DATA.toString()] = this as Comparator<Any?>
     }
 
     private val textComparator: Comparator<Text?> = nullsLast( compareBy<Text> { it.content.toString() }
