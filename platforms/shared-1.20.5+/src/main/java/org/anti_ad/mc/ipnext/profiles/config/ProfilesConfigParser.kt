@@ -20,14 +20,15 @@
 package org.anti_ad.mc.ipnext.profiles.config
 
 
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.nbt.NbtHelper
-import org.anti_ad.mc.ipnext.specific.*
 import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.alias.util.IdentifierOf
-import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.annotation.MayThrow
 import org.anti_ad.mc.common.extensions.tryOrPrint
+import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.gen.ProfilesLexer
 import org.anti_ad.mc.ipnext.gen.ProfilesParser
 import org.anti_ad.mc.ipnext.ingame.`(asString)`
@@ -91,35 +92,38 @@ val String.`(asIdentifier)`: Identifier
     get() = IdentifierOf(this)
 
 
-
 private fun ProfilesParser.ScriptContext.toProfileList(): List<ProfileData> {
-    return mutableListOf<ProfileData>().apply {
-        profile().forEach { profile ->
-            add(ProfileData(profile.Id().text, ProfileSlotId.valueOfOrFAKE(profile.activeSlotName()?.text), mutableListOf<ProfileSlot>().apply {
-                profile.slotsDef().slotDef().forEach { slotDef ->
-                    add(ProfileSlot(ProfileSlotId.valueOf(slotDef.slotname().text), mutableListOf<ProfileItemData>().apply {
-                        slotDef.itemDef().forEach { itemDef ->
-                            add(ProfileItemData(itemDef.itemName().NamespacedId().text.removeSurrounding("\""),
-                                                itemDef.itemName().customName()?.STRING()?.text?.removeSurrounding("\"") ?: "",
-                                                itemDef.components()?.component()?.map {
-                                                    val id = it.NamespacedId().toString().removeSurrounding("\"").`(asIdentifier)`
-                                                    var step1 = it.customName().STRING()?.text
-                                                    var step2 = step1?.removeSurrounding("\"")
-                                                    var step3 = step2?.replace("\\\"", "\"")
-                                                        ?.replace("\\\\", "\\")
-                                                        ?.replace("\\n", "\n")
-                                                        ?.replace("\\r", "\r")
-                                                        ?.replace("\\t", "\t")
-                                                    var nbtString = step3 ?: ""
-                                                    //val nbtString = it.customName().STRING()?.text?.removeSurrounding("\"")?.replace("\\\"", "\"") ?: ""
-                                                    ProfileComponentData(id, NbtUtils.parseNbtOrEmpty(nbtString))
-                                                }))
-                        }
-                    }))
-                }
-            }))
-        }
+    return profile().map { profile ->
+        ProfileData(
+            profile.Id().text,
+            ProfileSlotId.valueOfOrFAKE(profile.activeSlotName()?.text),
+            profile.slotsDef().slotDef().map { slotDef ->
+                ProfileSlot(
+                    ProfileSlotId.valueOf(slotDef.slotname().text),
+                    slotDef.orderRule()?.STRING()?.text?.unescape()?.removePrefix("@"),
+                    slotDef.itemDef().map { it.toProfileItemData() })
+            })
     }
+}
+
+private fun ProfilesParser.ItemDefContext.toProfileItemData(): ProfileItemData {
+    return ProfileItemData(
+        this.itemName().NamespacedId().text.unescape(),
+        this.itemName().customName()?.STRING()?.text?.unescape() ?: "",
+        this.components()?.component()?.map {
+            val id = it.NamespacedId().toString().unescape().`(asIdentifier)`
+            val nbtString = it.customName()?.STRING()?.text?.unescape() ?: ""
+            ProfileComponentData(id, NbtUtils.parseNbtOrEmpty(nbtString))
+        })
+}
+
+private fun String.unescape(): String {
+    return (Json.parseToJsonElement(this) as? JsonPrimitive)
+        ?.contentOrNull ?: this
+}
+
+private fun String.escape(): String {
+    return Json.encodeToString(this)
 }
 
 fun String.fromEnchantmentLevel(): Int {
@@ -153,6 +157,7 @@ data class ProfileData(val name: String,
 }
 
 data class ProfileSlot(val id: ProfileSlotId,
+                       val order: String?,
                        val items: List<ProfileItemData>) {
 
     override fun toString(): String {
@@ -162,10 +167,14 @@ data class ProfileSlot(val id: ProfileSlotId,
 }
 
 data class ProfileComponentData(val id: Identifier,
-                                val componentNbt: NbtElement) {
+                                val componentNbt: NbtElement?) {
 
     override fun toString(): String {
-        return "\"$id\"(\"${componentNbt.`(asString)`.replace("\\", "\\\\").replace("\"", "\\\"")}\")".replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
+        return if (componentNbt == null) {
+            "\"$id\""
+        } else {
+            "\"$id\"(${componentNbt.`(asString)`.escape()})"
+        }
     }
 }
 
@@ -241,55 +250,74 @@ enum class ProfileSlotId(val slotId: Int) {
 
 }
 
+// regex    :-> "([^"]*)" : (.*)
+// replace  :-> ["minecraft:\l$1"("$2")]
+// regex    :\{id:"([^"]*)",lvl:(\d*)}
+// replace  :'$1':$2
+
+val testConfig get() = """
+profile Main activate HOT1
+    HOT1
+        "minecraft:netherite_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5,'minecraft:silk_touch':1,'minecraft:smite':5,'minecraft:unbreaking':3}")]
+        "minecraft:diamond_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5,'minecraft:silk_touch':1,'minecraft:smite':5,'minecraft:unbreaking':3}")]
+    HOT2
+        "minecraft:netherite_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5}")]
+        "minecraft:diamond_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5,'minecraft:silk_touch':1,'minecraft:smite':5,'minecraft:unbreaking':3}")]
+        "minecraft:netherite_axe"
+        "minecraft:diamond_axe"
+    HOT3
+        "minecraft:water_bucket"
+    HOT4
+        "minecraft:terracotta"
+    CHEST
+        "minecraft:netherite_chestplate"
+    OFFHAND
+        "minecraft:shield" -> ["minecraft:enchantments"("{'minecraft:unbreaking':3,'minecraft:mending':1}")]
+    LEGS
+        "minecraft:netherite_leggings" -> ["minecraft:enchantments"("{'minecraft:fire_protection':3,'minecraft:unbreaking':3}")]
+    FEET
+        "minecraft:netherite_boots" -> ["minecraft:enchantments"("{'minecraft:protection':4,'minecraft:unbreaking':3}")]
+
+profile PvP activate HOT5
+    HOT3
+        "minecraft:netherite_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5,'minecraft:silk_touch':1,'minecraft:smite':5,'minecraft:unbreaking':3}")]
+        "minecraft:diamond_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5,'minecraft:silk_touch':1,'minecraft:smite':5,'minecraft:unbreaking':3}")]
+    HOT5
+        "minecraft:netherite_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5,'minecraft:silk_touch':1,'minecraft:smite':5,'minecraft:unbreaking':3}")]
+        "minecraft:diamond_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5,'minecraft:silk_touch':1,'minecraft:smite':5,'minecraft:unbreaking':3}")]
+        "minecraft:diamond_axe"
+    HOT4
+        "minecraft:iron_pickaxe" -> ["minecraft:enchantments"("{'minecraft:efficiency':4,'minecraft:fortune':3}")]
+    HOT7
+        "minecraft:splash_potion" -> ["minecraft:potion_contents"("'minecraft:strong_harming'")]
+    HOT6
+        "minecraft:splash_potion" -> ["minecraft:potion_contents"("'minecraft:harming'")]
+    HOT2
+        "minecraft:splash_potion" -> ["minecraft:potion_contents"("'minecraft:weakness'")]
+    HOT1
+        "minecraft:splash_potion" -> ["minecraft:potion_contents"("'minecraft:regeneration'")]
+    HOT8
+        "minecraft:splash_potion" -> ["minecraft:potion_contents"("'minecraft:long_turtle_master'")]
+    HOT9
+    HOT1
+
+profile StressTest
+    HOT1 order by "@item_name"
+        "#minecraft:pickaxes"
+        "#minecraft:axes"
+    HOT2 order by "@creative_menu_order"
+        "#minecraft:pickaxes"
+        "#minecraft:axes"
+    HOT3
+        "minecraft:wooden_*"
+    HOT4 order by "@by_nutrition"
+        "*" -> ["food"]
+    HOT5 order by "@less_nutrition"
+        "*" -> ["food"]
+""".trimIndent()
 
 @Suppress("UNUSED_PARAMETER")
 fun main(args: Array<String>) {
-    val testConfig = """profile Main activate HOT1
-	HOT1
-		"minecraft:netherite_axe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:smite",lvl:5},{id:"minecraft:unbreaking",lvl:3}]
-		"minecraft:diamond_axe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:smite",lvl:5},{id:"minecraft:unbreaking",lvl:3}]
-	HOT2
-		"minecraft:netherite_axe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:5}]
-		"minecraft:diamond_axe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:smite",lvl:5},{id:"minecraft:unbreaking",lvl:3}]
-		"minecraft:netherite_axe"
-		"minecraft:diamond_axe"
-	HOT3
-		"minecraft:water_bucket"
-	HOT4
-		"minecraft:terracotta"
-	CHEST
-		"minecraft:netherite_chestplate"
-	OFFHAND
-		"minecraft:shield" -> "Enchantments" : [{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:mending",lvl:1}]
-	LEGS
-		"minecraft:netherite_leggings" -> "Enchantments" : [{id:"minecraft:fire_protection",lvl:3},{id:"minecraft:unbreaking",lvl:3}]
-	FEET
-		"minecraft:netherite_boots" -> "Enchantments" : [{id:"minecraft:protection",lvl:4},{id:"minecraft:unbreaking",lvl:3}]
-
-profile PvP activate HOT5
-	HOT3
-		"minecraft:netherite_axe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:smite",lvl:5},{id:"minecraft:unbreaking",lvl:3}]
-		"minecraft:diamond_axe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:smite",lvl:5},{id:"minecraft:unbreaking",lvl:3}]
-	HOT5
-		"minecraft:netherite_axe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:smite",lvl:5},{id:"minecraft:unbreaking",lvl:3}]
-		"minecraft:diamond_axe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:smite",lvl:5},{id:"minecraft:unbreaking",lvl:3}]
-		"minecraft:diamond_axe"
-	HOT4
-		"minecraft:iron_pickaxe" -> "Enchantments" : [{id:"minecraft:efficiency",lvl:4},{id:"minecraft:fortune",lvl:3}]
-	HOT7
-		"minecraft:splash_potion" -> "Potion" : {id:"minecraft:strong_harming"}
-	HOT6
-		"minecraft:splash_potion" -> "Potion" : {id:"minecraft:harming"}
-	HOT2
-		"minecraft:splash_potion" -> "Potion" : {id:"minecraft:weakness"}
-	HOT1
-		"minecraft:splash_potion" -> "Potion" : {id:"minecraft:regeneration"}
-	HOT8
-		"minecraft:splash_potion" -> "Potion" : {id:"minecraft:long_turtle_master"}
-	HOT9
-    HOT1
-"""
-
-    val r = ProfilesConfig.getProfiles(testConfig);
+    val r = ProfilesConfig.getProfiles(testConfig)
     println(ProfilesConfig.asString(r))
 }

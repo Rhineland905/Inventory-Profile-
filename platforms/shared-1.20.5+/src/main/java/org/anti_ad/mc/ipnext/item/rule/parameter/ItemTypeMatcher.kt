@@ -26,9 +26,12 @@ import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.extensions.trySwallow
 import org.anti_ad.mc.ipnext.item.ItemType
 import org.anti_ad.mc.ipnext.item.NbtUtils
+import java.util.function.Predicate
 
-sealed class ItemTypeMatcher {
+sealed class ItemTypeMatcher: Predicate<ItemType> {
+
     abstract fun match(itemType: ItemType): Boolean
+    override fun test(itemType: ItemType): Boolean = this.match(itemType)
 
     abstract val identifier: Identifier
 

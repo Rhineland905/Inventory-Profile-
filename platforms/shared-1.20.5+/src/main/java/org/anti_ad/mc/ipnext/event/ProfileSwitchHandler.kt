@@ -19,49 +19,45 @@
 
 package org.anti_ad.mc.ipnext.event
 
+import com.yevdo.jwildcard.JWildcard
 import org.anti_ad.mc.alias.client.gui.screen.ingame.InventoryScreen
 import org.anti_ad.mc.alias.component.ComponentType
+import org.anti_ad.mc.alias.component.DataComponentTypes
+import org.anti_ad.mc.alias.component.MergedComponentMap
 import org.anti_ad.mc.alias.item.`(componentChanges)`
 import org.anti_ad.mc.alias.nbt.NbtCompound
+import org.anti_ad.mc.alias.nbt.NbtList
+import org.anti_ad.mc.alias.nbt.NbtString
+import org.anti_ad.mc.alias.registry.`(get)`
 import org.anti_ad.mc.alias.registry.Registries
 import org.anti_ad.mc.alias.text.getLiteral
 import org.anti_ad.mc.alias.text.getTranslatable
-import org.anti_ad.mc.alias.component.DataComponentTypes
-import org.anti_ad.mc.alias.nbt.NbtList
-import org.anti_ad.mc.alias.registry.`(get)`
+import org.anti_ad.mc.alias.util.IdentifierOf
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.extensions.transformOrNull
 import org.anti_ad.mc.common.gui.NativeInputContextBase
-import org.anti_ad.mc.ipnext.Log
-import org.anti_ad.mc.ipnext.profiles.config.ProfileData
-import org.anti_ad.mc.ipnext.profiles.config.ProfileItemData
-import org.anti_ad.mc.ipnext.profiles.config.ProfileSlot
-import org.anti_ad.mc.ipnext.profiles.config.ProfileSlotId
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.VanillaUtil
+import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.config.EditProfiles
 import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.config.Hotkeys
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
-import org.anti_ad.mc.ipnext.ingame.`(itemStack)`
-import org.anti_ad.mc.ipnext.ingame.`(selectedSlot)`
-import org.anti_ad.mc.ipnext.ingame.`(slots)`
-import org.anti_ad.mc.ipnext.ingame.`(vanillaStack)`
-import org.anti_ad.mc.ipnext.ingame.vCursorStack
+import org.anti_ad.mc.ipnext.ingame.*
 import org.anti_ad.mc.ipnext.inventory.ContainerClicker
 import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions
+import org.anti_ad.mc.ipnext.item.*
 import org.anti_ad.mc.ipnext.item.ComponentUtils.toFilteredNbtOrNull
-import org.anti_ad.mc.ipnext.item.ItemStack
+import org.anti_ad.mc.ipnext.item.ComponentUtils.toFullNbtOrNull
 import org.anti_ad.mc.ipnext.item.NbtUtils.compareTo
-import org.anti_ad.mc.ipnext.item.customName
-import org.anti_ad.mc.ipnext.item.isEmpty
-import org.anti_ad.mc.ipnext.item.itemId
 import org.anti_ad.mc.ipnext.item.rule.file.RuleFileRegister
+import org.anti_ad.mc.ipnext.item.rule.parameter.ItemTypeMatcher
 import org.anti_ad.mc.ipnext.parser.ProfilesLoader
-import org.anti_ad.mc.ipnext.profiles.config.`(asIdentifier)`
-import org.anti_ad.mc.ipnext.profiles.config.ProfileComponentData
+import org.anti_ad.mc.ipnext.profiles.config.*
 import java.util.*
+import java.util.function.Predicate
+import kotlin.jvm.optionals.getOrNull
 
 object ProfileSwitchHandler: IInputHandler {
 
@@ -112,7 +108,7 @@ object ProfileSwitchHandler: IInputHandler {
                     val stack = Vanilla.playerContainer().`(slots)`[slot].`(itemStack)`
                     val vStack = Vanilla.playerContainer().`(slots)`[slot].`(vanillaStack)`
                     if (!stack.isEmpty()) {
-                        add(ProfileSlot(ProfileSlotId.valueOf(slot), mutableListOf<ProfileItemData>().apply {
+                        add(ProfileSlot(ProfileSlotId.valueOf(slot), null, mutableListOf<ProfileItemData>().apply {
                             val customName = if (EditProfiles.INCLUDE_CUSTOM_NAME.booleanValue) stack.itemType.customName else ""
                             add(ProfileItemData(stack.itemType.itemId, customName, vStack.`(componentChanges)`.entrySet().mapNotNull { (type, value) ->
                                 toProfileComponentDataOrNull(type, value)
@@ -172,7 +168,7 @@ object ProfileSwitchHandler: IInputHandler {
             targetProfile = newProfile
             if (targetProfile.valid) {
                 targetProfile.slots.forEach {
-                    monitors.add(ProfileMonitor(it.id.slotId, it.items))
+                    monitors.add(ProfileMonitor(it))
                 }
                 doApplyProfile = true
             }
@@ -243,13 +239,18 @@ object ProfileSwitchHandler: IInputHandler {
         }
     }
 
-    class ProfileMonitor(val slot: Int, private val targetValues: List<ProfileItemData>) {
+    class ProfileMonitor(
+        private val slotData: ProfileSlot,
+    ) {
+        val slot: Int get() = this.slotData.id.slotId
+        private val sortOrder get() = this.slotData.order
+        private val targetItems get() = this.slotData.items
 
         fun findAndSwap(sourceSlots: List<Int>): Boolean {
             val currentItem = Vanilla.playerContainer().`(slots)`[slot].`(itemStack)`
             Log.trace("found ${currentItem.itemType.itemId} in slot $slot")
-            if (targetValues.isNotEmpty()) {
-                val swapWith: Int? = targetValues.findIn(sourceSlots, ::bestMatch)
+            if (targetItems.isNotEmpty()) {
+                val swapWith: Int? = targetItems.findIn(sourceSlots, ::bestMatch)
                 if (swapWith != null) {
                     if (slot != swapWith) {
                         Log.trace("swapping $swapWith to $slot")
@@ -308,27 +309,16 @@ object ProfileSwitchHandler: IInputHandler {
         }
 
         private fun bestMatch(to: ProfileItemData, from: List<Int>): Int? {
-            val soerted = from.filter {
-                val ist = Vanilla.playerContainer().`(slots)`[it].`(itemStack)`
-                var res = false
-                if (!ist.isEmpty()) {
-                    val enchMatching = to.match(ist)
-                    val customNameMatch = if (to.customName.isNotBlank()) {
-                        ist.itemType.customName == to.customName
-                    } else {
-                        true
-                    }
-                    res = ist.itemType.itemId == to.itemId && customNameMatch && enchMatching
-                }
-                res
-            }.sortedWith { i, j ->
-                val jStack = Vanilla.playerContainer().`(slots)`[j].`(itemStack)`
-                val iStack = Vanilla.playerContainer().`(slots)`[i].`(itemStack)`
+            val sorted = from.filter {
+                val itemStack = Vanilla.playerContainer().`(slots)`[it].`(itemStack)`
+                !itemStack.isEmpty() && to.match(itemStack)
+            }.sortedWith(Comparator.comparing(
+                { it: Int -> Vanilla.playerContainer().`(slots)`[it].`(itemStack)`.itemType },
+                RuleFileRegister.getCustomRuleOrEmpty(this.sortOrder ?: "auto_refill_best")
+            ))
 
-                RuleFileRegister.getCustomRuleOrEmpty("auto_refill_best").compare(jStack.itemType,
-                                                                                  iStack.itemType)
-            }
-            return soerted.lastOrNull()
+            Log.trace("$to :: ${sorted.joinToString { Vanilla.playerContainer().`(slots)`[it].`(itemStack)`.itemType.itemId }}")
+            return sorted.lastOrNull()
         }
     }
 
@@ -369,37 +359,72 @@ object ProfileSwitchHandler: IInputHandler {
 
 private fun ProfileItemData.match(stack: ItemStack): Boolean {
     val stackCustomName = stack.itemType.customName
-    return (itemId == stack.itemType.itemId)
-           && ((customName.isNotBlank() && stackCustomName.isNotBlank() && customName == stackCustomName)
-               || this.components.match(stack))
+    val matcher: Predicate<ItemType> = when {
+        itemId.startsWith("#") -> ItemTypeMatcher.forTag(itemId.removePrefix("#"))
+        itemId.contains("*") -> Predicate { JWildcard.matches(itemId, it.itemId) }
+        else -> null
+    } ?: Predicate { itemId.`(asIdentifier)` == it.identifier }
+    
+
+    val customName = !customName.isNotBlank() || customName == stackCustomName
+
+    return matcher.test(stack.itemType)
+            && customName
+            && this.components.match(stack)
 }
 
+//val itemPredicateArgumentType by lazy {
+//    val access = CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup())
+//    ItemPredicateArgumentType.itemPredicate(access)
+//}
+
 private fun List<ProfileComponentData>?.match(stack: ItemStack): Boolean {
-    val changes = stack.itemType.changes
-/*
-    if (changes.isEmpty && this.isNullOrEmpty()) return true
-    if (this.isNullOrEmpty() || changes.isEmpty) return false
-*/
     if (this.isNullOrEmpty()) return true
 
-    this.forEach { ct ->
-        val type = Registries.DATA_COMPONENT_TYPE.`(get)`(ct.id) // ?.get()?.value()
-        if (type != null) {
-            val component = changes.get(type)
-            if (component == null || component.isEmpty) return false
-            val nbt = type.toFilteredNbtOrNull(component) ?: NbtCompound()
-            val ctComponentNbt = ct.componentNbt
-            if (type == DataComponentTypes.ENCHANTMENTS && ctComponentNbt is NbtList && nbt is NbtList) {
-                val found = nbt.filter { st ->
-                    ctComponentNbt.contains(st)
-                }
-                return found.size == ctComponentNbt.size
+//    val changes = stack.itemType.changes
+    val tag = stack.itemType.tag ?: MergedComponentMap.EMPTY
+
+
+    return this.all { ct ->
+        val type = Registries.DATA_COMPONENT_TYPE.`(get)`(ct.id)
+            ?: return@all false
+
+        val condNBT = ct.componentNbt;
+        val component = tag.get(type);
+        val itemNBT = type.toFullNbtOrNull(Optional.ofNullable(component))
+            ?: NbtCompound()
+
+        if (condNBT == null) {
+            Log.trace("existence check")
+
+            component != null
+        } else if (type == DataComponentTypes.ENCHANTMENTS && condNBT is NbtList) {
+            val enchant = (itemNBT as? NbtCompound)?.`(keys)`
+                ?.mapTo(mutableSetOf(), ::IdentifierOf)
+                ?: emptySet()
+
+            val cond = condNBT.mapTo(mutableSetOf()) { it.`(asString)`.`(asIdentifier)` }
+
+            Log.trace("enchant check: $cond $enchant")
+            enchant.containsAll(cond)
+        } else if (type == DataComponentTypes.POTION_CONTENTS && (condNBT is NbtString || condNBT is NbtList)) {
+            val potion = (itemNBT as? NbtCompound)?.get("potion")?.`(asString)`?.`(asIdentifier)`
+
+            val cond = if (condNBT is NbtList) {
+                condNBT.map { it.`(asString)`.`(asIdentifier)` }
+            } else {
+                listOf(condNBT.`(asString)`.`(asIdentifier)`)
             }
-            if (ctComponentNbt.compareTo(nbt) != 0) return false
+
+            Log.trace("potion check: $cond $potion")
+            cond.contains(potion)
+        } else {
+
+            Log.trace("partial check: $condNBT < $itemNBT")
+            // should use item predicates
+            condNBT.compareTo(itemNBT) != 0
         }
     }
-
-    return true
 }
 
 private fun Iterable<ProfileItemData>.findIn(from: List<Int>, action: (ProfileItemData, List<Int>) -> Int?): Int? {

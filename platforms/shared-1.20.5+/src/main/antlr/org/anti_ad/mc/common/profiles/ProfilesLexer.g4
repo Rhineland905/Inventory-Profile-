@@ -23,6 +23,8 @@ FEET         : 'FEET';
 HEAD         : 'HEAD';
 OFFHAND      : 'OFFHAND';
 
+ORDER        : 'order by';
+
 //ENCHANTMENTS: '"Enchantments"';
 
 COMMA : ',' ;
@@ -39,6 +41,7 @@ LID    : 'id';
 //LVL    : 'lvl';
 //S      : 's';
 
+HASH : '#';
 COLON : ':';
 //SEMICOLON : ';';
 
@@ -58,7 +61,11 @@ Level: NUMBER;
 
 Id :  ID;
 
-NamespacedId: DQUOTE ~ [:" \n\t[\],(){}]+ ':' ~ [:" \n\t[\],(){}]+ DQUOTE;
+// somehow empty identifier is allowed and resolved to `minecraft:`, so do it
+// also supports wildcard
+fragment NAMESPACE: [0-9a-z_\-.*]*;
+fragment PATH: [0-9a-z_\-./*]*;
+NamespacedId: DQUOTE HASH? (NAMESPACE COLON)? PATH DQUOTE;
 
 STRING
    : DQUOTE (ESC | SAFECODEPOINT)* DQUOTE;
