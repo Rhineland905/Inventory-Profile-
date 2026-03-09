@@ -50,6 +50,7 @@ object ProfilesConfig {
             content.parseBy(::ProfilesLexer,
                             ::ProfilesParser,
                             lexerMode = ProfilesLexer.DEFAULT_MODE).script().toProfileList()
+                .also { it.joinToString("\n").lines().forEach { Log.trace(it) } }
 
     fun asString(profiles: List<ProfileData>): String {
         var s = ""
@@ -110,10 +111,11 @@ private fun ProfilesParser.ItemDefContext.toProfileItemData(): ProfileItemData {
     return ProfileItemData(
         this.itemName().NamespacedId().text.unescape(),
         this.itemName().customName()?.STRING()?.text?.unescape() ?: "",
-        this.components()?.component()?.map {
-            val id = it.NamespacedId().toString().unescape().`(asIdentifier)`
-            val nbtString = it.customName()?.STRING()?.text?.unescape() ?: ""
-            ProfileComponentData(id, NbtUtils.parseNbtOrEmpty(nbtString))
+        this.components()?.component()?.map { component ->
+            val id = component.NamespacedId().toString().unescape().`(asIdentifier)`
+            val nbt = component.customName()?.STRING()?.text?.unescape()
+                ?.let { NbtUtils.parseNbtOrEmpty(it) }
+            ProfileComponentData(id, nbt)
         })
 }
 
@@ -144,16 +146,12 @@ data class ProfileData(val name: String,
                        val valid: Boolean = true) {
 
     override fun toString(): String {
-        val start = if (active != ProfileSlotId.NONE) {
-            "profile $name activate ${active.name}"
-        } else {
-            "profile $name"
+        val slots = slots.joinToString("\n").prependIndent()
+        return when (active) {
+            ProfileSlotId.NONE -> "profile $name\n$slots\n"
+            else -> "profile $name activate ${active.name}\n$slots\n"
         }
-        return "$start\n%s\n".format(slots.joinToString(separator = "\n\t", prefix = "\t") {
-            it.toString()
-        })
     }
-
 }
 
 data class ProfileSlot(val id: ProfileSlotId,
@@ -161,19 +159,25 @@ data class ProfileSlot(val id: ProfileSlotId,
                        val items: List<ProfileItemData>) {
 
     override fun toString(): String {
-        return id.toString() + "\n" + items.joinToString(separator = "\n\t\t", prefix = "\t\t") { it.toString() }
+        val items = when {
+            items.isEmpty() -> ""
+            else -> "\n${items.joinToString("\n").prependIndent()}"
+        }
+        return when (order) {
+            null -> "$id$items"
+            else -> "$id order ${"@$order".escape()}$items"
+        }
     }
-
 }
 
 data class ProfileComponentData(val id: Identifier,
                                 val componentNbt: NbtElement?) {
 
     override fun toString(): String {
-        return if (componentNbt == null) {
-            "\"$id\""
-        } else {
-            "\"$id\"(${componentNbt.`(asString)`.escape()})"
+        val quotedId = id.toString().escape()
+        return when (componentNbt) {
+            null -> quotedId
+            else -> "$quotedId(${componentNbt.`(asString)`.escape()})"
         }
     }
 }
@@ -183,20 +187,13 @@ data class ProfileItemData(val itemId: String,
                            val components: List<ProfileComponentData>?) {
 
     override fun toString(): String {
-        return when {
-            !components.isNullOrEmpty() -> {
-                itemIdString() + " -> [ " + components.joinToString(separator = ", ") + " ]"
-            }
-            else -> {
-                itemIdString()
-            }
+        val itemId = when {
+            customName.isNotBlank() -> "${itemId.escape()}(${customName.escape()})"
+            else -> itemId.escape()
         }
-    }
-    private fun itemIdString(): String {
-        return if (customName.isNotBlank()) {
-            "\"$itemId\"(\"$customName\")"
-        } else {
-            "\"$itemId\""
+        return when {
+            components.isNullOrEmpty() -> itemId
+            else -> "$itemId -> [ ${components.joinToString(separator = ", ")} ]"
         }
     }
 }
@@ -302,18 +299,20 @@ profile PvP activate HOT5
     HOT1
 
 profile StressTest
-    HOT1 order by "@item_name"
+    HOT1 order "@item_name"
         "#minecraft:pickaxes"
         "#minecraft:axes"
-    HOT2 order by "@creative_menu_order"
+    HOT2 order "@creative_menu_order"
         "#minecraft:pickaxes"
         "#minecraft:axes"
     HOT3
         "minecraft:wooden_*"
-    HOT4 order by "@by_nutrition"
+    HOT4 order "@by_nutrition"
         "*" -> ["food"]
-    HOT5 order by "@less_nutrition"
+    HOT5 order "@less_nutrition"
         "*" -> ["food"]
+    HOT6
+        "minecraft:diamond_pickaxe"("[The \"A Silky\" Pick]")
 """.trimIndent()
 
 @Suppress("UNUSED_PARAMETER")

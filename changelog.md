@@ -1,3 +1,8 @@
+### unreleased
+
+- #tags and wildcards are now available in profiles.
+- Item priority when applying profiles can now be configured using @custom_rules.
+
 <!-- latest begin -->
 
 ### 2.2.3

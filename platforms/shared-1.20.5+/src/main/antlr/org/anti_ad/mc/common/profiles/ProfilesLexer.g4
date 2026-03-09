@@ -23,7 +23,7 @@ FEET         : 'FEET';
 HEAD         : 'HEAD';
 OFFHAND      : 'OFFHAND';
 
-ORDER        : 'order by';
+ORDER        : 'order';
 
 //ENCHANTMENTS: '"Enchantments"';
 

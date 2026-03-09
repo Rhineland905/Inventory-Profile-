@@ -57,7 +57,6 @@ import org.anti_ad.mc.ipnext.parser.ProfilesLoader
 import org.anti_ad.mc.ipnext.profiles.config.*
 import java.util.*
 import java.util.function.Predicate
-import kotlin.jvm.optionals.getOrNull
 
 object ProfileSwitchHandler: IInputHandler {
 
@@ -389,8 +388,8 @@ private fun List<ProfileComponentData>?.match(stack: ItemStack): Boolean {
         val type = Registries.DATA_COMPONENT_TYPE.`(get)`(ct.id)
             ?: return@all false
 
-        val condNBT = ct.componentNbt;
-        val component = tag.get(type);
+        val condNBT = ct.componentNbt
+        val component = tag.get(type)
         val itemNBT = type.toFullNbtOrNull(Optional.ofNullable(component))
             ?: NbtCompound()
 
@@ -422,7 +421,7 @@ private fun List<ProfileComponentData>?.match(stack: ItemStack): Boolean {
 
             Log.trace("partial check: $condNBT < $itemNBT")
             // should use item predicates
-            condNBT.compareTo(itemNBT) != 0
+            condNBT.compareTo(itemNBT) == 0
         }
     }
 }
