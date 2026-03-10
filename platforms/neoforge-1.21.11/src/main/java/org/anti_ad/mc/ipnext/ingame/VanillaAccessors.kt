@@ -22,6 +22,7 @@
 
 package org.anti_ad.mc.ipnext.ingame
 
+import net.minecraft.resources.ResourceKey
 import org.anti_ad.mc.alias.client.GameOptions
 import org.anti_ad.mc.alias.client.KeyBinding
 import org.anti_ad.mc.alias.client.MinecraftClient
@@ -31,13 +32,16 @@ import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
 import org.anti_ad.mc.alias.client.network.ClientPlayerInteractionManager
 import org.anti_ad.mc.alias.component.MergedComponentMap
+import org.anti_ad.mc.alias.component.type.ItemEnchantmentsComponent
+import org.anti_ad.mc.alias.enchantment.Enchantment
 import org.anti_ad.mc.alias.entity.player.PlayerEntity
 import org.anti_ad.mc.alias.inventory.Inventory
 import org.anti_ad.mc.alias.inventory.PlayerInventory
 import org.anti_ad.mc.alias.nbt.NbtCompound
 import org.anti_ad.mc.alias.nbt.NbtElement
 import org.anti_ad.mc.alias.registry.DefaultedRegistry
-import org.anti_ad.mc.alias.registry.Registry
+import org.anti_ad.mc.alias.registry.entry.RegistryEntry
+import org.anti_ad.mc.alias.registry.tag.TagKey
 import org.anti_ad.mc.alias.screen.Container
 import org.anti_ad.mc.alias.screen.PlayerContainer
 import org.anti_ad.mc.alias.screen.StonecutterContainer
@@ -52,6 +56,7 @@ import org.anti_ad.mc.ipnext.item.ItemType
 import org.anti_ad.mc.ipnext.item.MutableItemStack
 import org.anti_ad.mc.ipnext.item.empty
 import org.anti_ad.mc.ipnext.item.vanillaStack
+import kotlin.jvm.optionals.getOrNull
 import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
 
 // ============
@@ -130,6 +135,9 @@ inline var PlayerInventory.`(selectedSlot)`: Int
 inline val CreativeInventoryScreen.`(isInventoryTab)`: Boolean // method_2469() == ItemGroup.INVENTORY.getIndex()
     get() = this.isInventoryOpen  // in official mappings this is .TAB_INVENTORY.id  // index
 
+val ItemEnchantmentsComponent.`(enchantments)`: Set<RegistryEntry<Enchantment>>
+    get() = this.keySet()
+
 // ============
 // Registry
 // ============
@@ -141,6 +149,18 @@ fun <T: Any> DefaultedRegistry<T>.`(getRawId)`(value: T): Int {
 fun <T: Any> DefaultedRegistry<T>.`(getByIdentifier)`(id: Identifier): T {
     return this.getValue(id) //get(id) //getOrDefault(id)
 }
+
+fun <T: Any> RegistryEntry<T>.`(is)`(id: Identifier): Boolean = this.`is`(id)
+fun <T: Any> RegistryEntry<T>.`(is)`(id: TagKey<T>): Boolean = this.`is`(id)
+fun <T: Any> RegistryEntry<T>.`(is)`(id: ResourceKey<T>): Boolean = this.`is`(id)
+val <T: Any> RegistryEntry<T>.`(key)`: ResourceKey<T>?
+    get() = this.unwrapKey().getOrNull()
+val <T: Any> RegistryEntry<T>.`(value)`: T?
+    get() = this.value()
+val ResourceKey<*>.`(registry)`: Identifier
+    get() = this.registry()
+val ResourceKey<*>.`(identigier)`: Identifier
+    get() = this.identifier()
 
 // ============
 // nbt Tag

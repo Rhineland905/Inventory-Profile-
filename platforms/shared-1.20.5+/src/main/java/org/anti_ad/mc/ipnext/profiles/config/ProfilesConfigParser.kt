@@ -31,7 +31,6 @@ import org.anti_ad.mc.common.extensions.tryOrPrint
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.gen.ProfilesLexer
 import org.anti_ad.mc.ipnext.gen.ProfilesParser
-import org.anti_ad.mc.ipnext.ingame.`(asString)`
 import org.anti_ad.mc.ipnext.item.NbtUtils
 import org.anti_ad.mc.ipnext.parser.parseBy
 
@@ -179,7 +178,7 @@ data class ProfileComponentData(val id: Identifier,
             null -> id.toString().escape()
             else -> {
                 val componentId = id.toString().escape()
-                val component = componentNbt.`(asString)`.escape()
+                val component = componentNbt.toString().escape()
                 "$componentId($component)"
             }
         }

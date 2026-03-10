@@ -20,8 +20,7 @@
 package org.anti_ad.mc.ipnext.specific
 
 import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.nbt.NbtString
-import kotlin.jvm.optionals.getOrDefault
+import kotlin.jvm.optionals.getOrElse
 
 val NbtElement.asString: String
-    get() = this.toString()
+    get() = this.asString().getOrElse { this.toString() }

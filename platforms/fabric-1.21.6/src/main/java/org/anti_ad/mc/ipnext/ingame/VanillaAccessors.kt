@@ -31,6 +31,8 @@ import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
 import org.anti_ad.mc.alias.client.network.ClientPlayerInteractionManager
 import org.anti_ad.mc.alias.component.MergedComponentMap
+import org.anti_ad.mc.alias.component.type.ItemEnchantmentsComponent
+import org.anti_ad.mc.alias.enchantment.Enchantment
 import org.anti_ad.mc.alias.entity.player.PlayerEntity
 import org.anti_ad.mc.alias.inventory.Inventory
 import org.anti_ad.mc.alias.inventory.PlayerInventory
@@ -38,6 +40,9 @@ import org.anti_ad.mc.alias.nbt.NbtCompound
 import org.anti_ad.mc.alias.nbt.NbtElement
 import org.anti_ad.mc.alias.registry.DefaultedRegistry
 import org.anti_ad.mc.alias.registry.Registry
+import org.anti_ad.mc.alias.registry.RegistryKey
+import org.anti_ad.mc.alias.registry.entry.RegistryEntry
+import org.anti_ad.mc.alias.registry.tag.TagKey
 import org.anti_ad.mc.alias.screen.Container
 import org.anti_ad.mc.alias.screen.PlayerContainer
 import org.anti_ad.mc.alias.screen.StonecutterContainer
@@ -55,6 +60,7 @@ import org.anti_ad.mc.ipnext.item.vanillaStack
 import org.anti_ad.mc.ipnext.mixin.IMixinContainerScreen
 import org.anti_ad.mc.ipnext.mixin.IMixinSlot
 import org.anti_ad.mc.ipnext.specific.asString
+import kotlin.jvm.optionals.getOrNull
 import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
 
 // ============
@@ -137,6 +143,9 @@ inline var PlayerInventory.`(selectedSlot)`: Int
 inline val CreativeInventoryScreen.`(isInventoryTab)`: Boolean // method_2469() == ItemGroup.INVENTORY.getIndex()
     get() = this.isInventoryTabSelected
 
+val ItemEnchantmentsComponent.`(enchantments)`: Set<RegistryEntry<Enchantment>>
+    get() = this.enchantments
+
 // ============
 // Registry
 // ============
@@ -163,6 +172,18 @@ fun <T> Registry<T>.`(getRawId)`(value: T): Int {
 fun <T> Registry<T>.`(getByIdentifier)`(id: Identifier): T? {
     return get(id)
 }
+
+fun <T: Any> RegistryEntry<T>.`(is)`(id: Identifier): Boolean = this.matchesId(id)
+fun <T: Any> RegistryEntry<T>.`(is)`(id: TagKey<T>): Boolean = this.isIn(id)
+fun <T: Any> RegistryEntry<T>.`(is)`(id: RegistryKey<T>): Boolean = this.matchesKey(id)
+val <T: Any> RegistryEntry<T>.`(key)`: RegistryKey<T>?
+    get() = this.key.getOrNull()
+val <T: Any> RegistryEntry<T>.`(value)`: T?
+    get() = this.value()
+val RegistryKey<*>.`(registry)`: Identifier
+    get() = this.registry
+val RegistryKey<*>.`(identigier)`: Identifier
+    get() = this.value
 
 // ============
 // nbt Tag

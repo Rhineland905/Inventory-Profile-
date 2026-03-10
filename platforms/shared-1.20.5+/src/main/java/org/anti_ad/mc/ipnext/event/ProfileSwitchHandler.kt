@@ -23,8 +23,9 @@ import com.google.common.base.Predicates
 import com.yevdo.jwildcard.JWildcard
 import org.anti_ad.mc.alias.client.gui.screen.ingame.InventoryScreen
 import org.anti_ad.mc.alias.component.ComponentType
-import org.anti_ad.mc.alias.component.DataComponentTypes
 import org.anti_ad.mc.alias.component.MergedComponentMap
+import org.anti_ad.mc.alias.component.type.ItemEnchantmentsComponent
+import org.anti_ad.mc.alias.component.type.PotionContentsComponent
 import org.anti_ad.mc.alias.item.`(componentChanges)`
 import org.anti_ad.mc.alias.nbt.NbtCompound
 import org.anti_ad.mc.alias.nbt.NbtList
@@ -33,7 +34,6 @@ import org.anti_ad.mc.alias.registry.`(get)`
 import org.anti_ad.mc.alias.registry.Registries
 import org.anti_ad.mc.alias.text.getLiteral
 import org.anti_ad.mc.alias.text.getTranslatable
-import org.anti_ad.mc.alias.util.IdentifierOf
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.extensions.transformOrNull
 import org.anti_ad.mc.common.gui.NativeInputContextBase
@@ -45,19 +45,37 @@ import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.config.Hotkeys
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
-import org.anti_ad.mc.ipnext.ingame.*
+import org.anti_ad.mc.ipnext.ingame.`(asString)`
+import org.anti_ad.mc.ipnext.ingame.`(enchantments)`
+import org.anti_ad.mc.ipnext.ingame.`(identigier)`
+import org.anti_ad.mc.ipnext.ingame.`(itemStack)`
+import org.anti_ad.mc.ipnext.ingame.`(key)`
+import org.anti_ad.mc.ipnext.ingame.`(selectedSlot)`
+import org.anti_ad.mc.ipnext.ingame.`(slots)`
+import org.anti_ad.mc.ipnext.ingame.`(vanillaStack)`
+import org.anti_ad.mc.ipnext.ingame.vCursorStack
 import org.anti_ad.mc.ipnext.inventory.ContainerClicker
 import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions
-import org.anti_ad.mc.ipnext.item.*
 import org.anti_ad.mc.ipnext.item.ComponentUtils.toFilteredNbtOrNull
 import org.anti_ad.mc.ipnext.item.ComponentUtils.toFullNbtOrNull
+import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.NbtUtils.compareTo
+import org.anti_ad.mc.ipnext.item.customName
+import org.anti_ad.mc.ipnext.item.identifier
+import org.anti_ad.mc.ipnext.item.isEmpty
+import org.anti_ad.mc.ipnext.item.itemId
 import org.anti_ad.mc.ipnext.item.rule.file.RuleFileRegister
 import org.anti_ad.mc.ipnext.item.rule.parameter.ItemTypeMatcher
 import org.anti_ad.mc.ipnext.parser.ProfilesLoader
-import org.anti_ad.mc.ipnext.profiles.config.*
+import org.anti_ad.mc.ipnext.profiles.config.`(asIdentifier)`
+import org.anti_ad.mc.ipnext.profiles.config.ProfileComponentData
+import org.anti_ad.mc.ipnext.profiles.config.ProfileData
+import org.anti_ad.mc.ipnext.profiles.config.ProfileItemData
+import org.anti_ad.mc.ipnext.profiles.config.ProfileSlot
+import org.anti_ad.mc.ipnext.profiles.config.ProfileSlotId
 import java.util.*
-import java.util.function.Predicate
+import java.util.function.*
+import kotlin.jvm.optionals.getOrNull
 
 object ProfileSwitchHandler: IInputHandler {
 
@@ -393,15 +411,15 @@ private fun List<ProfileComponentData>?.match(stack: ItemStack): Boolean {
             Log.trace("existence check")
 
             component != null
-        } else if (type == DataComponentTypes.ENCHANTMENTS && condNBT is NbtList) {
-            val enchant = (itemNBT as? NbtCompound)?.`(keys)`?.mapTo(mutableSetOf(), ::IdentifierOf) ?: emptySet()
+        } else if (component is ItemEnchantmentsComponent && condNBT is NbtList) {
+            val enchant = component.`(enchantments)`.mapNotNullTo(mutableSetOf()) { it.`(key)`?.`(identigier)` }
 
             val cond = condNBT.mapTo(mutableSetOf()) { it.`(asString)`.`(asIdentifier)` }
 
             Log.trace("enchant check: $cond $enchant")
             enchant.containsAll(cond)
-        } else if (type == DataComponentTypes.POTION_CONTENTS && (condNBT is NbtString || condNBT is NbtList)) {
-            val potion = (itemNBT as? NbtCompound)?.get("potion")?.`(asString)`?.`(asIdentifier)`
+        } else if (component is PotionContentsComponent && (condNBT is NbtString || condNBT is NbtList)) {
+            val potion = component.potion.getOrNull()?.`(key)`?.`(identigier)` ?: return@all false
 
             val cond = if (condNBT is NbtList) {
                 condNBT.map { it.`(asString)`.`(asIdentifier)` }
