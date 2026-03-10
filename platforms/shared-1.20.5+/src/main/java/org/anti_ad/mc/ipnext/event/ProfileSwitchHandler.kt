@@ -19,6 +19,7 @@
 
 package org.anti_ad.mc.ipnext.event
 
+import com.google.common.base.Predicates
 import com.yevdo.jwildcard.JWildcard
 import org.anti_ad.mc.alias.client.gui.screen.ingame.InventoryScreen
 import org.anti_ad.mc.alias.component.ComponentType
@@ -238,9 +239,8 @@ object ProfileSwitchHandler: IInputHandler {
         }
     }
 
-    class ProfileMonitor(
-        private val slotData: ProfileSlot,
-    ) {
+    class ProfileMonitor(private val slotData: ProfileSlot) {
+
         val slot: Int get() = this.slotData.id.slotId
         private val sortOrder get() = this.slotData.order
         private val targetItems get() = this.slotData.items
@@ -308,13 +308,16 @@ object ProfileSwitchHandler: IInputHandler {
         }
 
         private fun bestMatch(to: ProfileItemData, from: List<Int>): Int? {
+            val rule = RuleFileRegister.getCustomRuleOrEmpty(this.sortOrder ?: "auto_refill_best")
+
             val sorted = from.filter {
                 val itemStack = Vanilla.playerContainer().`(slots)`[it].`(itemStack)`
                 !itemStack.isEmpty() && to.match(itemStack)
-            }.sortedWith(Comparator.comparing(
-                { it: Int -> Vanilla.playerContainer().`(slots)`[it].`(itemStack)`.itemType },
-                RuleFileRegister.getCustomRuleOrEmpty(this.sortOrder ?: "auto_refill_best")
-            ))
+            }.sortedWith { i, j ->
+                val a = Vanilla.playerContainer().`(slots)`[i].`(itemStack)`.itemType;
+                val b = Vanilla.playerContainer().`(slots)`[j].`(itemStack)`.itemType;
+                rule.compare(a, b)
+            }
 
             Log.trace("$to :: ${sorted.joinToString { Vanilla.playerContainer().`(slots)`[it].`(itemStack)`.itemType.itemId }}")
             return sorted.lastOrNull()
@@ -352,24 +355,19 @@ object ProfileSwitchHandler: IInputHandler {
         }
         return activeProfileId
     }
-
-
 }
 
 private fun ProfileItemData.match(stack: ItemStack): Boolean {
     val stackCustomName = stack.itemType.customName
-    val matcher: Predicate<ItemType> = when {
-        itemId.startsWith("#") -> ItemTypeMatcher.forTag(itemId.removePrefix("#"))
-        itemId.contains("*") -> Predicate { JWildcard.matches(itemId, it.itemId) }
-        else -> null
-    } ?: Predicate { itemId.`(asIdentifier)` == it.identifier }
-    
+    val matcher = when {
+        itemId.startsWith("#") -> ItemTypeMatcher.forTag(itemId.removePrefix("#")) ?: Predicates.alwaysFalse()
+        itemId.contains("*")   -> Predicate { JWildcard.matches(itemId, it.itemId) }
+        else                   -> Predicate { itemId.`(asIdentifier)` == it.identifier }
+    }
 
     val customName = !customName.isNotBlank() || customName == stackCustomName
 
-    return matcher.test(stack.itemType)
-            && customName
-            && this.components.match(stack)
+    return matcher.test(stack.itemType) && customName && this.components.match(stack)
 }
 
 //val itemPredicateArgumentType by lazy {
@@ -380,27 +378,23 @@ private fun ProfileItemData.match(stack: ItemStack): Boolean {
 private fun List<ProfileComponentData>?.match(stack: ItemStack): Boolean {
     if (this.isNullOrEmpty()) return true
 
-//    val changes = stack.itemType.changes
+    //    val changes = stack.itemType.changes
     val tag = stack.itemType.tag ?: MergedComponentMap.EMPTY
 
 
     return this.all { ct ->
-        val type = Registries.DATA_COMPONENT_TYPE.`(get)`(ct.id)
-            ?: return@all false
+        val type = Registries.DATA_COMPONENT_TYPE.`(get)`(ct.id) ?: return@all false
 
         val condNBT = ct.componentNbt
         val component = tag.get(type)
-        val itemNBT = type.toFullNbtOrNull(Optional.ofNullable(component))
-            ?: NbtCompound()
+        val itemNBT = type.toFullNbtOrNull(Optional.ofNullable(component)) ?: NbtCompound()
 
         if (condNBT == null) {
             Log.trace("existence check")
 
             component != null
         } else if (type == DataComponentTypes.ENCHANTMENTS && condNBT is NbtList) {
-            val enchant = (itemNBT as? NbtCompound)?.`(keys)`
-                ?.mapTo(mutableSetOf(), ::IdentifierOf)
-                ?: emptySet()
+            val enchant = (itemNBT as? NbtCompound)?.`(keys)`?.mapTo(mutableSetOf(), ::IdentifierOf) ?: emptySet()
 
             val cond = condNBT.mapTo(mutableSetOf()) { it.`(asString)`.`(asIdentifier)` }
 
@@ -419,8 +413,7 @@ private fun List<ProfileComponentData>?.match(stack: ItemStack): Boolean {
             cond.contains(potion)
         } else {
 
-            Log.trace("partial check: $condNBT < $itemNBT")
-            // should use item predicates
+            Log.trace("partial check: $condNBT < $itemNBT") // should use item predicates
             condNBT.compareTo(itemNBT) == 0
         }
     }

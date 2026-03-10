@@ -47,10 +47,9 @@ object ProfilesConfig {
 
     @MayThrow // may throws
     fun getProfiles(content: String): List<ProfileData> =
-            content.parseBy(::ProfilesLexer,
-                            ::ProfilesParser,
-                            lexerMode = ProfilesLexer.DEFAULT_MODE).script().toProfileList()
-                .also { it.joinToString("\n").lines().forEach { Log.trace(it) } }
+        content.parseBy(::ProfilesLexer,
+                        ::ProfilesParser,
+                        lexerMode = ProfilesLexer.DEFAULT_MODE).script().toProfileList()
 
     fun asString(profiles: List<ProfileData>): String {
         var s = ""
@@ -95,33 +94,26 @@ val String.`(asIdentifier)`: Identifier
 
 private fun ProfilesParser.ScriptContext.toProfileList(): List<ProfileData> {
     return profile().map { profile ->
-        ProfileData(
-            profile.Id().text,
-            ProfileSlotId.valueOfOrFAKE(profile.activeSlotName()?.text),
-            profile.slotsDef().slotDef().map { slotDef ->
-                ProfileSlot(
-                    ProfileSlotId.valueOf(slotDef.slotname().text),
-                    slotDef.orderRule()?.STRING()?.text?.unescape()?.removePrefix("@"),
-                    slotDef.itemDef().map { it.toProfileItemData() })
-            })
+        ProfileData(profile.Id().text, ProfileSlotId.valueOfOrFAKE(profile.activeSlotName()?.text), profile.slotsDef().slotDef().map { slotDef ->
+            ProfileSlot(ProfileSlotId.valueOf(slotDef.slotname().text),
+                        slotDef.orderRule()?.STRING()?.text?.unescape()?.removePrefix("@"),
+                        slotDef.itemDef().map { it.toProfileItemData() })
+        })
     }
 }
 
 private fun ProfilesParser.ItemDefContext.toProfileItemData(): ProfileItemData {
-    return ProfileItemData(
-        this.itemName().NamespacedId().text.unescape(),
-        this.itemName().customName()?.STRING()?.text?.unescape() ?: "",
-        this.components()?.component()?.map { component ->
-            val id = component.NamespacedId().toString().unescape().`(asIdentifier)`
-            val nbt = component.customName()?.STRING()?.text?.unescape()
-                ?.let { NbtUtils.parseNbtOrEmpty(it) }
-            ProfileComponentData(id, nbt)
-        })
+    return ProfileItemData(this.itemName().NamespacedId().text.unescape(),
+                           this.itemName().customName()?.STRING()?.text?.unescape() ?: "",
+                           this.components()?.component()?.map { component ->
+                               val id = component.NamespacedId().toString().unescape().`(asIdentifier)`
+                               val nbt = component.customName()?.STRING()?.text?.unescape()?.let { NbtUtils.parseNbtOrEmpty(it) }
+                               ProfileComponentData(id, nbt)
+                           })
 }
 
 private fun String.unescape(): String {
-    return (Json.parseToJsonElement(this) as? JsonPrimitive)
-        ?.contentOrNull ?: this
+    return (Json.parseToJsonElement(this) as? JsonPrimitive)?.contentOrNull ?: this
 }
 
 private fun String.escape(): String {
@@ -146,11 +138,14 @@ data class ProfileData(val name: String,
                        val valid: Boolean = true) {
 
     override fun toString(): String {
-        val slots = slots.joinToString("\n").prependIndent()
-        return when (active) {
-            ProfileSlotId.NONE -> "profile $name\n$slots\n"
-            else -> "profile $name activate ${active.name}\n$slots\n"
+        val start = if (active != ProfileSlotId.NONE) {
+            "profile $name activate ${active.name}"
+        } else {
+            "profile $name"
         }
+        return "$start\n%s\n".format(slots.joinToString(separator = "\n\t", prefix = "\t") {
+            it.toString()
+        })
     }
 }
 
@@ -159,13 +154,19 @@ data class ProfileSlot(val id: ProfileSlotId,
                        val items: List<ProfileItemData>) {
 
     override fun toString(): String {
-        val items = when {
-            items.isEmpty() -> ""
-            else -> "\n${items.joinToString("\n").prependIndent()}"
+        val slot = when (order) {
+            null -> "$id"
+            else -> {
+                val order = "@$order".escape()
+                "$id order $order"
+            }
         }
-        return when (order) {
-            null -> "$id$items"
-            else -> "$id order ${"@$order".escape()}$items"
+        return when {
+            items.isEmpty() -> slot
+            else            -> {
+                val items = items.joinToString("\n") { "\t\t$it" }
+                "$slot\n$items"
+            }
         }
     }
 }
@@ -174,10 +175,13 @@ data class ProfileComponentData(val id: Identifier,
                                 val componentNbt: NbtElement?) {
 
     override fun toString(): String {
-        val quotedId = id.toString().escape()
         return when (componentNbt) {
-            null -> quotedId
-            else -> "$quotedId(${componentNbt.`(asString)`.escape()})"
+            null -> id.toString().escape()
+            else -> {
+                val componentId = id.toString().escape()
+                val component = componentNbt.`(asString)`.escape()
+                "$componentId($component)"
+            }
         }
     }
 }
@@ -188,12 +192,19 @@ data class ProfileItemData(val itemId: String,
 
     override fun toString(): String {
         val itemId = when {
-            customName.isNotBlank() -> "${itemId.escape()}(${customName.escape()})"
-            else -> itemId.escape()
+            customName.isBlank() -> itemId.escape()
+            else                 -> {
+                val itemId = itemId.escape();
+                val customName = customName.escape()
+                "$itemId($customName)"
+            }
         }
         return when {
             components.isNullOrEmpty() -> itemId
-            else -> "$itemId -> [ ${components.joinToString(separator = ", ")} ]"
+            else                       -> {
+                val components = components.joinToString(separator = ", ")
+                "$itemId -> [$components]"
+            }
         }
     }
 }
@@ -252,7 +263,8 @@ enum class ProfileSlotId(val slotId: Int) {
 // regex    :\{id:"([^"]*)",lvl:(\d*)}
 // replace  :'$1':$2
 
-val testConfig get() = """
+val testConfig
+    get() = """
 profile Main activate HOT1
     HOT1
         "minecraft:netherite_axe" -> ["minecraft:enchantments"("{'minecraft:efficiency':5,'minecraft:silk_touch':1,'minecraft:smite':5,'minecraft:unbreaking':3}")]
@@ -298,7 +310,7 @@ profile PvP activate HOT5
     HOT9
     HOT1
 
-profile StressTest
+profile Test
     HOT1 order "@item_name"
         "#minecraft:pickaxes"
         "#minecraft:axes"
@@ -313,6 +325,12 @@ profile StressTest
         "*" -> ["food"]
     HOT6
         "minecraft:diamond_pickaxe"("[The \"A Silky\" Pick]")
+    HOT7
+        "#metalbundles:bundles"
+    HOT8
+        "metalbundles:*_bundle"
+    HOT9
+        "*" -> ["minecraft:enchantments"("{\"minecraft:mending\":1,\"minecraft:unbreaking\":3}")]
 """.trimIndent()
 
 @Suppress("UNUSED_PARAMETER")
