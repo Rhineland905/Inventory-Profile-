@@ -1,7 +1,39 @@
-### unreleased
+### 2.2.4
 
-- #tags and wildcards are now available in profiles.
-- Item priority when applying profiles can now be configured using @custom_rules.
+
+- fixed sort when there are villager entities from "Villager Pickup" in the inventory.
+- In profiles, you can now specify item priority using @custom_sort_rules.
+- In profiles, you can now use #tags
+- In profiles, you can now use wildcards
+
+
+#### New profile features examples
+
+
+- specify order using custom sorting rule and item tags
+
+```
+    HOT1 order "@item_name"
+        "#minecraft:pickaxes"
+        "#minecraft:axes"
+```
+
+
+- using wildcards  
+
+```
+    HOT3
+        "minecraft:wooden_*"
+    HOT4 order "@by_nutrition"
+        "*" -> ["food"]
+    HOT5 order "@less_nutrition"
+        "*" -> ["food"]
+    HOT8
+        "metalbundles:*_bundle"
+    HOT9
+        "*" -> ["minecraft:enchantments"("{\"minecraft:mending\":1,\"minecraft:unbreaking\":3}")]
+
+```
 
 <!-- latest begin -->
 
