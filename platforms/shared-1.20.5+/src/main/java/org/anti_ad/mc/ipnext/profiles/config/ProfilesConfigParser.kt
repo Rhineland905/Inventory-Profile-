@@ -19,20 +19,32 @@
 
 package org.anti_ad.mc.ipnext.profiles.config
 
-
+import com.yevdo.jwildcard.JWildcard
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
+import org.anti_ad.mc.alias.component.ComponentType
+import org.anti_ad.mc.alias.item.Items
 import org.anti_ad.mc.alias.nbt.NbtElement
+import org.anti_ad.mc.alias.registry.`(get)`
+import org.anti_ad.mc.alias.registry.Registries
+import org.anti_ad.mc.alias.text.Text
 import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.alias.util.IdentifierOf
+import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.annotation.MayThrow
 import org.anti_ad.mc.common.extensions.tryOrPrint
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.gen.ProfilesLexer
 import org.anti_ad.mc.ipnext.gen.ProfilesParser
+import org.anti_ad.mc.ipnext.item.EMPTY
+import org.anti_ad.mc.ipnext.item.ItemType
 import org.anti_ad.mc.ipnext.item.NbtUtils
+import org.anti_ad.mc.ipnext.item.itemId
+import org.anti_ad.mc.ipnext.item.rule.parameter.ItemTypeMatcher
 import org.anti_ad.mc.ipnext.parser.parseBy
+import java.util.function.*
+import java.util.regex.*
 
 object ProfilesConfig {
 
@@ -76,7 +88,7 @@ fun List<ProfileData>.dump() {
                     Log.trace(slotDef.id.name)
                     Log.indent {
                         slotDef.items.forEach { item ->
-                            val i = item.itemId + " -> " + (item.components ?: "")
+                            val i = item.itemId.toString() + " -> " + (item.components ?: "")
                             Log.trace(i)
                         }
                     }
@@ -90,7 +102,6 @@ fun List<ProfileData>.dump() {
 val String.`(asIdentifier)`: Identifier
     get() = IdentifierOf(this)
 
-
 private fun ProfilesParser.ScriptContext.toProfileList(): List<ProfileData> {
     return profile().map { profile ->
         ProfileData(profile.Id().text, ProfileSlotId.valueOfOrFAKE(profile.activeSlotName()?.text), profile.slotsDef().slotDef().map { slotDef ->
@@ -102,10 +113,10 @@ private fun ProfilesParser.ScriptContext.toProfileList(): List<ProfileData> {
 }
 
 private fun ProfilesParser.ItemDefContext.toProfileItemData(): ProfileItemData {
-    return ProfileItemData(this.itemName().NamespacedId().text.unescape(),
+    return ProfileItemData(ProfileItemId.of(this.itemName().identifier().text.unescape()),
                            this.itemName().customName()?.STRING()?.text?.unescape() ?: "",
                            this.components()?.component()?.map { component ->
-                               val id = component.NamespacedId().toString().unescape().`(asIdentifier)`
+                               val id = ProfileComponentType.of(component.identifier().text.unescape())
                                val nbt = component.customName()?.STRING()?.text?.unescape()?.let { NbtUtils.parseNbtOrEmpty(it) }
                                ProfileComponentData(id, nbt)
                            })
@@ -170,8 +181,10 @@ data class ProfileSlot(val id: ProfileSlotId,
     }
 }
 
-data class ProfileComponentData(val id: Identifier,
+data class ProfileComponentData(val id: ProfileComponentType,
                                 val componentNbt: NbtElement?) {
+
+    constructor(id: String, component: NbtElement?) : this(ProfileComponentType.of(id), component)
 
     override fun toString(): String {
         return when (componentNbt) {
@@ -185,15 +198,15 @@ data class ProfileComponentData(val id: Identifier,
     }
 }
 
-data class ProfileItemData(val itemId: String,
+data class ProfileItemData(val itemId: ProfileItemId,
                            val customName: String,
                            val components: List<ProfileComponentData>?) {
 
     override fun toString(): String {
         val itemId = when {
-            customName.isBlank() -> itemId.escape()
+            customName.isBlank() -> itemId.toString().escape()
             else                 -> {
-                val itemId = itemId.escape();
+                val itemId = itemId.toString().escape()
                 val customName = customName.escape()
                 "$itemId($customName)"
             }
@@ -204,6 +217,77 @@ data class ProfileItemData(val itemId: String,
                 val components = components.joinToString(separator = ", ")
                 "$itemId -> [$components]"
             }
+        }
+    }
+}
+
+sealed interface ProfileItemId: Predicate<ItemType> {
+
+    data class Id(val value: Identifier): ProfileItemId,
+                                          Predicate<ItemType> by ItemTypeMatcher.IsItem(value) {
+
+        init {
+            if (NbtUtils.getItemFromId(value) == Items.AIR) { // because it's defaulted registry
+                warnAndChat("unknown item id: $value")
+            }
+        }
+
+        override fun toString(): String = value.toString()
+    }
+
+    data class Tag(val value: Identifier): ProfileItemId,
+                                           Predicate<ItemType> by ItemTypeMatcher.IsTag(value) {
+
+        init {
+            if (NbtUtils.getTagFromId(value) == null) {
+                warnAndChat("unknown item tag: #$value")
+            }
+        }
+
+        override fun toString(): String = "#$value"
+    }
+
+    data class Wildcard(val value: String): ProfileItemId {
+
+        private val pattern: Pattern by lazy { Pattern.compile(JWildcard.wildcardToRegex(value)) }
+        override fun test(type: ItemType): Boolean = pattern.matcher(type.itemId).matches()
+        override fun toString(): String = value
+    }
+
+    companion object {
+
+        fun of(id: String): ProfileItemId {
+            val result = when {
+                id.startsWith("#") -> Tag(IdentifierOf(id.removePrefix("#")))
+                id.contains("*")   -> Wildcard(id)
+                else               -> Id(IdentifierOf(id))
+            }
+
+            tryOrPrint(::warnAndChat) {
+                result.test(ItemType.EMPTY) // trigger validation but do not throw
+            }
+
+            return result
+        }
+    }
+}
+
+data class ProfileComponentType(val id: Identifier) {
+
+    val type: ComponentType<*>? by lazy {
+        Registries.DATA_COMPONENT_TYPE.`(get)`(id) ?: null.also { warnAndChat("unknown data component: $id") }
+    }
+
+    override fun toString(): String = id.toString()
+
+    companion object {
+
+        fun of(id: String): ProfileComponentType {
+            val result = ProfileComponentType(IdentifierOf(id))
+            tryOrPrint(::warnAndChat) {
+                result.type // trigger validation but do not throw
+            }
+            return result
         }
     }
 }
@@ -255,6 +339,11 @@ enum class ProfileSlotId(val slotId: Int) {
     }
 
 
+}
+
+private fun warnAndChat(msg: String) {
+    Log.warn(msg)
+    TellPlayer.chat(Text.literal(msg))
 }
 
 // regex    :-> "([^"]*)" : (.*)
