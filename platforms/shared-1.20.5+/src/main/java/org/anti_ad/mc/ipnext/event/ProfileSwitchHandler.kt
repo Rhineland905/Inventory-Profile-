@@ -19,8 +19,6 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import com.google.common.base.Predicates
-import com.yevdo.jwildcard.JWildcard
 import org.anti_ad.mc.alias.client.gui.screen.ingame.InventoryScreen
 import org.anti_ad.mc.alias.component.ComponentType
 import org.anti_ad.mc.alias.component.MergedComponentMap
@@ -30,8 +28,6 @@ import org.anti_ad.mc.alias.item.`(componentChanges)`
 import org.anti_ad.mc.alias.nbt.NbtCompound
 import org.anti_ad.mc.alias.nbt.NbtList
 import org.anti_ad.mc.alias.nbt.NbtString
-import org.anti_ad.mc.alias.registry.`(get)`
-import org.anti_ad.mc.alias.registry.Registries
 import org.anti_ad.mc.alias.text.getLiteral
 import org.anti_ad.mc.alias.text.getTranslatable
 import org.anti_ad.mc.common.IInputHandler
@@ -61,20 +57,18 @@ import org.anti_ad.mc.ipnext.item.ComponentUtils.toFullNbtOrNull
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.NbtUtils.compareTo
 import org.anti_ad.mc.ipnext.item.customName
-import org.anti_ad.mc.ipnext.item.identifier
 import org.anti_ad.mc.ipnext.item.isEmpty
 import org.anti_ad.mc.ipnext.item.itemId
 import org.anti_ad.mc.ipnext.item.rule.file.RuleFileRegister
-import org.anti_ad.mc.ipnext.item.rule.parameter.ItemTypeMatcher
 import org.anti_ad.mc.ipnext.parser.ProfilesLoader
 import org.anti_ad.mc.ipnext.profiles.config.`(asIdentifier)`
 import org.anti_ad.mc.ipnext.profiles.config.ProfileComponentData
 import org.anti_ad.mc.ipnext.profiles.config.ProfileData
 import org.anti_ad.mc.ipnext.profiles.config.ProfileItemData
+import org.anti_ad.mc.ipnext.profiles.config.ProfileItemId
 import org.anti_ad.mc.ipnext.profiles.config.ProfileSlot
 import org.anti_ad.mc.ipnext.profiles.config.ProfileSlotId
 import java.util.*
-import java.util.function.*
 import kotlin.jvm.optionals.getOrNull
 
 object ProfileSwitchHandler: IInputHandler {
@@ -114,7 +108,7 @@ object ProfileSwitchHandler: IInputHandler {
 
     private fun toProfileComponentDataOrNull(type: ComponentType<*>, value: Optional<*>): ProfileComponentData? {
         return type.toFilteredNbtOrNull(value).transformOrNull {
-            ProfileComponentData(type.toString().`(asIdentifier)`, it)
+            ProfileComponentData(type.toString(), it)
         }
     }
 
@@ -128,7 +122,7 @@ object ProfileSwitchHandler: IInputHandler {
                     if (!stack.isEmpty()) {
                         add(ProfileSlot(ProfileSlotId.valueOf(slot), null, mutableListOf<ProfileItemData>().apply {
                             val customName = if (EditProfiles.INCLUDE_CUSTOM_NAME.booleanValue) stack.itemType.customName else ""
-                            add(ProfileItemData(stack.itemType.itemId, customName, vStack.`(componentChanges)`.entrySet().mapNotNull { (type, value) ->
+                            add(ProfileItemData(ProfileItemId.of(stack.itemType.itemId), customName, vStack.`(componentChanges)`.entrySet().mapNotNull { (type, value) ->
                                 toProfileComponentDataOrNull(type, value)
                             } ))
                         }))
@@ -377,15 +371,10 @@ object ProfileSwitchHandler: IInputHandler {
 
 private fun ProfileItemData.match(stack: ItemStack): Boolean {
     val stackCustomName = stack.itemType.customName
-    val matcher = when {
-        itemId.startsWith("#") -> ItemTypeMatcher.forTag(itemId.removePrefix("#")) ?: Predicates.alwaysFalse()
-        itemId.contains("*")   -> Predicate { JWildcard.matches(itemId, it.itemId) }
-        else                   -> Predicate { itemId.`(asIdentifier)` == it.identifier }
-    }
 
     val customName = !customName.isNotBlank() || customName == stackCustomName
 
-    return matcher.test(stack.itemType) && customName && this.components.match(stack)
+    return itemId.test(stack.itemType) && customName && this.components.match(stack)
 }
 
 //val itemPredicateArgumentType by lazy {
@@ -401,7 +390,7 @@ private fun List<ProfileComponentData>?.match(stack: ItemStack): Boolean {
 
 
     return this.all { ct ->
-        val type = Registries.DATA_COMPONENT_TYPE.`(get)`(ct.id) ?: return@all false
+        val type = ct.id.type ?: return@all false
 
         val condNBT = ct.componentNbt
         val component = tag.get(type)
