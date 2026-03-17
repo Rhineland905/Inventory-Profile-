@@ -57,6 +57,7 @@ import org.anti_ad.mc.ipnext.item.ComponentUtils.toFullNbtOrNull
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.NbtUtils.compareTo
 import org.anti_ad.mc.ipnext.item.customName
+import org.anti_ad.mc.ipnext.item.identifier
 import org.anti_ad.mc.ipnext.item.isEmpty
 import org.anti_ad.mc.ipnext.item.itemId
 import org.anti_ad.mc.ipnext.item.rule.file.RuleFileRegister
@@ -122,7 +123,7 @@ object ProfileSwitchHandler: IInputHandler {
                     if (!stack.isEmpty()) {
                         add(ProfileSlot(ProfileSlotId.valueOf(slot), null, mutableListOf<ProfileItemData>().apply {
                             val customName = if (EditProfiles.INCLUDE_CUSTOM_NAME.booleanValue) stack.itemType.customName else ""
-                            add(ProfileItemData(ProfileItemId.of(stack.itemType.itemId), customName, vStack.`(componentChanges)`.entrySet().mapNotNull { (type, value) ->
+                            add(ProfileItemData(ProfileItemId.Id(stack.itemType.identifier), customName, vStack.`(componentChanges)`.entrySet().mapNotNull { (type, value) ->
                                 toProfileComponentDataOrNull(type, value)
                             } ))
                         }))
