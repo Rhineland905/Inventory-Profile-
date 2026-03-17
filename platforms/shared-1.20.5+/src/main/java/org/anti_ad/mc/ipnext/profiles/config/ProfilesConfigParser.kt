@@ -28,10 +28,8 @@ import org.anti_ad.mc.alias.item.Items
 import org.anti_ad.mc.alias.nbt.NbtElement
 import org.anti_ad.mc.alias.registry.`(get)`
 import org.anti_ad.mc.alias.registry.Registries
-import org.anti_ad.mc.alias.text.Text
 import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.alias.util.IdentifierOf
-import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.annotation.MayThrow
 import org.anti_ad.mc.common.extensions.tryOrPrint
 import org.anti_ad.mc.ipnext.Log
@@ -113,10 +111,10 @@ private fun ProfilesParser.ScriptContext.toProfileList(): List<ProfileData> {
 }
 
 private fun ProfilesParser.ItemDefContext.toProfileItemData(): ProfileItemData {
-    return ProfileItemData(ProfileItemId.of(this.itemName().identifier().text.unescape()),
+    return ProfileItemData(ProfileItemId.of(this.itemName().itemIdLike()),
                            this.itemName().customName()?.STRING()?.text?.unescape() ?: "",
                            this.components()?.component()?.map { component ->
-                               val id = ProfileComponentType.of(component.identifier().text.unescape())
+                               val id = ProfileComponentType.of(component.NamespacedId().text.unescape())
                                val nbt = component.customName()?.STRING()?.text?.unescape()?.let { NbtUtils.parseNbtOrEmpty(it) }
                                ProfileComponentData(id, nbt)
                            })
@@ -228,7 +226,7 @@ sealed interface ProfileItemId: Predicate<ItemType> {
 
         init {
             if (NbtUtils.getItemFromId(value) == Items.AIR) { // because it's defaulted registry
-                warnAndChat("unknown item id: $value")
+                Log.warn("unknown item id: $value")
             }
         }
 
@@ -240,7 +238,7 @@ sealed interface ProfileItemId: Predicate<ItemType> {
 
         init {
             if (NbtUtils.getTagFromId(value) == null) {
-                warnAndChat("unknown item tag: #$value")
+                Log.warn("unknown item tag: #$value")
             }
         }
 
@@ -256,14 +254,17 @@ sealed interface ProfileItemId: Predicate<ItemType> {
 
     companion object {
 
-        fun of(id: String): ProfileItemId {
-            val result = when {
-                id.startsWith("#") -> Tag(IdentifierOf(id.removePrefix("#")))
-                id.contains("*")   -> Wildcard(id)
-                else               -> Id(IdentifierOf(id))
-            }
+        fun of(idLike: ProfilesParser.ItemIdLikeContext): ProfileItemId {
+            val id = idLike.NamespacedId()?.text?.unescape()
+            val tag = idLike.NamespacedTag()?.text?.unescape()
+            val wildcard = idLike.IdWildcard()?.text?.unescape()
 
-            tryOrPrint(::warnAndChat) {
+            val result = id?.let { Id(IdentifierOf(it)) }
+                         ?: tag?.let { Tag(IdentifierOf(it.removePrefix("#"))) }
+                         ?: wildcard?.let { Wildcard(it) }
+                         ?: Wildcard(idLike.text.unescape()) // unreachable; something went wrong
+
+            tryOrPrint(Log::warn) {
                 result.test(ItemType.EMPTY) // trigger validation but do not throw
             }
 
@@ -275,7 +276,7 @@ sealed interface ProfileItemId: Predicate<ItemType> {
 data class ProfileComponentType(val id: Identifier) {
 
     val type: ComponentType<*>? by lazy {
-        Registries.DATA_COMPONENT_TYPE.`(get)`(id) ?: null.also { warnAndChat("unknown data component: $id") }
+        Registries.DATA_COMPONENT_TYPE.`(get)`(id) ?: null.also { Log.warn("unknown data component: $id") }
     }
 
     override fun toString(): String = id.toString()
@@ -284,7 +285,7 @@ data class ProfileComponentType(val id: Identifier) {
 
         fun of(id: String): ProfileComponentType {
             val result = ProfileComponentType(IdentifierOf(id))
-            tryOrPrint(::warnAndChat) {
+            tryOrPrint(Log::warn) {
                 result.type // trigger validation but do not throw
             }
             return result
@@ -339,11 +340,6 @@ enum class ProfileSlotId(val slotId: Int) {
     }
 
 
-}
-
-private fun warnAndChat(msg: String) {
-    Log.warn(msg)
-    TellPlayer.chat(Text.literal(msg))
 }
 
 // regex    :-> "([^"]*)" : (.*)
