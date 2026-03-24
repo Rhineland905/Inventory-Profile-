@@ -23,14 +23,14 @@ FEET         : 'FEET';
 HEAD         : 'HEAD';
 OFFHAND      : 'OFFHAND';
 
-ORDER        : 'order';
+ORDER        : 'order' -> pushMode(customName); // "@order" is also customName
 
 //ENCHANTMENTS: '"Enchantments"';
 
 COMMA : ',' ;
 //fragment LBRACK : '[';
 //LBrack : WS? LBRACK;
-LPAREN : '(' ;
+LPAREN : '(' -> pushMode(customName); // item name or component data
 RPAREN : ')' ;
 LBRACK : '[' ;
 RBRACK : ']' ;
@@ -63,13 +63,17 @@ Id :  ID;
 
 // somehow empty identifier is allowed and resolved to `minecraft:`, so do it
 // also supports wildcard
-fragment NAMESPACE: [0-9a-z_\-.*]*;
-fragment PATH: [0-9a-z_\-./*]*;
-NamespacedId: DQUOTE HASH? (NAMESPACE COLON)? PATH DQUOTE;
+fragment NAMESPACE: [0-9a-z_\-.];
+fragment PATH: [0-9a-z_\-./];
+NamespacedId: DQUOTE (NAMESPACE* COLON)? PATH* DQUOTE;
+NamespacedTag: DQUOTE HASH (NAMESPACE* COLON)? PATH* DQUOTE;
+IdWildcard: DQUOTE ((NAMESPACE | '*')* COLON)? (PATH | '*')* DQUOTE;
+
+mode customName;
+WS_customName: WS -> skip;
 
 STRING
-   : DQUOTE (ESC | SAFECODEPOINT)* DQUOTE;
-
+   : DQUOTE (ESC | SAFECODEPOINT)* DQUOTE -> popMode; // end customName context
 
 fragment ESC
    : '\\' (["\\/bfnrt] | UNICODE)
