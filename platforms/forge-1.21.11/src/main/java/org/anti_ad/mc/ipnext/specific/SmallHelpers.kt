@@ -22,10 +22,10 @@
 
 package org.anti_ad.mc.ipnext.specific
 
+import net.minecraft.client.renderer.RenderPipelines
 import org.anti_ad.mc.alias.SharedConstants
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.vanilla.Vanilla.mc
-import org.anti_ad.mc.common.vanilla.alias.RenderLayer
 import org.anti_ad.mc.ipnext.IPNInfoManager
 
 inline fun serverIdentifier(perServer: Boolean): String = when {
@@ -49,12 +49,12 @@ inline fun serverIdentifier(perServer: Boolean): String = when {
 
 inline fun initInfoManager() {
     IPNInfoManager.loader = "forge"
-    IPNInfoManager.mcVersion = SharedConstants.getCurrentVersion().id
+    IPNInfoManager.mcVersion = SharedConstants.getCurrentVersion().id()
 }
 
 val NativeContext.asOverlayContext: NativeContext
     get() {
-        return NativeContext(this.native, RenderLayer::guiTexturedOverlay).apply {
+        return NativeContext(this.native, RenderPipelines.GUI_TEXTURED).apply {
             isOverlay = true
         }
     }

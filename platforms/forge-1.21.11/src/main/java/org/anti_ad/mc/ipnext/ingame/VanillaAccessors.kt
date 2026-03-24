@@ -142,11 +142,11 @@ val ItemEnchantmentsComponent.`(enchantments)`: Set<RegistryEntry<Enchantment>>
 // Registry
 // ============
 
-fun <T> DefaultedRegistry<T>.`(getRawId)`(value: T): Int {
+fun <T: Any> DefaultedRegistry<T>.`(getRawId)`(value: T): Int {
     return getId(value)
 }
 
-fun <T> DefaultedRegistry<T>.`(getByIdentifier)`(id: Identifier): T {
+fun <T: Any> DefaultedRegistry<T>.`(getByIdentifier)`(id: Identifier): T {
     return this.getValue(id) //get(id) //getOrDefault(id)
 }
 
@@ -160,7 +160,7 @@ val <T: Any> RegistryEntry<T>.`(value)`: T?
 val ResourceKey<*>.`(registry)`: Identifier
     get() = this.registry()
 val ResourceKey<*>.`(identigier)`: Identifier
-    get() = this.location()
+    get() = this.identifier()
 
 // ============
 // nbt Tag

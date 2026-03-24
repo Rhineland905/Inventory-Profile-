@@ -72,7 +72,7 @@ cd ..
 
 export _JAVA_OPTIONS=-Xmx8G
 
-GRADLE_ARG="--exclude-task compileTestJava --exclude-task test ${BUILD_PATH}build"
+GRADLE_ARG="--exclude-task compileTestJava --exclude-task compileTestKotlin --exclude-task test ${BUILD_PATH}build"
 
 
 if [[ n${IPNEXT_M} != "n" ]]; then

@@ -22,7 +22,7 @@ package org.anti_ad.mc.ipnext.forge;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import kotlin.Unit;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -30,10 +30,9 @@ import net.minecraftforge.client.event.ScreenEvent.Render;
 import net.minecraftforge.client.event.ScreenEvent.Init;
 import org.anti_ad.mc.common.math2d.Rectangle;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
-import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import org.anti_ad.mc.common.gui.NativeContext;
 import org.anti_ad.mc.common.vanilla.Vanilla;
 import org.anti_ad.mc.common.vanilla.VanillaUtil;
@@ -49,12 +48,13 @@ import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions;
 public class ForgeEventHandler {
 
     @SubscribeEvent
-    public void clientClick(ClientTickEvent e) {
-        if (e.phase == Phase.START) {
-            ClientEventHandler.INSTANCE.onTickPre();
-        } else { // e.phase == Phase.END
-            ClientEventHandler.INSTANCE.onTick();
-        }
+    public void clientClick(ClientTickEvent.Pre e) {
+        ClientEventHandler.INSTANCE.onTickPre();
+    }
+
+    @SubscribeEvent
+    public void clientClick(ClientTickEvent.Post e) {
+        ClientEventHandler.INSTANCE.onTick();
     }
 
     @SubscribeEvent
@@ -64,7 +64,6 @@ public class ForgeEventHandler {
             ClientEventHandler.INSTANCE.onJoinWorld();
         }
     }
-
 
     @SubscribeEvent
     public void joinWorld(LevelEvent.Load event) {
@@ -93,33 +92,33 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void preScreenRender(ScreenEvent.Render.Pre event) {
-        ScreenEventHandler.INSTANCE.preRender(new NativeContext(event.getGuiGraphics(), RenderType::guiTextured));
+        ScreenEventHandler.INSTANCE.preRender(new NativeContext(event.getGuiGraphics(), RenderPipelines.GUI_TEXTURED));
     }
 
     // fabric GameRenderer.render() = forge updateCameraAndRender()
     // forge line 554
     @SubscribeEvent
     public void postScreenRender(Render.Post e) {
-        ScreenEventHandler.INSTANCE.postRender(new NativeContext(e.getGuiGraphics(), RenderType::guiTextured));
+        ScreenEventHandler.INSTANCE.postRender(new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED));
     }
 
     @SubscribeEvent
     public void onBackgroundRender(ContainerScreenEvent.Render.Background e) {
-        var context = new NativeContext(e.getGuiGraphics(), RenderType::guiTextured);
+        var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
         ContainerScreenEventHandler.INSTANCE.onBackgroundRender(context, e.getMouseX(), e.getMouseY(), 0);
     }
 
     @SubscribeEvent
     public void onForegroundRender(ContainerScreenEvent.Render.Foreground e) {
-        var context = new NativeContext(e.getGuiGraphics(), RenderType::guiTextured);
+        var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
         context.setOverlay(true);
         context.setOverlay(true);
         var screen = e.getContainerScreen();
-        context.getNative().pose().pushPose();
+        var matrix = context.getNative().pose().pushMatrix();
         var topLeft = new Rectangle(screen.getGuiLeft(), screen.getGuiTop(), screen.getXSize(), screen.getYSize()).getTopLeft();
-        context.getNative().pose().translate(-topLeft.getX(), -topLeft.getY(), 0.0d);
+        context.getNative().pose().translate(-topLeft.getX(), -topLeft.getY(), matrix);
         ContainerScreenEventHandler.INSTANCE.onForegroundRender(context, e.getMouseX(), e.getMouseY(), 0);
-        context.getNative().pose().popPose();
+        context.getNative().pose().popMatrix();
     }
 
     // ============
@@ -129,7 +128,7 @@ public class ForgeEventHandler {
     @SubscribeEvent
     public void onGuiKeyPressedPre(ScreenEvent.KeyPressed.Pre e) { // Tweaks.PREVENT_CLOSE_GUI_DROP_ITEM
         if (!VanillaUtil.INSTANCE.inGame()) return;
-        InputConstants.Key mouseKey = InputConstants.getKey(e.getKeyCode(), e.getScanCode()); //getInputByCode(e.getKeyCode(), e.getScanCode()); // getKey(e.getKeyCode(), e.getScanCode());
+        InputConstants.Key mouseKey = InputConstants.getKey(e.getInfo()); //getInputByCode(e.getKeyCode(), e.getScanCode()); // getKey(e.getKeyCode(), e.getScanCode());
         if (Tweaks.INSTANCE.getPREVENT_CLOSE_GUI_DROP_ITEM().getBooleanValue()
                 && (e.getKeyCode() == 256 || Vanilla.INSTANCE.mc().options.keyInventory //gameSettings.keyBindInventory // options.keyInventory
                 .isActiveAndMatches(mouseKey))) {

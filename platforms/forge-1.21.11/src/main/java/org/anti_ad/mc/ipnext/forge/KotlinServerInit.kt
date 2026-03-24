@@ -19,7 +19,9 @@
 
 package org.anti_ad.mc.ipnext.forge
 
-class KotlinServerInit: Runnable {
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
+
+class KotlinServerInit(context: FMLJavaModLoadingContext): Runnable {
 
     override fun run() {
 

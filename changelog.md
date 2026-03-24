@@ -1,3 +1,12 @@
+<!-- latest begin -->
+
+### 2.2.4 - Forge 1.21.11
+
+
+
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.2.4
 
 
@@ -19,7 +28,7 @@
 ```
 
 
-- using wildcards  
+- using wildcards
 
 ```
     HOT3
@@ -35,7 +44,6 @@
 
 ```
 
-<!-- latest begin -->
 
 ### 2.2.3
 
@@ -46,11 +54,9 @@
   - Added "**Features**" page where all major features can be enabled/disabled.
   - Added "**Sort Settings**" page, where all sort-related settings were moved.
   - Old settings files will be updated automatically. Also, downgrade is possible without loss of information.
-- The number of quick profiles is now 10. 
-  
+- The number of quick profiles is now 10.
 
-<!-- latest end -->
-<!-- rest begin -->
+
 
 ### 2.2.2
 

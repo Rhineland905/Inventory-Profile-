@@ -21,15 +21,15 @@ package org.anti_ad.mc.ipnext.forge
 
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import net.minecraftforge.fml.loading.FMLEnvironment
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.gen.ModInfo
-import org.anti_ad.mc.ipnext.event.ClientInitHandler.register
 
 @Mod(ModInfo.MOD_ID)
-class IPNForgeModInit {
+class IPNForgeModInit(val context: FMLJavaModLoadingContext) {
 
-    private val toInit: Runnable = if (FMLEnvironment.dist === Dist.CLIENT) KotlinClientInit() else KotlinServerInit()
+    private val toInit: Runnable = if (FMLEnvironment.dist === Dist.CLIENT) KotlinClientInit(context) else KotlinServerInit(context)
 
     init {
         try {

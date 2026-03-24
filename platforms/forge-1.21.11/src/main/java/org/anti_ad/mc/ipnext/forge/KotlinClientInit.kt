@@ -24,23 +24,24 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.IExtensionPoint
 import net.minecraftforge.client.ConfigScreenHandler
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import org.anti_ad.mc.common.gui.screen.ConfigScreenBase
 import org.anti_ad.mc.ipnext.config.ConfigScreenSettings
 import org.anti_ad.mc.ipnext.init as inventoryProfilesInit
 
-class KotlinClientInit: Runnable {
+class KotlinClientInit(val context: FMLJavaModLoadingContext): Runnable {
 
     override fun run() {
 
-        thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT.registerExtensionPoint(IExtensionPoint.DisplayTest::class.java) {
-            IExtensionPoint.DisplayTest({ thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT.container.modInfo.version.toString() }) {
+        context.registerExtensionPoint(IExtensionPoint.DisplayTest::class.java) {
+            IExtensionPoint.DisplayTest({ context.container.modInfo.version.toString() }) {
                     _: String?, _: Boolean? -> true
             }
         }
 
         MinecraftForge.EVENT_BUS.register(ForgeEventHandler())
 
-        thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory::class.java) {
+        context.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory::class.java) {
             ConfigScreenHandler.ConfigScreenFactory { _: Minecraft?, p: Screen? ->
                 ConfigScreenBase(ConfigScreenSettings).apply {
                     parent = p

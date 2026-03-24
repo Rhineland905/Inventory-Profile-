@@ -19,12 +19,11 @@
 
 package org.anti_ad.mc.ipnext.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraft.world.item.trading.MerchantOffers;
 import org.anti_ad.mc.common.gui.NativeContext;
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager;
 import org.spongepowered.asm.mixin.Final;
@@ -47,12 +46,14 @@ public class MixinMerchantScreen {
 
 
     @SuppressWarnings({"DataFlowIssue", "rawtypes"})
-    @Inject(method = "render",
-            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V", ordinal = 0),
-            locals = LocalCapture.CAPTURE_FAILHARD)
-    void render(GuiGraphics matrices, int mouseX, int mouseY, float delta, CallbackInfo ci, MerchantOffers tradeOfferList, int i, int j, int k, int l, int m, Iterator var11, MerchantOffer tradeOffer, ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3, ItemStack itemStack4) {
+    @Inject(method = "renderContents",
+            at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen;renderAndDecorateCostA(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;II)V",
+                     ordinal = 0)
+    )
+    void render(GuiGraphics matrices, int mouseX, int mouseY, float delta, CallbackInfo ci, @Local(ordinal = 2) int i, @Local(ordinal = 3) int j, @Local(ordinal = 4) int k, @Local(ordinal = 5) int l, @Local(ordinal = 6) int m, @Local MerchantOffer tradeOffer) {
         MerchantScreen self = (MerchantScreen)((Object)this);
-        VillagerTradeManager.INSTANCE.drawingButton(self, new NativeContext(matrices, RenderType::guiTextured), mouseX, mouseY, tradeOffer, i, j, k, l, m);
+        VillagerTradeManager.INSTANCE.drawingButton(self, new NativeContext(matrices, RenderPipelines.GUI_TEXTURED), mouseX, mouseY, tradeOffer, i, j, k, l, m);
     }
 
 
