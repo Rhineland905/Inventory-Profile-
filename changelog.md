@@ -1,7 +1,11 @@
 <!-- latest begin -->
 
-### 2.2.4 - Forge 1.21.11
+### 2.2.5 
 
+- support for Forge 1.21.11
+- fixed profile parser not working for some components. Thanks to @rassvet-ii for all new work on profiles.
+- removed the last of the OpenGL dependent code.
+- 1.21.6 and 1.21.10 are no longer supported.
 
 
 <!-- latest end -->

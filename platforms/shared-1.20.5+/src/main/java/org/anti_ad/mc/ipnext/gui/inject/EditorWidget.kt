@@ -32,16 +32,13 @@ import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.VanillaScreenUtil
 import org.anti_ad.mc.common.vanilla.alias.glue.I18n
-import org.anti_ad.mc.common.vanilla.render.rClearDepth
 import org.anti_ad.mc.common.vanilla.render.glue.rDrawOutline
-import org.anti_ad.mc.common.vanilla.render.rStandardGlState
 import org.anti_ad.mc.common.vanilla.render.opaque
 import org.anti_ad.mc.ipn.api.IPNButton
 import org.anti_ad.mc.ipnext.config.Debugs
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.gui.GUIDEEditorScreen
 import org.anti_ad.mc.ipnext.gui.inject.base.InsertableWidget
-import org.anti_ad.mc.ipnext.gui.inject.base.ProfileButtonWidget
 import org.anti_ad.mc.ipnext.gui.inject.base.SortButtonWidget
 
 class EditorWidget(override val screen: ContainerScreen<*>,

@@ -83,8 +83,6 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                                       partialTicks: Float) {
         //if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
         rehint()
-        //rStandardGlState()
-        //rClearDepth(context)
         overflow = Overflow.VISIBLE
         absoluteBounds = screen.`(containerBounds)`
         init()
