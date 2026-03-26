@@ -1,6 +1,14 @@
 <!-- latest begin -->
 
-### 2.2.5 
+### 2.2.6
+
+- workaround for Kotlin 2.3.20 metadata incompatibility. Just update for Fabric neoforge so far doesn't support Kotlin 2.3.20.
+
+
+<!-- latest end -->
+<!-- rest begin -->
+
+### 2.2.5
 
 - support for Forge 1.21.11
 - fixed profile parser not working for some components. Thanks to @rassvet-ii for all new work on profiles.
@@ -8,8 +16,6 @@
 - 1.21.6 and 1.21.10 are no longer supported.
 
 
-<!-- latest end -->
-<!-- rest begin -->
 
 ### 2.2.4
 
