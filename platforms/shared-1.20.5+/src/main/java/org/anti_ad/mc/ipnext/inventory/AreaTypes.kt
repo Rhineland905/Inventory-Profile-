@@ -94,8 +94,8 @@ object AreaTypes {
             if (types.contains(SORTABLE_STORAGE) || types.contains(NO_SORTING_STORAGE)) {
                 fillSlots(types, vanillaSlots, slotIndices)
             }
-            return@AreaType ItemArea(vanillaSlots,
-                                     slotIndices)
+            ItemArea(vanillaSlots,
+                     slotIndices)
         }
 
     val sortableItemStorage: AreaType =
@@ -106,7 +106,7 @@ object AreaTypes {
                 if (types.contains(SORTABLE_STORAGE)) {
                     fillSlots(types, vanillaSlots, slotIndices)
                 }
-                return@AreaType ItemArea(vanillaSlots,
+                ItemArea(vanillaSlots,
                                          slotIndices)
             }
 
@@ -133,10 +133,8 @@ object AreaTypes {
                     run {
                         val cl: Class<*> = this.javaClass
                         val hints = HintsManagerNG.getHints(cl)
-                        it.javaClass === cl && hints.slotIgnoreInventoryTypes.contains(className)
-                                || (hints.ignoreCraftingGrid
-                                && (it.`(inventory)` is CraftingInventory
-                                || it.`(inventory)` is CraftingResultInventory))
+                        it.`(inventory)`.javaClass === cl && hints.slotIgnoreInventoryTypes.contains(className)
+                                || (hints.ignoreCraftingGrid && (it.`(inventory)` is CraftingInventory || it.`(inventory)` is CraftingResultInventory))
                     }
         }
 
@@ -178,24 +176,25 @@ fun interface AreaType {
         fun match(orderSensitive: Boolean = false,
                   predicate: (Slot) -> Boolean) = AreaType { _, vanillaSlots ->
             val slotIndices = vanillaSlots.mapIndexedNotNull { index, slot -> if (predicate(slot)) index else null }
-            return@AreaType ItemArea(vanillaSlots,
-                                     slotIndices,
-                                     orderSensitive)
+            ItemArea(vanillaSlots,
+                     slotIndices,
+                     orderSensitive)
         }
 
         fun playerInvSlots(vararg invSlots: Int,
-                           orderSensitive: Boolean = false) =
-            playerInvSlots(orderSensitive) { invSlots.asIterable() }
+                           orderSensitive: Boolean = false) = playerInvSlots(orderSensitive) { invSlots.asIterable() }
 
         fun playerInvSlots(@Suppress("UNUSED_PARAMETER")
                            orderSensitive: Boolean = false,
                            invSlots: () -> Iterable<Int>) = AreaType { _, vanillaSlots ->
             val slotIndexOfInvSlot = mutableMapOf<Int, Int>() // invSlot, slotIndex
             vanillaSlots.forEachIndexed { slotIndex, slot ->
-                if (slot.`(inventoryOrNull)` is PlayerInventory) slotIndexOfInvSlot[slot.`(invSlot)`] = slotIndex
+                if (slot.`(inventoryOrNull)` is PlayerInventory) {
+                    slotIndexOfInvSlot[slot.`(invSlot)`] = slotIndex
+                }
             }
-            return@AreaType ItemArea(vanillaSlots,
-                                     invSlots().mapNotNull { slotIndexOfInvSlot[it] })
+            ItemArea(vanillaSlots,
+                     invSlots().mapNotNull { slotIndexOfInvSlot[it] })
         }
     }
 

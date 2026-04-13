@@ -99,7 +99,8 @@ class StringBasedRule : TypeBasedRule<String>() {
             val strength = arguments[strength].value
             Collator.getInstance(locale).apply { this.strength = strength }
         }
-        return@lazy rawComparator.letIf(arguments[logical]) { LogicalStringComparator(it) }
+        val condition = arguments[logical]
+        return@lazy rawComparator.letIf(condition) { LogicalStringComparator(it) }
     } // interestingly if using if else, compiler cannot guess type
 
     fun compareString(str1: String,

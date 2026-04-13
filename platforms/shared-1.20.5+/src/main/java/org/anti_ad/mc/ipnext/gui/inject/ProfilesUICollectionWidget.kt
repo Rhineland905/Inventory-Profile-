@@ -58,7 +58,7 @@ class ProfilesUICollectionWidget(override val screen: ContainerScreen<*>,
     override val container = Vanilla.container()
     private val types = ContainerTypes.getTypes(container)
 
-    var visibleSource: () -> Boolean
+    var visibleSource: () -> Boolean = { Features.ENABLE_PROFILES.booleanValue && GuiSettings.ENABLE_PROFILES_UI.booleanValue }
 
     override var visible: Boolean
         get() = visibleSource() && super.visible
@@ -70,7 +70,6 @@ class ProfilesUICollectionWidget(override val screen: ContainerScreen<*>,
 
     init {
         visible = types.contains(ContainerType.PLAYER)
-        visibleSource = { Features.ENABLE_PROFILES.booleanValue && GuiSettings.ENABLE_PROFILES_UI.booleanValue }
     }
 
     override fun postBackgroundRender(context: NativeContext,

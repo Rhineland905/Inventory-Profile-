@@ -20,6 +20,7 @@
 
 @file:Suppress("unused")
 
+
 package org.anti_ad.mc.ipnext.config
 
 import org.anti_ad.mc.common.config.IConfigOption

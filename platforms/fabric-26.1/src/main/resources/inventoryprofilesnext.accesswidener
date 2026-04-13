@@ -1,0 +1,6 @@
+accessWidener	v1	official
+
+
+accessible method net/minecraft/world/item/ItemStack <init> (Lnet/minecraft/core/Holder;ILnet/minecraft/core/component/PatchedDataComponentMap;)V
+accessible field net/minecraft/core/component/DataComponentPatch map Lit/unimi/dsi/fastutil/objects/Reference2ObjectMap;
+accessible field net/minecraft/client/gui/screens/inventory/MerchantScreen$TradeOfferButton index I

@@ -328,7 +328,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                         (_, keybind) -> keybind?.keyCodes?.isEmpty() != true
                 }.joinToString("\n") { (suffix, keybind) ->
                     I18n.translate("$prefix.$suffix",
-                                   keybind?.displayText?.uppercase())
+                                   keybind?.displayText?.uppercase() ?: "")
                 }
             // extra I18n.translate null is ok
         }

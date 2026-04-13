@@ -2,6 +2,8 @@
 -libraryjars  <java.home>/jmods/java.base.jmod(!**.jar;!module-info.class)
 #-keep class !org.anti_ad.embedded.** { *; }
 
+-keep class kotlin.Metadata
+
 
 #-keep class org.anti_ad.mc.ipnext.InventoryProfilesKt { *; }
 #-keep class org.anti_ad.mc.ipnext.compat.** { *; }
@@ -9,17 +11,26 @@
 #-keep class org.anti_ad.mc.common.mixin.** { *; }
 #-keepnames class org.anti_ad.mc.ipnext.config.**
 
-#-ignorewarnings
+-ignorewarnings
 -optimizationpasses 15 # (828K -> 811K)
 
 -dontwarn org.jetbrains.annotations.**
 -dontwarn javax.annotation.**
 -dontwarn java.awt.**
+-dontwarn kotlin.**
+-dontwarn kotlinx.**
+-dontwarn org.jetbrains.**
+-dontwarn org.intellij.lang.annotations.**
+-dontwarn dev.isxander.**
+-dontwarn org.anti_ad.mc.alias.**
+-dontwarn kotlin.concurrent.**
+-keepclassmembers class kotlinx.coroutines.** { *; }
+
 
 #-dontusemixedcaseclassnames
 
 -keepattributes *Annotation*
-#-verbose
+-verbose
 
 
 #-dontoptimize
@@ -34,7 +45,7 @@
 
 
 #normal build
-#-keep class kotlin.Metadata
+#-keepkotlinmetadata
 -keepclassmembers class org.anti_ad.mc.** { *; }
 -keep class org.anti_ad.mc.** { *; }
 

@@ -34,97 +34,88 @@ import org.anti_ad.mc.ipnext.inventory.ContainerClicker
 import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions
 import org.anti_ad.mc.ipnext.item.isEmpty
 
-class IPNImpl: IPN() {
 
-    override val containerClicker: IContainerClicker = PContainerClicker()
+object IPNSpi {
 
-    override val lockedSlots: List<Int>
-        get() = LockSlotsHandler.lockedInvSlots.toList()
+    private val actions = mutableListOf<() -> Unit>()
 
-    companion object {
-        fun init() {
-            _IPN = IPNImpl();
+    fun onTickInGame() {
+        val localActions = mutableListOf<() -> Unit>()
+        synchronized(actions) {
+            localActions.addAll(actions)
+            actions.clear()
         }
-
-        private val actions = mutableListOf<() -> Unit>()
-
-        fun onTickInGame() {
-            val localActions = mutableListOf<() -> Unit>()
-            synchronized(actions) {
-                localActions.addAll(actions)
-                actions.clear()
+        localActions.isNotEmpty().ifTrue {
+            localActions.forEach {
+                it()
             }
-            localActions.isNotEmpty().ifTrue {
-                localActions.forEach {
-                    it()
-                }
-                LockedSlotKeeper.init()
-            }
-            localActions.clear()
+            LockedSlotKeeper.init()
         }
+        localActions.clear()
+    }
 
-        fun addTickAction(action: () -> Unit) {
-            synchronized(actions) {
-                actions.add(action)
-            }
+    fun addTickAction(action: () -> Unit) {
+        synchronized(actions) {
+            actions.add(action)
         }
     }
 }
 
+
 class PContainerClicker: IContainerClicker {
 
     override fun leftClick(slotId: Int) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             ContainerClicker.leftClick(if (slotId < 9) slotId + 36 else slotId)
         }
     }
 
     override fun rightClick(slotId: Int) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             ContainerClicker.rightClick(if (slotId < 9) slotId + 36 else slotId)
         }
     }
 
     override fun shiftClick(slotId: Int) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             ContainerClicker.shiftClick(if (slotId < 9) slotId + 36 else slotId)
         }
     }
 
     override fun qClick(slotId: Int) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             ContainerClicker.qClick(if (slotId < 9) slotId + 36 else slotId)
         }
     }
 
     override fun click(slotId: Int,
                        button: Int) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             ContainerClicker.click(if (slotId < 9) slotId + 36 else slotId, button)
         }
     }
 
     override fun swap(slotId: Int,
                       hotbarSlotId: Int) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             swapSlots(hotbarSlotId, slotId)
         }
     }
 
     override fun executeQClicks(clicks: Map<Int, Int>) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             ContainerClicker.executeQClicks(translateMapValueToSlot(clicks), interval)
         }
     }
 
     override fun executeSwapClicks(clicks: Map<Int, Int>) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             ContainerClicker.executeSwapClicks(translateMap(clicks), interval)
         }
     }
 
     override fun executeClicks(clicks: Map<Int, Int>) {
-        IPNImpl.addTickAction {
+        IPNSpi.addTickAction {
             ContainerClicker.executeClicks(clicks.toList(), interval)
         }
     }

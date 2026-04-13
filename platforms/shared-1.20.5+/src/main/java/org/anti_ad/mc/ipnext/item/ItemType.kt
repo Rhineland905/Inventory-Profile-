@@ -47,7 +47,7 @@ data class ItemType(val item: Item,
 
     val sourceStack: ItemStack? = stackSource(this)
 
-    val tag: MergedComponentMap?
+    val tag: MergedComponentMap
 
     val changes: ComponentChanges
 
@@ -59,9 +59,14 @@ data class ItemType(val item: Item,
 
     init {
         //if (null == aTag) Log.trace("aTag = NULL here", Exception())
-        if (aTag == null && item != Items.AIR) {
-            tag = EMPTY_COMPONENT_MAP
-            changes = ComponentChanges.EMPTY
+        if (aTag == null) {
+            if (item != Items.AIR) {
+                tag = EMPTY_COMPONENT_MAP
+                changes = ComponentChanges.EMPTY
+            } else {
+                tag = MergedComponentMap(item.components())
+                changes = aChanges ?: ComponentChanges.EMPTY
+            }
         } else {
             tag = aTag
             changes = aChanges ?: ComponentChanges.EMPTY

@@ -482,6 +482,9 @@ private object InnerActions {
                 val forcePlayerSide = forcePlayer || forcePlayerSide()
                 val target: ItemArea
                 if (forcePlayerSide || sortableItemStorage.get().isEmpty()) {
+                    val playerArea = playerStorage.get()
+                    val lockedArea = lockedSlots.get()
+                    val disabledArea = container.disabled.get()
                     val slots = (playerStorage - lockedSlots - container.disabled)
                     target = slots.get()
                     if (SortSettings.RESTOCK_HOTBAR.booleanValue) {

@@ -20,6 +20,7 @@
 
 package org.anti_ad.mc.ipnext.gui
 
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.alias.screen.Container
 import org.anti_ad.mc.alias.screen.slot.Slot
@@ -211,12 +212,12 @@ class DebugScreen: BaseDebugScreen() {
         var storedPageIndex = 0
     }
 
-    override fun renderBackground(context: DrawContext,
-                                  mouseX: Int,
-                                  mouseY: Int,
-                                  deltaTicks: Float) {
+    override fun extractBackground(context: DrawContext,
+                                   mouseX: Int,
+                                   mouseY: Int,
+                                   deltaTicks: Float) {
         //this.applyBlur();
-        this.renderDarkening(context);
+        this.extractMenuBackground(context);
     }
 
 }

@@ -23,7 +23,7 @@ package org.anti_ad.mc.ipnext.event
 import org.anti_ad.mc.common.input.GlobalInputHandler
 import org.anti_ad.mc.common.vanilla.VanillaUtil
 import org.anti_ad.mc.ipnext.IPNInfoManager
-import org.anti_ad.mc.ipnext.access.IPNImpl
+import org.anti_ad.mc.ipnext.access.IPNSpi
 import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings
@@ -54,7 +54,7 @@ object ClientEventHandler: PClientEventHandler {
     private fun onTickInGame() {
         LockedSlotKeeper.onTickInGame()
         ProfileSwitchHandler.onTickInGame()
-        IPNImpl.onTickInGame()
+        IPNSpi.onTickInGame()
         CuttersDispatcher.onTickInGame()
         AnvilHandler.onTickInGame()
 

@@ -43,7 +43,7 @@ import org.anti_ad.mc.ipnext.item.isEmpty
 
 object SlotHighlightHandler: InventoryOverlay {
 
-    private var toHighlight: ItemType = ItemType.EMPTY
+    private var toHighlight: ItemType? = null
 
     private var ticksSinceLastFocusChange = 3
 

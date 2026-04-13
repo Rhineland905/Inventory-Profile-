@@ -21,6 +21,8 @@
 
 package org.anti_ad.mc.ipnext.event.autorefill
 
+import net.minecraft.core.component.DataComponentGetter
+import net.minecraft.core.component.DataComponentType
 import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.InventoryScreen
 import org.anti_ad.mc.alias.component.ComponentType
@@ -92,6 +94,7 @@ import org.anti_ad.mc.ipnext.item.`(isFood)`
 import org.anti_ad.mc.ipnext.item.`(isHarmful)`
 import org.anti_ad.mc.ipnext.item.`(saturationModifier)`
 import org.anti_ad.mc.ipnext.item.ComponentUtils.`(withRemovedIf)`
+import org.anti_ad.mc.ipnext.item.ComponentUtils.get
 import org.anti_ad.mc.ipnext.item.EMPTY
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.ItemType
@@ -390,9 +393,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
 
         }
 
-        private fun notifySuccessfulChange(
-            itemType: ItemType, foundSlotId: Int
-                                          ) {
+        private fun notifySuccessfulChange(itemType: ItemType, foundSlotId: Int) {
             if (AutoRefillSettings.VISUAL_REPLACE_SUCCESS_NOTIFICATION.value) {
                 val replacingWith = Vanilla.playerContainer().`(slots)`[foundSlotId].`(itemStack)`.itemType
 
@@ -415,9 +416,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                         showSubTitle(fromSerializedJson(message(false)))
                     }
 
-                    ToolReplaceVisualNotification.HOTBAR   -> Vanilla.inGameHud().setOverlayMessage(
-                        fromSerializedJson(message(false)), false
-                                                                                                   )
+                    ToolReplaceVisualNotification.HOTBAR   -> Vanilla.inGameHud().setOverlayMessage(fromSerializedJson(message(false))!!, false)
 
                     ToolReplaceVisualNotification.CHAT     -> VanillaUtil.chat(fromSerializedJson(message(true))!!)
                 }
@@ -455,9 +454,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                                     showSubTitle(fromSerializedJson(message(false)))
                                 }
 
-                                ToolReplaceVisualNotification.HOTBAR   -> Vanilla.inGameHud().setOverlayMessage(
-                                    fromSerializedJson(message(false)), false
-                                                                                                               )
+                                ToolReplaceVisualNotification.HOTBAR   -> Vanilla.inGameHud().setOverlayMessage(fromSerializedJson(message(false))!!, false)
 
                                 ToolReplaceVisualNotification.CHAT     -> VanillaUtil.chat(fromSerializedJson(message(true))!!)
                             }
@@ -497,7 +494,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                             showSubTitle(fromSerializedJson(message(false)))
                         }
 
-                        ToolReplaceVisualNotification.HOTBAR   -> Vanilla.inGameHud().setOverlayMessage(fromSerializedJson(message(false)), false)
+                        ToolReplaceVisualNotification.HOTBAR   -> Vanilla.inGameHud().setOverlayMessage(fromSerializedJson(message(false))!!, false)
                         ToolReplaceVisualNotification.CHAT     -> VanillaUtil.chat(fromSerializedJson(message(true))!!)
                     }
 
@@ -532,7 +529,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                             showSubTitle(fromSerializedJson(message(false)))
                         }
 
-                        ToolReplaceVisualNotification.HOTBAR   -> Vanilla.inGameHud().setOverlayMessage(fromSerializedJson(message(false)), false)
+                        ToolReplaceVisualNotification.HOTBAR   -> Vanilla.inGameHud().setOverlayMessage(fromSerializedJson(message(false))!!, false)
                         ToolReplaceVisualNotification.CHAT     -> VanillaUtil.chat(fromSerializedJson(message(true))!!)
                     }
 
@@ -763,7 +760,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                                     if (!tagsIn.isEmpty && !tagsOut.isEmpty) {
                                         res = true
                                         tagsIn.entrySet().forEach { (type, value) ->
-                                            if (value != tagsOut[type]) {
+                                            if (value != tagsOut.get(type)) {
                                                 res = false
                                                 return@earlyFinish
                                             }

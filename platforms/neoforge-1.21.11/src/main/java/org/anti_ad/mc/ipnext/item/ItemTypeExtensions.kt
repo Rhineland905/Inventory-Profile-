@@ -94,7 +94,7 @@ inline val ItemType.Companion.EMPTY
                      ComponentChanges.EMPTY,
                      { false })
 
-fun ItemType.isEmpty() : Boolean {
+fun ItemType.isEmpty(): Boolean {
     return item == Items.AIR
 }
 

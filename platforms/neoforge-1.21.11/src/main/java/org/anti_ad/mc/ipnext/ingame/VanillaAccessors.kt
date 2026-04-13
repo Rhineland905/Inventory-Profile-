@@ -78,17 +78,17 @@ inline val VanillaItemStack.`(mutableItemStack)`: MutableItemStack
                                                                         count)
 
 inline val Container.`(slots)`: List<Slot>
-    get() = slots //inventorySlots
+    get() = slots
 
 inline val Container.`(syncId)`: Int
     get() = containerId
 
 inline val Slot.`(id)`: Int
-    get() = index //slotNumber
+    get() = index
 inline val Slot.`(invSlot)`: Int
     get() = slotIndex // forge
 inline val Slot.`(itemStack)`: ItemStack
-    get() = this.item.`(itemStack)` // stack
+    get() = this.item.`(itemStack)`
 inline val Slot.`(vanillaStack)`: VanillaItemStack
     get() = this.item // stack
 

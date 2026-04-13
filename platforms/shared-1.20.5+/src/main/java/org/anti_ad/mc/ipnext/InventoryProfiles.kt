@@ -20,11 +20,15 @@
 
 package org.anti_ad.mc.ipnext
 
-import org.anti_ad.mc.ipnext.access.IPNImpl
+import org.anti_ad.mc.ipn.api.access.IContainerClicker
+import org.anti_ad.mc.ipn.api.access.IPN
+import org.anti_ad.mc.ipnext.access.PContainerClicker
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.event.ClientInitHandler
 import org.anti_ad.mc.ipnext.compat.integrations.Integrations
 import org.anti_ad.mc.ipnext.config.ConfigScreenSettings
+import org.anti_ad.mc.ipnext.event.LockSlotsHandler
+import org.anti_ad.mc.ipnext.event.SlotHighlightHandler
 import org.anti_ad.mc.ipnext.gui.inject.InsertWidgetHandler
 import org.anti_ad.mc.ipnext.input.InputHandler
 import org.anti_ad.mc.ipnext.specific.initInfoManager
@@ -36,11 +40,28 @@ val versionCheckUrl: URL = URI("https://ipn.anti-ad.org/ipn/ipnVersionCheckV3").
 @Suppress("unused")
 fun init() {
 
-    IPNImpl.init()
+    val ipnimpl = object : IPN() {
+
+        override val containerClicker: IContainerClicker = PContainerClicker()
+
+        override val lockedSlots: List<Int>
+            get() = LockSlotsHandler.lockedInvSlots.toList()
+
+        init {
+            _IPN = this
+        }
+    }
+
 
     specificInit()
 
     ClientInitHandler.register {
+
+        try {
+            SlotHighlightHandler.hashCode()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
 
         Integrations.init()
 
