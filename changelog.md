@@ -1,12 +1,17 @@
 <!-- latest begin -->
 
+
+### 2.3.0 
+
+- added support for Fabric Minecraft 26.1/.x 
+ 
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.2.6
 
 - workaround for Kotlin 2.3.20 metadata incompatibility. Just update for Fabric neoforge so far doesn't support Kotlin 2.3.20.
 
-
-<!-- latest end -->
-<!-- rest begin -->
 
 ### 2.2.5
 
