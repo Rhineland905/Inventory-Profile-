@@ -1,12 +1,17 @@
 <!-- latest begin -->
 
+### 2.3.1
 
-### 2.3.0 
+- fixes keyboard shortcuts not working in player inventory when the recipe window is shown.
 
-- added support for Fabric Minecraft 26.1/.x 
  
 <!-- latest end -->
 <!-- rest begin -->
+
+### 2.3.0
+
+- added support for Fabric Minecraft 26.1/.x
+
 
 ### 2.2.6
 
