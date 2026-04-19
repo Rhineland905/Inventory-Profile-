@@ -65,7 +65,7 @@ fun vMainhandIndex() =
 
 fun isInputFieldActive(scr: ContainerScreen<*>): Boolean {
     return scr.children()?.any {
-        (it is RecipeBookWidget<*> && (it.`(searchField)`?.isActive == true)) || (it is TextFieldWidget && it.isActive)
+        (it is RecipeBookWidget<*> && (it.`(searchField)`?.isFocused == true)) || (it is TextFieldWidget && it.isFocused)
     } == true
 }
 
