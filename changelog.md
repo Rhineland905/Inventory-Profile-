@@ -1,12 +1,18 @@
 <!-- latest begin -->
 
-### 2.3.1
+### 2.3.2
 
-- fixes keyboard shortcuts not working in player inventory when the recipe window is shown.
+- added support for Forge 26.1.x
+- added support for NeoForge 26.1.x
 
  
 <!-- latest end -->
 <!-- rest begin -->
+
+### 2.3.1
+
+- fixes keyboard shortcuts not working in player inventory when the recipe window is shown.
+
 
 ### 2.3.0
 
