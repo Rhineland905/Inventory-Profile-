@@ -131,7 +131,7 @@ object ContainerClicker {
             return
         }
         // clickSlot() = method_2906()
-        Vanilla.interactionManager().`(clickSlot)`(container.`(syncId)`,
+        Vanilla.interactionManager().`(clickSlot)`(container.containerId,
                                                    slotId,
                                                    button,
                                                    actionType,

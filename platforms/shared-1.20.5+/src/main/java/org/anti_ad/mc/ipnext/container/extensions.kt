@@ -22,7 +22,6 @@ package org.anti_ad.mc.ipnext.container
 import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeContainer
 import org.anti_ad.mc.alias.screen.*
 import org.anti_ad.mc.common.vanilla.Vanilla
-
 import org.anti_ad.mc.ipnext.inventory.ContainerType
 import org.anti_ad.mc.ipnext.inventory.nonStorage
 import org.anti_ad.mc.ipnext.inventory.playerOnly
@@ -38,7 +37,8 @@ val versionSpecificContainerTypes = setOf(PlayerContainer::class.java           
                                           BeaconContainer::class.java           /**/ to nonStorage,
                                           BlastFurnaceContainer::class.java     /**/ to simple,
                                           CartographyTableContainer::class.java /**/ to simple,
-                                          AbstractFurnaceContainer::class.java  /**/ to simple,
+                                          ForgingContainer::class.java          /**/ to simple,
+                                          FurnaceContainer::class.java          /**/ to simple,
                                           GrindstoneContainer::class.java       /**/ to simple,
                                           LecternContainer::class.java          /**/ to nonStorage,
                                           LoomContainer::class.java             /**/ to nonStorage,
@@ -54,6 +54,7 @@ val versionSpecificContainerTypes = setOf(PlayerContainer::class.java           
                                           HopperContainer::class.java           /**/ to setOf(ContainerType.NO_SORTING_STORAGE,
                                                                                               ContainerType.PURE_BACKPACK), //setOf(ContainerType.NO_SORTING_STORAGE),
                                           BrewingStandContainer::class.java     /**/ to nonStorage, //setOf(ContainerType.NO_SORTING_STORAGE),
+                                          AbstractFurnaceContainer::class.java  /**/ to simple, //setOf(ContainerType.NO_SORTING_STORAGE),
 
                                           GenericContainer::class.java          /**/ to setOf(ContainerType.SORTABLE_STORAGE,
                                                                                               ContainerType.RECTANGULAR,
@@ -76,6 +77,3 @@ fun StonecutterContainer.selectRecipe(id: Int) {
     clickMenuButton(Vanilla.player(), id)
     Vanilla.interactionManager().handleInventoryButtonClick(containerId, id)
 }
-
-val AnvilContainer.`(levelCost)`: Int
-    get() = this.cost
