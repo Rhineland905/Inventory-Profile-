@@ -27,15 +27,14 @@ import net.minecraft.core.NonNullList; //net.minecraft.util.NonNullList;
 import org.anti_ad.mc.ipnext.config.Debugs;
 import org.anti_ad.mc.ipnext.config.Features;
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings;
-import org.anti_ad.mc.ipnext.config.ModSettings;
 import org.anti_ad.mc.ipnext.event.LockSlotsHandler;
 import org.anti_ad.mc.ipnext.event.LockedSlotKeeper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Inventory.class)
@@ -44,15 +43,17 @@ public abstract class MixinPlayerInventory {
 
     @Shadow @Final public NonNullList<ItemStack> items;
 
-    private ItemStack addedStack = null;
+    @Unique
+    private ItemStack inventoryProfilesNext$addedStack = null;
 
-    private boolean skipChecks = false;
+    @Unique
+    private boolean inventoryProfilesNext$skipChecks = false;
 
     @Inject(at = @At(value = "HEAD", target = "Lnet/minecraft/world/entity/player/Inventory;getFreeSlot()I"),
             method = "getFreeSlot",
             cancellable = true)
     public void getEmptySlot(CallbackInfoReturnable<Integer> info) {
-        if (!skipChecks) {
+        if (!inventoryProfilesNext$skipChecks) {
             var inventoryPlayer = ((Inventory)((Object)this)).player;
             if (inventoryPlayer.equals(Minecraft.getInstance().player)) {
                 if (Features.INSTANCE.getENABLE_LOCK_SLOTS().getValue() &&
@@ -62,7 +63,7 @@ public abstract class MixinPlayerInventory {
                         if (LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_EMPTY_HOTBAR_AS_SEMI_LOCKED().getValue()
                                 && Inventory.isHotbarSlot(i)
                                 && !LockedSlotKeeper.INSTANCE.isOnlyHotbarFree()
-                                && !LockedSlotKeeper.INSTANCE.isIgnored(addedStack)
+                                && !LockedSlotKeeper.INSTANCE.isIgnored(inventoryProfilesNext$addedStack)
                                 && LockedSlotKeeper.INSTANCE.isHotBarSlotEmpty(i)) {
                             continue;
                         }
@@ -83,12 +84,12 @@ public abstract class MixinPlayerInventory {
     @Inject(at = @At(value = "HEAD", target = "Lnet/minecraft/world/entity/player/Inventory;add(Lnet/minecraft/world/item/ItemStack;)Z"),
             method = "add(Lnet/minecraft/world/item/ItemStack;)Z")
     public void addStackPre(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        addedStack = stack;
+        inventoryProfilesNext$addedStack = stack;
     }
 
     @Inject(at = @At(value = "TAIL", target = "Lnet/minecraft/world/entity/player/Inventory;add(Lnet/minecraft/world/item/ItemStack;)Z"),
             method = "add(Lnet/minecraft/world/item/ItemStack;)Z")
     public void addStackPost(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        addedStack = null;
+        inventoryProfilesNext$addedStack = null;
     }
 }

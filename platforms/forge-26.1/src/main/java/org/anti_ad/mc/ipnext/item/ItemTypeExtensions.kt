@@ -24,20 +24,19 @@ package org.anti_ad.mc.ipnext.item
 
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.core.Holder
 import net.minecraft.network.chat.contents.TranslatableContents
 import net.minecraft.resources.ResourceKey
-import net.minecraft.world.effect.MobEffectCategory
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect
 import net.minecraft.world.item.consume_effects.ConsumeEffect
 import net.minecraft.world.item.enchantment.Enchantment
 import net.minecraft.world.item.enchantment.EnchantmentHelper
-import net.minecraftforge.common.extensions.IForgeFluid
-import net.minecraftforge.registries.ForgeRegistries
+import net.minecraft.world.level.block.ShulkerBoxBlock
 import org.anti_ad.mc.alias.component.ComponentChanges
 import org.anti_ad.mc.alias.component.MergedComponentMap
 import org.anti_ad.mc.alias.component.DataComponentTypes
 import org.anti_ad.mc.alias.component.type.ConsumableComponent
+import org.anti_ad.mc.alias.component.type.ContainerComponent
 import org.anti_ad.mc.alias.component.type.EquippableComponent
 import org.anti_ad.mc.alias.component.type.FoodComponent
 import org.anti_ad.mc.alias.entity.EquipmentSlot
@@ -53,7 +52,6 @@ import org.anti_ad.mc.alias.item.Items
 import org.anti_ad.mc.alias.item.PowderSnowBucketItem
 import org.anti_ad.mc.alias.nbt.NbtElement
 import org.anti_ad.mc.alias.nbt.NbtOps
-import org.anti_ad.mc.alias.potion.Potion
 import org.anti_ad.mc.alias.registry.Registries
 import org.anti_ad.mc.alias.registry.tag.EnchantmentTags
 import org.anti_ad.mc.alias.util.Identifier
@@ -64,7 +62,6 @@ import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.alias.glue.I18n
 
 import org.anti_ad.mc.ipnext.config.CreativeMenuSortOrder
-import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.config.SortSettings
 import org.anti_ad.mc.ipnext.ingame.`(getRawId)`
 import org.anti_ad.mc.ipnext.ingame.`(itemType)`
@@ -89,14 +86,28 @@ fun ItemType.toNamespacedString(): String { // like ItemType.toString() but with
     return itemId + (tag ?: "")
 }
 
-inline val ItemType.Companion.EMPTY
+val ItemType.Companion.EMPTY
     get() = ItemType(Items.AIR,
                      MergedComponentMap(Items.AIR.components()),
                      ComponentChanges.EMPTY,
                      { false })
 
-fun ItemType.isEmpty() : Boolean {
+fun ItemType.isEmpty(): Boolean {
     return item == Items.AIR
+    //air has components now so removed the check for it
+}
+
+val ItemType.isShulker: Boolean
+    get() = item is BlockItem && item.block is ShulkerBoxBlock
+
+val ItemType.isEmptyShulker: Boolean
+    get() {
+        val iss = isShulker
+        return iss && (tag?.get(DataComponentTypes.CONTAINER).isEmpty())
+    }
+
+private fun ContainerComponent?.isEmpty(): Boolean {
+    return this == null || this === ContainerComponent.EMPTY || this == ContainerComponent.EMPTY
 }
 
 inline val ItemType.maxCount: Int
@@ -108,13 +119,20 @@ inline val ItemType.searchItemStack: VanillaItemStack
     }
 
 inline val ItemType.vanillaStack: VanillaItemStack
-    get() = VanillaItemStack(this.item, 1, this@vanillaStack.tag ?: MergedComponentMap.EMPTY as MergedComponentMap)
+    get() {
+        val tag = this@vanillaStack.tag?.copy() ?: return VanillaItemStack(item, 1)
+        tag?.applyPatch(this@vanillaStack.changes)
+        val stack = VanillaItemStack(item.builtInRegistryHolder(), 1, tag)
+        return stack
+    }
 
 fun ItemType.vanillaStackWithCount(count: Int): VanillaItemStack =
-        VanillaItemStack(this.item, count, this@vanillaStackWithCount.tag ?: MergedComponentMap.EMPTY as MergedComponentMap)
+    VanillaItemStack(this.item.builtInRegistryHolder(),
+                     count,
+                     this@vanillaStackWithCount.tag as MergedComponentMap) // nbt was tag
 
 inline val ItemType.identifier: Identifier
-    get() = ForgeRegistries.ITEMS.getKey(item)!! // `(getIdentifier)`(item)
+    get() = Registries.ITEM.getKey(item)
 
 inline val ItemType.namespace: String
     get() = identifier.namespace
@@ -214,22 +232,24 @@ private class ItemGroupComparator: Comparator<ItemGroup> {
     }
 }
 
-private fun initGroupIndex(): Boolean {
-    val features = Vanilla.mc().player?.connection?.enabledFeatures()
-    val lookup = Vanilla.mc().player?.level()?.registryAccess() //getRegistryManager()
-    val opTabEnabled = Vanilla.mc().options.operatorItemsTab().get() && Vanilla.playerNullable()?.canUseGameMasterBlocks() ?: false
-    return if (features != null && lookup != null) {
-        ItemGroups.tryRebuildTabContents(features, opTabEnabled, lookup);
-        true
-    } else {
-        false
+private fun initGroupIndex() {
+    val player = Vanilla.playerNullable()
+    val features = player?.connection?.enabledFeatures()
+    val lookup = player?.level()?.registryAccess() //getRegistryManager()
+    val opTabEnabled = Vanilla.mc().options.operatorItemsTab().get() && player?.canUseGameMasterBlocks() ?: false
+    if (features != null && lookup != null) {
+        ItemGroups.tryRebuildTabContents(features, opTabEnabled, lookup).ifTrue {
+            val sm = player.connection.searchTrees()
+            val list = ItemGroups.searchTab().searchTabDisplayItems.toList()
+            sm.updateCreativeTooltips(lookup, list)
+            sm.updateCreativeTags(list)
+        }
     }
 }
 
 val ItemType.searchTabIndex: Int
     get() {
         initGroupIndex()
-
         val index = ItemGroups.searchTab().searchTabDisplayItems.indexOfFirst { it ->
             it != null && it.`(itemType)`.item == this.item
         }
@@ -264,12 +284,6 @@ val ItemType.groupIndex: Int
         return result
     }
 
-/*
-inline val ItemType.`(group)`: ItemGroup?
-    get() = item.itemCategory
-*/
-
-@Suppress("DEPRECATION")
 inline val ItemType.`(foodComponent)`: FoodComponent
     get() = item.components().get(DataComponentTypes.FOOD) ?: error("this shouldn't happen")
 
@@ -305,13 +319,12 @@ inline val ConsumableComponent.`(isHarmful)`: Boolean
 inline val FoodComponent.`(saturationModifier)`
     get() = this.saturation
 
-
 val COMPONENTS_CHANGES_CODEC: Codec<VanillaItemStack> = Codec.lazyInitialized {
     RecordCodecBuilder.create { instance ->
         instance.group(ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter {
-                stack -> stack?.componentsPatch
+                stack -> @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") stack?.componentsPatch
         }).apply(instance) { changes: ComponentChanges ->
-            VanillaItemStack(ForgeRegistries.ITEMS.getHolder(Items.AIR).get(), 0, changes)
+            VanillaItemStack( Registries.ITEM.get(Registries.ITEM.getKey(Items.AIR)).get(), 0, changes)
         }
     }
 }
@@ -339,7 +352,8 @@ inline val ItemType.`(componentsToNbt)`: NbtElement?
 inline val ItemType.rawId: Int
     get() = Registries.ITEM.`(getRawId)`(item)
 inline val ItemType.damage: Int
-    get() = vanillaStack.damageValue //damage // .damageValue
+    get() = vanillaStack.damageValue
+
 inline val ItemType.`(enchantmentsScore)`: Double
     //  get() = EnchantmentHelper.get(vanillaStack).toList().fold(0.0) { acc, (enchantment, level) ->
     get() = EnchantmentHelper.getEnchantmentsForCrafting(vanillaStack).entrySet().fold(0.0) { acc, (enchantment, level) ->
@@ -352,11 +366,11 @@ inline val ItemType.`(enchantments)`: MutableMap<ResourceKey<Enchantment>, Int>
     }
 
 inline val ItemType.isDamageable: Boolean
-    get() = vanillaStack.isDamageableItem //isDamageable  // .isDamageableItem
+    get() = vanillaStack.isDamageableItem
 inline val ItemType.maxDamage: Int
     get() = vanillaStack.maxDamage
 inline val ItemType.durability: Int
-    get() = maxDamage - damage
+    get() = if (isDamageableFn())  maxDamage - damage else -1
 
 inline val ItemType.isBucket: Boolean
     get() = item is BucketItem || item is PowderSnowBucketItem
@@ -373,9 +387,9 @@ fun ItemType.isEmptyComparedTo(other: ItemType): Boolean {
     val otherItem = other.item
     Log.trace("isEmpty item: ${item.javaClass}")
     Log.trace("isEmpty otherItem: ${item.javaClass}")
-    return if (item is PowderSnowBucketItem && otherItem is BucketItem && otherItem.fluid == Fluids.EMPTY) {
+    return if (item is PowderSnowBucketItem && otherItem is BucketItem && otherItem.content == Fluids.EMPTY) {
         true
-    } else if (otherItem == Items.BUCKET && item is BucketItem && item.fluid != Fluids.EMPTY) {
+    } else if (otherItem == Items.BUCKET && item is BucketItem && item.content != Fluids.EMPTY) {
         true
     } else item is EntityBucketItem && otherItem is BucketItem && otherItem !is EntityBucketItem
     //item is MilkBucketItem || item is IMixinEntityBucketItem || (item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty())
@@ -395,7 +409,9 @@ inline val ItemType.isHoneyBottle: Boolean
     get() = item == Items.HONEY_BOTTLE
 
 inline val ItemType.isStew: Boolean
-    get() = this.`(isFood)` && vanillaStack.components[DataComponentTypes.SUSPICIOUS_STEW_EFFECTS] != null
+    get() = `(isFood)`
+            && (vanillaStack.components[DataComponentTypes.USE_REMAINDER]?.convertInto?.item == Items.BOWL && vanillaStack.components[DataComponentTypes.USE_REMAINDER]?.convertInto?.count == 1)
+
 
 //region ItemType Potion Relative
 
@@ -419,7 +435,7 @@ inline val ItemType.comparablePotionEffects: List<PotionEffect>
 
 @Suppress("ObjectPropertyName")
 inline val StatusEffectInstance.`(asComparable)`: PotionEffect
-    get() = PotionEffect(ForgeRegistries.MOB_EFFECTS.getKey(this.effect.value()).toString(),
+    get() = PotionEffect(Registries.MOB_EFFECT.getKey(this.effect.value()).toString(),
                          this.amplifier,
                          this.duration)
 

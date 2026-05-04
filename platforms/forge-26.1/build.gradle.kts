@@ -63,7 +63,9 @@ dependencies {
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-core:[1.7.0,2)")
 */
 
+/*
     compileOnly(fg.deobf("curse.maven:easy-villagers-400514:7457884"))
+*/
 
 }
 

@@ -82,12 +82,12 @@ public abstract class MixinMinecraftClient {
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "pickBlock()V")
+    @Inject(at = @At("HEAD"), method = "pickBlockOrEntity()V")
     private void doItemPickPre(CallbackInfo ci) {
         LockedSlotKeeper.INSTANCE.setPickingItem(true);
     }
 
-    @Inject(at = @At("TAIL"), method = "pickBlock()V")
+    @Inject(at = @At("TAIL"), method = "pickBlockOrEntity()V")
     private void doItemPickPost(CallbackInfo ci) {
         LockedSlotKeeper.INSTANCE.setPickingItem(false);
     }

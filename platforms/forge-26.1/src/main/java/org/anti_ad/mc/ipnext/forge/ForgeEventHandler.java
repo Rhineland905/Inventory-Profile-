@@ -23,6 +23,7 @@ package org.anti_ad.mc.ipnext.forge;
 import com.mojang.blaze3d.platform.InputConstants;
 import kotlin.Unit;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -65,11 +66,17 @@ public class ForgeEventHandler {
         }
     }
 
+    private LevelAccessor prevLevel = null;
+
     @SubscribeEvent
     public void joinWorld(LevelEvent.Load event) {
         if (VanillaUtil.INSTANCE.isOnClientThread()) {
-            ClientEventHandler.INSTANCE.onJoinGame();
-            ClientEventHandler.INSTANCE.onJoinWorld();
+            var z = event.getLevel();
+            if (z != prevLevel) {
+                prevLevel = z;
+                ClientEventHandler.INSTANCE.onJoinGame();
+                ClientEventHandler.INSTANCE.onJoinWorld();
+            }
         }
     }
 

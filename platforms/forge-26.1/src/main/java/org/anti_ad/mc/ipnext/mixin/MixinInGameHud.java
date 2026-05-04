@@ -22,7 +22,7 @@ package org.anti_ad.mc.ipnext.mixin;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.anti_ad.mc.common.gui.NativeContext;
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler;
@@ -36,22 +36,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinInGameHud {
 
     @Inject(at = @At("HEAD"),
-            method = "renderItemHotbar")
-    protected void preRenderHotbar(GuiGraphics drawContext,
-                                   DeltaTracker tickCounter,
+            method = "extractItemHotbar")
+    protected void preRenderHotbar(GuiGraphicsExtractor graphics,
+                                   DeltaTracker deltaTracker,
                                    CallbackInfo ci) {
-        var context = new NativeContext(drawContext, RenderPipelines.GUI_TEXTURED);
+        var context = new NativeContext(graphics, RenderPipelines.GUI_TEXTURED);
         LockSlotsHandler.INSTANCE.preRenderHud(context);
         AutoRefillHandler.INSTANCE.preRenderHud(context);
     }
 
 
     @Inject(at = @At("TAIL"),
-            method = "renderItemHotbar")
-    protected void postRenderHotbar(GuiGraphics drawContext,
-                                    DeltaTracker tickCounter,
+            method = "extractItemHotbar")
+    protected void postRenderHotbar(GuiGraphicsExtractor graphics,
+                                    DeltaTracker deltaTracker,
                                     CallbackInfo ci) {
-        var context = new NativeContext(drawContext, RenderPipelines.GUI_TEXTURED);
+        var context = new NativeContext(graphics, RenderPipelines.GUI_TEXTURED);
         LockSlotsHandler.INSTANCE.postRenderHud(context);
         AutoRefillHandler.INSTANCE.postRenderHud(context);
     }

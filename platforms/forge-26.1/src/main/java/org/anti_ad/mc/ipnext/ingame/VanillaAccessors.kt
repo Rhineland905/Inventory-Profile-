@@ -78,17 +78,17 @@ inline val VanillaItemStack.`(mutableItemStack)`: MutableItemStack
                                                                         count)
 
 inline val Container.`(slots)`: List<Slot>
-    get() = slots //inventorySlots
+    get() = slots
 
 inline val Container.`(syncId)`: Int
     get() = containerId
 
 inline val Slot.`(id)`: Int
-    get() = index //slotNumber
+    get() = index
 inline val Slot.`(invSlot)`: Int
     get() = slotIndex // forge
 inline val Slot.`(itemStack)`: ItemStack
-    get() = this.item.`(itemStack)` // stack
+    get() = this.item.`(itemStack)`
 inline val Slot.`(vanillaStack)`: VanillaItemStack
     get() = this.item // stack
 
@@ -117,12 +117,12 @@ inline val Screen.`(focusedSlot)`: Slot?
     }
 
 inline val ContainerScreen<*>.`(rawFocusedSlot)`: Slot?
-    get() = slotUnderMouse // forge
+    get() = hoveredSlot // forge
 inline val ContainerScreen<*>.`(containerBounds)`: Rectangle
-    get() = Rectangle(guiLeft,
-                      guiTop,
-                      xSize,
-                      ySize)
+    get() = Rectangle(leftPos,
+                      topPos,
+                      imageWidth,
+                      imageHeight)
 inline val ContainerScreen<*>.`(container)`: Container
     get() = this.menu //container //in official mappings this is "menu"
 
@@ -193,7 +193,7 @@ inline val Window.`(scaledHeight)`: Int
 
 @Suppress("NOTHING_TO_INLINE", "HasPlatformType", "FunctionName")
 inline fun ClientPlayerInteractionManager.`(clickSlot)`(i: Int, j: Int, k: Int, slotActionType: SlotActionType, playerEntity: PlayerEntity) =
-        this.handleInventoryMouseClick(i, j, k, slotActionType, playerEntity)
+        this.handleContainerInput(i, j, k, slotActionType, playerEntity)
 
 @Suppress("NOTHING_TO_INLINE", "HasPlatformType", "FunctionName")
 inline fun PlayerContainer.`(onSlotClick)`(slotIndex: Int, button: Int, actionType: SlotActionType, player: PlayerEntity) =

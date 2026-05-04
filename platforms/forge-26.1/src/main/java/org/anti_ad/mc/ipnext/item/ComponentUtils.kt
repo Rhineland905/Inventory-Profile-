@@ -20,6 +20,9 @@
 package org.anti_ad.mc.ipnext.item
 
 import com.mojang.serialization.Codec
+import net.minecraft.core.Holder
+import net.minecraft.core.component.DataComponentType
+import net.minecraft.world.item.component.TypedEntityData
 import org.anti_ad.mc.alias.component.ComponentChanges
 import org.anti_ad.mc.alias.component.ComponentType
 import org.anti_ad.mc.alias.component.DataComponentTypes
@@ -88,13 +91,22 @@ object ComponentUtils {
         0
     }
 
+    private val typedEntityDataComparator: Comparator<TypedEntityData<*>> = Comparator { a: TypedEntityData<*>, b: TypedEntityData<*> ->
+        if (a.type().javaClass === b.type().javaClass) {
+            a.copyTagWithoutId().compareTo(b.copyTagWithoutId())
+        } else {
+            0
+        }
+    }.apply {
+        registry[DataComponentTypes.BLOCK_ENTITY_DATA.toString()] = this as Comparator<Any?>
+        registry[DataComponentTypes.ENTITY_DATA.toString()] = this as Comparator<Any?>
+    }
+
     private val nbtComparator: Comparator<NbtComponent?> = nullsLast { a: NbtComponent, b: NbtComponent ->
         a.copyTag().compareTo(b.copyTag())
     }.apply {
-        registry[DataComponentTypes.BLOCK_ENTITY_DATA.toString()] = this as Comparator<Any?>
         registry[DataComponentTypes.CUSTOM_DATA.toString()] = this as Comparator<Any?>
         registry[DataComponentTypes.BUCKET_ENTITY_DATA.toString()] = this as Comparator<Any?>
-        registry[DataComponentTypes.ENTITY_DATA.toString()] = this as Comparator<Any?>
     }
 
     private val textComparator: Comparator<Text?> = nullsLast( compareBy<Text> { it.contents.toString() }
@@ -142,8 +154,8 @@ object ComponentUtils {
     private val chargedProjectilesComponentComparator = nullsLast(
             compareBy<ChargedProjectilesComponent> { it.items.size.inv() }.thenComparator { o1, o2 ->
 
-                val l1: List<ItemType> = o1.items.map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
-                val l2: List<ItemType> = o2.items.map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
+                val l1: List<ItemType> = o1.itemCopies().map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
+                val l2: List<ItemType> = o2.itemCopies().map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
                 l1.forEachIndexed { index, itemType ->
                     val v = itemTypeComparator.compare(itemType, l2[index])
                     if (v != 0) return@thenComparator v
@@ -257,4 +269,8 @@ object ComponentUtils {
     }
 
     fun ComponentChanges.`(withRemovedIf)`(predicate: Predicate<ComponentType<*>>): ComponentChanges = this.forget(predicate)
+
+    fun ComponentChanges.get(prototype: DataComponentType<*>): Optional<*>? {
+        return this.map[prototype]
+    }
 }

@@ -18,6 +18,7 @@
  */
 package org.anti_ad.mc.ipnext.forge
 
+import net.minecraftforge.fml.ModList
 import net.minecraftforge.fml.loading.FMLLoader
 import org.anti_ad.mc.ipnext.gen.ModInfo
 import org.apache.logging.log4j.LogManager
@@ -45,7 +46,7 @@ class IPNMixinPlugin: IMixinConfigPlugin {
 
             logger.warn("${ModInfo.MOD_NAME}: Doing our own dependency resolving! Because Forge is being Forge....: https://github.com/MinecraftForge/MinecraftForge/issues/9088")
 
-            val modFile = FMLLoader.getLoadingModList().getModFileById(ModInfo.MOD_ID)
+            val modFile = ModList.getModFileById(ModInfo.MOD_ID)
 
             if (modFile != null) {
                 modFile.mods.find {
@@ -53,7 +54,7 @@ class IPNMixinPlugin: IMixinConfigPlugin {
                 }?.dependencies?.forEach {
                     //logger.error("\tFound dependencies: ${it.modId}, mandatory: ${it.isMandatory}")
                     if (it.isMandatory) {
-                        val depFile = FMLLoader.getLoadingModList().getModFileById(it.modId)
+                        val depFile = ModList.getModFileById(it.modId)
                         //logger.error("Found depFile: ${depFile.file.fileName}")
                         shouldLoad = depFile != null
                         if (!shouldLoad) {

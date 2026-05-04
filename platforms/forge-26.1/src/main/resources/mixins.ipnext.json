@@ -19,7 +19,6 @@
         "MixinPlayerInventory",
         "MixinScreenHandler",
         "MixinServerBoundInteractPacket",
-        "MixinTraderTileEntityBase",
         "MixinClientPacketListener"
     ],
     "injectors":          {

@@ -23,7 +23,7 @@ package org.anti_ad.mc.ipnext.mixin;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import org.anti_ad.mc.ipnext.event.CuttersDispatcher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,17 +34,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMultiPlayerGameMode {
 
 
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleInventoryMouseClick(IIILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V", cancellable = true)
-    public void clickSlotPre(int syncId, int slotId, int clickData, ClickType actionType, Player player, CallbackInfo ci) {
-        if (slotId == 1 && (CuttersDispatcher.INSTANCE.isAnyStillCrafting()
+    @Inject(at = @At("HEAD"), method = "handleContainerInput(IIILnet/minecraft/world/inventory/ContainerInput;Lnet/minecraft/world/entity/player/Player;)V", cancellable = true)
+    public void clickSlotPre(int containerId, int slotNum, int buttonNum, ContainerInput containerInput, Player player, CallbackInfo ci) {
+        if (slotNum == 1 && (CuttersDispatcher.INSTANCE.isAnyStillCrafting()
                 || CuttersDispatcher.INSTANCE.isAnyRefillTick())) {
             ci.cancel();
         }
     }
 
-    @Inject(at = @At("TAIL"), method = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleInventoryMouseClick(IIILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V")
-    public void clickSlot(int syncId, int slotId, int clickData, ClickType actionType, Player player, CallbackInfo ci) {
-        if (slotId == 1 && CuttersDispatcher.INSTANCE.isAnyOldScreen()) {
+    @Inject(at = @At("TAIL"), method = "handleContainerInput(IIILnet/minecraft/world/inventory/ContainerInput;Lnet/minecraft/world/entity/player/Player;)V")
+    public void clickSlot(int containerId, int slotNum, int buttonNum, ContainerInput containerInput, Player player, CallbackInfo ci) {
+        if (slotNum == 1 && CuttersDispatcher.INSTANCE.isAnyOldScreen()) {
             CuttersDispatcher.INSTANCE.onCrafted();
         }
     }

@@ -19,11 +19,11 @@
 
 package org.anti_ad.mc.ipnext.compat.integrations
 
-import org.anti_ad.mc.common.extensions.trySwallow
+import net.minecraftforge.fml.ModList
 
 object Integrations {
 
-    val isEasyShulkerBoxesLoaded = false
+    val isEasyShulkerBoxesLoaded = ModList.getModFileById("easyshulkerboxes") != null
 
     val carpetEmptyShulkersStackSize = 1
 
