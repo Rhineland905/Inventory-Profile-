@@ -154,8 +154,8 @@ object ComponentUtils {
     private val chargedProjectilesComponentComparator = nullsLast(
             compareBy<ChargedProjectilesComponent> { it.items.size.inv() }.thenComparator { o1, o2 ->
 
-                val l1: List<ItemType> = o1.items.map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
-                val l2: List<ItemType> = o2.items.map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
+                val l1: List<ItemType> = o1.itemCopies().map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
+                val l2: List<ItemType> = o2.itemCopies().map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
                 l1.forEachIndexed { index, itemType ->
                     val v = itemTypeComparator.compare(itemType, l2[index])
                     if (v != 0) return@thenComparator v
@@ -269,4 +269,8 @@ object ComponentUtils {
     }
 
     fun ComponentChanges.`(withRemovedIf)`(predicate: Predicate<ComponentType<*>>): ComponentChanges = this.forget(predicate)
+
+    fun ComponentChanges.get(prototype: DataComponentType<*>): Optional<*>? {
+        return this.map[prototype]
+    }
 }

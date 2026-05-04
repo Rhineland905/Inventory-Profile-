@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+/*
 package org.anti_ad.mc.ipnext.mixin;
 
 import de.maxhenkel.easyvillagers.blocks.tileentity.TraderTileentityBase;
@@ -30,11 +31,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 class MixinTraderTileEntityBase {
 
 
-    @Inject(at = @At("HEAD"), method = "Lde/maxhenkel/easyvillagers/blocks/tileentity/TraderTileentityBase;openTradingGUI(" +
-            "Lnet/minecraft/world/entity/player/Player;)Z", remap = false)
+    @Inject(at = @At("HEAD"), method = "openTradingGUI(Lnet/minecraft/world/entity/player/Player;)Z", remap = false)
     public void openTradingGUI(Player playerEntity, CallbackInfoReturnable<Boolean> cir) {
         TraderTileentityBase self = (TraderTileentityBase)((Object)this);
         VillagerTradeManager.INSTANCE.setCurrentVillager(self.getVillagerEntity());
     }
 
 }
+*/

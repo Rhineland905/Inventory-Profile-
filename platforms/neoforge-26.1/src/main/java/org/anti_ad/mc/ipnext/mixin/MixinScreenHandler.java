@@ -23,7 +23,7 @@ package org.anti_ad.mc.ipnext.mixin;
 
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import org.anti_ad.mc.ipnext.config.GuiSettings;
 import org.anti_ad.mc.ipnext.event.ContinuousCraftingHandler;
 import org.anti_ad.mc.ipnext.event.LockSlotsHandler;
@@ -38,20 +38,19 @@ public class MixinScreenHandler {
 
 
 
-    @Inject(at = @At(value = "HEAD",
-            target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleInventoryMouseClick(IIILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V"),
-            method = "handleInventoryMouseClick",
+    @Inject(at = @At(value = "HEAD"),
+            method = "handleContainerInput",
             cancellable = true)
-    public void internalOnSlotClickBegin(int windowId,
-                                         int slotIndex,
-                                         int button,
-                                         ClickType actionType,
+    public void internalOnSlotClickBegin(int containerId,
+                                         int slotNum,
+                                         int buttonNum,
+                                         ContainerInput containerInput,
                                          Player player,
                                          CallbackInfo cir) {
-        boolean move = actionType == ClickType.QUICK_MOVE;
-        boolean thr = actionType == ClickType.THROW;
+        boolean move = containerInput == ContainerInput.QUICK_MOVE;
+        boolean thr = containerInput == ContainerInput.THROW;
         if(!LockedSlotKeeper.INSTANCE.getProcessingLockedPickups() && (move || thr)) {
-            if (!LockSlotsHandler.INSTANCE.isQMoveActionAllowed(slotIndex)) {
+            if (!LockSlotsHandler.INSTANCE.isQMoveActionAllowed(slotNum)) {
                 cir.cancel();
             }
         }
@@ -60,13 +59,12 @@ public class MixinScreenHandler {
         }
     }
 
-    @Inject(at = @At(value = "TAIL",
-            target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleInventoryMouseClick(IIILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V"),
-            method = "handleInventoryMouseClick")
-    public void postInternalOnSlotClickBegin(int windowId,
-                                             int slotIndex,
-                                             int button,
-                                             ClickType actionType,
+    @Inject(at = @At(value = "TAIL"),
+            method = "handleContainerInput")
+    public void postInternalOnSlotClickBegin(int containerId,
+                                             int slotNum,
+                                             int buttonNum,
+                                             ContainerInput containerInput,
                                              Player player,
                                              CallbackInfo cir) {
         if (GuiSettings.INSTANCE.getCONTINUOUS_CRAFTING_SAVED_VALUE().getValue()) {

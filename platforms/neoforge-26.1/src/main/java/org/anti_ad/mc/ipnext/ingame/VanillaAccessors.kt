@@ -117,12 +117,12 @@ inline val Screen.`(focusedSlot)`: Slot?
     }
 
 inline val ContainerScreen<*>.`(rawFocusedSlot)`: Slot?
-    get() = slotUnderMouse // forge
+    get() = hoveredSlot // forge
 inline val ContainerScreen<*>.`(containerBounds)`: Rectangle
-    get() = Rectangle(guiLeft,
-                      guiTop,
-                      xSize,
-                      ySize)
+    get() = Rectangle(leftPos,
+                      topPos,
+                      imageWidth,
+                      imageHeight)
 inline val ContainerScreen<*>.`(container)`: Container
     get() = this.menu //container //in official mappings this is "menu"
 
@@ -193,7 +193,7 @@ inline val Window.`(scaledHeight)`: Int
 
 @Suppress("NOTHING_TO_INLINE", "HasPlatformType", "FunctionName")
 inline fun ClientPlayerInteractionManager.`(clickSlot)`(i: Int, j: Int, k: Int, slotActionType: SlotActionType, playerEntity: PlayerEntity) =
-        this.handleInventoryMouseClick(i, j, k, slotActionType, playerEntity)
+        this.handleContainerInput(i, j, k, slotActionType, playerEntity)
 
 @Suppress("NOTHING_TO_INLINE", "HasPlatformType", "FunctionName")
 inline fun PlayerContainer.`(onSlotClick)`(slotIndex: Int, button: Int, actionType: SlotActionType, player: PlayerEntity) =

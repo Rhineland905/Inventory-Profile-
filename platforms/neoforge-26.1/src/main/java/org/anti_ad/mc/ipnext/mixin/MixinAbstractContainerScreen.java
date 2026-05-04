@@ -22,7 +22,7 @@ package org.anti_ad.mc.ipnext.mixin;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.anti_ad.mc.ipnext.Log;
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings;
@@ -35,26 +35,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractContainerScreen.class)
 public class MixinAbstractContainerScreen<T extends AbstractContainerMenu> {
 
-    @Inject(at = @At(value = "HEAD",
-            target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V"),
-            method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V",
+    @Inject(at = @At(value = "HEAD"),
+            method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V",
             cancellable = true)
-    protected void slotClicked(Slot slot, int slotId, int p_97780_, ClickType p_97781_, CallbackInfo ci) {
+    protected void slotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
         Log.INSTANCE.trace("onMouseClick for " + slotId);
         LockSlotsHandler.INSTANCE.setLastMouseClickSlot(slot);
         if (slot != null && LockedSlotsSettings.INSTANCE.getLOCK_SLOTS_DISABLE_USER_INTERACTION().getValue()) {
             if (LockSlotsHandler.INSTANCE.isMappedSlotLocked(slot) ||
-                    (p_97781_ == ClickType.SWAP && LockSlotsHandler.INSTANCE.isSlotLocked(p_97780_))) {
+                    (containerInput == ContainerInput.SWAP && LockSlotsHandler.INSTANCE.isSlotLocked(slotId))) {
                 Log.INSTANCE.trace("cancel for " + slotId);
                 ci.cancel();
             }
         }
     }
 
-    @Inject(at = @At(value = "TAIL",
-            target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V"),
-            method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V")
-    protected void afterSlotClicked(Slot slot, int slotId, int p_97780_, ClickType p_97781_, CallbackInfo ci) {
+    @Inject(at = @At(value = "TAIL"),
+            method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V")
+    protected void afterSlotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
         LockSlotsHandler.INSTANCE.setLastMouseClickSlot(null);
     }
 }

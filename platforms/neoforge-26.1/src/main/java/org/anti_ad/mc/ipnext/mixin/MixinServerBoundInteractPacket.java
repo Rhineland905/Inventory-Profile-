@@ -19,30 +19,23 @@
 
 package org.anti_ad.mc.ipnext.mixin;
 
-import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ServerboundInteractPacket.class)
+@Mixin(Player.class)
 public class MixinServerBoundInteractPacket {
 
-    @Shadow @Final private int entityId;
-
-    @Inject(method = "createInteractionPacket(Lnet/minecraft/world/entity/Entity;ZLnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/network/protocol/game/ServerboundInteractPacket;",
+    @Inject(method = "interactOn(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/InteractionResult;",
             at = @At("HEAD"))
-    private static void createInteractionPacket(Entity entity,
-                                                boolean p_179614_,
-                                                InteractionHand p_179615_,
-                                                Vec3 p_179616_,
-                                                CallbackInfoReturnable<ServerboundInteractPacket> cir) {
+    private static void interactAt(Entity entity, InteractionHand hand, Vec3 location, CallbackInfoReturnable<InteractionResult> cir) {
         VillagerTradeManager.INSTANCE.setCurrentVillager(entity);
     }
 }
