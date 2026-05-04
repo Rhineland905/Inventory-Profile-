@@ -37,14 +37,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MultiPlayerGameMode.class)
 public class MixinClientPlayerInteractionManager {
 
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleContainerInput(IIILnet/minecraft/world/inventory/ContainerInput;Lnet/minecraft/world/entity/player/Player;)V", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "handleContainerInput(IIILnet/minecraft/world/inventory/ContainerInput;Lnet/minecraft/world/entity/player/Player;)V", cancellable = true)
     public void clickSlotPre(int containerId, int slotNum, int buttonNum, ContainerInput containerInput, Player player, CallbackInfo ci) {
         if (slotNum == 1 && (CuttersDispatcher.INSTANCE.isAnyRefillTick() || CuttersDispatcher.INSTANCE.isAnyStillCrafting())) {
             ci.cancel();
         }
     }
 
-    @Inject(at = @At("TAIL"), method = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleContainerInput(IIILnet/minecraft/world/inventory/ContainerInput;Lnet/minecraft/world/entity/player/Player;)V")
+    @Inject(at = @At("TAIL"), method = "handleContainerInput(IIILnet/minecraft/world/inventory/ContainerInput;Lnet/minecraft/world/entity/player/Player;)V")
     public void clickSlot(int containerId, int slotNum, int buttonNum, ContainerInput containerInput, Player player, CallbackInfo ci) {
         if (slotNum == 0) {
             ClientEventHandler.INSTANCE.onCrafted();

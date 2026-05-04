@@ -24,13 +24,8 @@ package org.anti_ad.mc.ipnext.item
 
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.core.Holder
-import net.minecraft.core.RegistryAccess
-import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.BuiltInRegistries.ITEM
 import net.minecraft.network.chat.contents.TranslatableContents
 import net.minecraft.resources.ResourceKey
-import net.minecraft.world.effect.MobEffectCategory
 import net.minecraft.world.item.component.Consumable
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect
 import net.minecraft.world.item.consume_effects.ConsumeEffect
@@ -57,32 +52,11 @@ import org.anti_ad.mc.common.vanilla.alias.glue.I18n
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.compat.integrations.Integrations
 import org.anti_ad.mc.ipnext.config.CreativeMenuSortOrder
-import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.config.SortSettings
 import org.anti_ad.mc.ipnext.ingame.*
 import org.anti_ad.mc.ipnext.mixin.*
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemGroup
 import java.util.*
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.MutableMap
-import kotlin.collections.associateTo
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.filter
-import kotlin.collections.fold
-import kotlin.collections.forEach
-import kotlin.collections.forEachIndexed
-import kotlin.collections.indexOfFirst
-import kotlin.collections.isNotEmpty
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.sortedWith
-import kotlin.collections.toList
-import kotlin.text.split
-import kotlin.text.trim
 import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
 
 // ============
@@ -97,7 +71,6 @@ fun ItemType.fullItemInfoAsJson(): String {
     return "$res\n}"
 }
 
-
 fun ItemType.toNamespacedString(): String { // like ItemType.toString() but with namespace
     return itemId + (tag ?: "")
 }
@@ -109,7 +82,7 @@ val ItemType.Companion.EMPTY
                      { false })
 
 fun ItemType.isEmpty(): Boolean {
-    return (item == Items.AIR)
+    return item == Items.AIR
     //air has components now so removed the check for it
 }
 
@@ -186,8 +159,6 @@ inline val ItemType.customOrTranslatedName: String
 //endregion
 
 //region ItemType Number Relative
-
-
 
 inline val ItemGroup.`(priorityIndex)`: Int
     get() {
@@ -383,7 +354,6 @@ inline val ItemType.`(enchantmentsScore)`: Double
         acc + if (enchantment.`is`(EnchantmentTags.CURSE)) -0.001 else level.toDouble() / enchantment.value().maxLevel
     } // cursed enchantments +0 scores
 
-
 inline val ItemType.`(enchantments)`: MutableMap<ResourceKey<Enchantment>, Int>
     get() = EnchantmentHelper.getEnchantmentsForCrafting(vanillaStack).entrySet().associateTo (mutableMapOf()) {
         it.key.unwrapKey().get() to it.intValue
@@ -433,7 +403,6 @@ inline val ItemType.isStew: Boolean
     get() = `(isFood)`
             && (vanillaStack.components[DataComponentTypes.USE_REMAINDER]?.convertInto?.item == Items.BOWL && vanillaStack.components[DataComponentTypes.USE_REMAINDER]?.convertInto?.count == 1)
 
-//endregion
 
 //region ItemType Potion Relative
 
@@ -464,6 +433,7 @@ inline val StatusEffectInstance.`(asComparable)`: PotionEffect
 data class PotionEffect(val effect: String,
                         val amplifier: Int,
                         val duration: Int) : Comparable<PotionEffect> {
+
     override fun compareTo(other: PotionEffect): Int { // stronger first
         this.effect.compareTo(other.effect).let { if (it != 0) return it }
         other.amplifier.compareTo(this.amplifier).let { if (it != 0) return it }
