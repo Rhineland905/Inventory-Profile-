@@ -24,7 +24,8 @@
         "MixinVirtualMouseHandler",
         "IMixinBucketItem",
         "IMixinFluid",
-        "IMixinEntityBucketItem"
+        "IMixinEntityBucketItem",
+        "IMixinSlot"
     ],
     "injectors":          {
         "defaultRequire": 1

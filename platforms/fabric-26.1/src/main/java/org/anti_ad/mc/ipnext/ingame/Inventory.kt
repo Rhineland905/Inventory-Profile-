@@ -20,15 +20,15 @@
 
 package org.anti_ad.mc.ipnext.ingame
 
-import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.alias.client.gui.screen.Screen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
 import org.anti_ad.mc.alias.client.gui.screen.recipebook.`(searchField)`
 import org.anti_ad.mc.alias.client.gui.screen.recipebook.RecipeBookWidget
 import org.anti_ad.mc.alias.client.gui.widget.TextFieldWidget
-import org.anti_ad.mc.alias.inventory.PlayerInventory
+import org.anti_ad.mc.alias.entity.player.PlayerInventory
 import org.anti_ad.mc.alias.screen.slot.Slot
+import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.ipnext.item.EMPTY
 import org.anti_ad.mc.ipnext.item.ItemStack
 

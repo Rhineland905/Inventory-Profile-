@@ -28,9 +28,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AbstractContainerScreen.class)
 public interface IMixinContainerScreen {
 
-    @Accessor("hoveredSlot")
-    Slot getFocusedSlot();
-
     @Accessor("leftPos")
     int getContainerX();
 

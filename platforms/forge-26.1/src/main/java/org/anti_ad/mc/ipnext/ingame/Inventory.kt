@@ -30,20 +30,11 @@ import org.anti_ad.mc.alias.entity.player.PlayerInventory
 import org.anti_ad.mc.alias.screen.slot.Slot
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.ipnext.item.EMPTY
-
-
 import org.anti_ad.mc.ipnext.item.ItemStack
 
 // ============
 // vanillamapping code depends on mappings
 // ============
-
-private inline val vPlayerSlots
-    get() = Vanilla.playerContainer().`(slots)`
-
-//fun vCursorStack() = Vanilla.playerInventory().carried.`(itemStack)` //itemStack = carried
-@Suppress("UNNECESSARY_SAFE_CALL")
-fun vCursorStack() = Vanilla.playerInventory().player.containerMenu.carried?.`(itemStack)` ?: ItemStack.EMPTY
 
 fun vPlayerSlotOf(slot: Slot,
                   screen: Screen?): Slot { // creative slot to survival slot
@@ -84,4 +75,9 @@ fun isInputFieldActive(scr: ContainerScreen<*>): Boolean {
         || (it is TextFieldWidget && it.isFocused)
     } == true
 }
+
+private inline val vPlayerSlots
+    get() = Vanilla.playerContainer().`(slots)`
+
+fun vCursorStack() = Vanilla.playerInventory().player.containerMenu.carried?.`(itemStack)` ?: ItemStack.EMPTY
 

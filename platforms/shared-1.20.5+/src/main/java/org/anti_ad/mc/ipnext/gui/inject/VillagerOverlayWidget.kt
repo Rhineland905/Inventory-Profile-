@@ -34,8 +34,6 @@ import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.alias.glue.I18n
 import org.anti_ad.mc.common.vanilla.render.glue.rDrawOutline
 import org.anti_ad.mc.common.vanilla.render.opaque
-import org.anti_ad.mc.common.vanilla.render.rClearDepth
-import org.anti_ad.mc.common.vanilla.render.rStandardGlState
 import org.anti_ad.mc.ipn.api.IPNButton
 import org.anti_ad.mc.ipnext.config.Debugs
 import org.anti_ad.mc.ipnext.config.Features
@@ -73,8 +71,6 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
                                       partialTicks: Float) {
         if (!Features.VILLAGER_TRADING_ENABLE.booleanValue) return
         rehint()
-        rStandardGlState()
-        rClearDepth(context)
         overflow = Overflow.VISIBLE
         absoluteBounds = screen.`(containerBounds)`
         init()
@@ -93,7 +89,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
     override fun postForegroundRender(context: NativeContext,
                                       mouseX: Int,
                                       mouseY: Int,
-                                      lastFrameDuration: Float) {
+                                      partialTicks: Float) {
 
     }
 

@@ -30,8 +30,6 @@ import org.anti_ad.mc.alias.entity.player.PlayerInventory
 import org.anti_ad.mc.alias.screen.slot.Slot
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.ipnext.item.EMPTY
-
-
 import org.anti_ad.mc.ipnext.item.ItemStack
 
 // ============
@@ -41,8 +39,6 @@ import org.anti_ad.mc.ipnext.item.ItemStack
 private inline val vPlayerSlots
     get() = Vanilla.playerContainer().`(slots)`
 
-//fun vCursorStack() = Vanilla.playerInventory().carried.`(itemStack)` //itemStack = carried
-@Suppress("UNNECESSARY_SAFE_CALL")
 fun vCursorStack() = Vanilla.playerInventory().player.containerMenu.carried?.`(itemStack)` ?: ItemStack.EMPTY
 
 fun vPlayerSlotOf(slot: Slot,
