@@ -240,7 +240,7 @@ object HintsManagerNG {
 
     private fun getIgnoredClass(container: Class<*>): Class<*>? {
         var sup: Class<*> = container
-        while (sup != Object::class.java) {
+        while (sup != Any::class.java) {
             if (sup.isAnnotationPresent(IPNIgnore::class.java)) {
                 return sup
             }

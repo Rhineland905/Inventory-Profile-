@@ -119,8 +119,8 @@ enum class RequireNbt {
 
     fun match(itemType: ItemType): Boolean {
         return when (this) {
-            REQUIRED -> itemType.tag != null
-            NO_NBT -> itemType.tag == null
+            REQUIRED -> !itemType.tag.isEmpty
+            NO_NBT -> itemType.tag.isEmpty
             NOT_REQUIRED -> true
         }
     }

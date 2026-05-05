@@ -246,8 +246,9 @@ private fun initGroupIndex() {
 val ItemType.searchTabIndex: Int
     get() {
         initGroupIndex()
-        val index = ItemGroups.searchTab().searchTabDisplayItems.indexOfFirst { it ->
-            it != null && it.`(itemType)`.item == this.item
+        val index = ItemGroups.searchTab().searchTabDisplayItems.indexOfFirst { itemStack ->
+            @Suppress("SENSELESS_COMPARISON")
+            itemStack != null && itemStack.`(itemType)`.item == this.item
         }
         if (index == -1) {
             Log.warn("Item ${this.itemId} not present in the Creative Inventory Search Tab!")

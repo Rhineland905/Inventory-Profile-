@@ -396,9 +396,11 @@ class EnchantmentsOrder : NativeRule(), SpecificEnchantmentOrder {
 
         val tagA = a.tag
         val tagB = b.tag
+/*
         if (tagA == null || tagB == null) {
             return compareNulls(tagA, tagB)
         }
+*/
         val enchantsA = tagA.get(enchType)
         val enchantsB = tagB.get(enchType)
         val sEnchantsA = tagA.get(storedEnchType)
