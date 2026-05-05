@@ -21,7 +21,10 @@
         "MixinScreenHandler",
         "MixinServerBoundInteractPacket",
         "MixinClientPacketListener",
-        "MixinVirtualMouseHandler"
+        "MixinVirtualMouseHandler",
+        "IMixinBucketItem",
+        "IMixinFluid",
+        "IMixinEntityBucketItem"
     ],
     "injectors":          {
         "defaultRequire": 1

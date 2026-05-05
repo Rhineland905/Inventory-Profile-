@@ -65,7 +65,7 @@ import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
 
 fun ItemType.fullItemInfoAsJson(): String {
     var res = "{" + "\n\t\"id\" : \"" + this.itemId + "\",\n"
-    tag?.keySet()?.forEach {
+    tag.keySet().forEach {
         res += "\t{\n\t\t\"$it\" : ${tag.get(it)}\n},"
     }
     return "$res\n}"
@@ -116,8 +116,8 @@ inline val ItemType.searchItemStack: VanillaItemStack
 
 inline val ItemType.vanillaStack: VanillaItemStack
     get() {
-        val tag = this@vanillaStack.tag?.copy() ?: return VanillaItemStack(item, 1)
-        tag?.applyPatch(this@vanillaStack.changes)
+        val tag = this@vanillaStack.tag.copy()
+        tag.applyPatch(this@vanillaStack.changes)
         val stack = VanillaItemStack(item.builtInRegistryHolder(), 1, tag)
         return stack
     }
@@ -128,7 +128,7 @@ fun ItemType.vanillaStackWithCount(count: Int): VanillaItemStack =
                      this@vanillaStackWithCount.tag as MergedComponentMap) // nbt was tag
 
 inline val ItemType.identifier: Identifier
-    get() = Registries.ITEM.`(getIdentifier)`(item)
+    get() = Registries.ITEM.getKey(item)
 
 inline val ItemType.namespace: String
     get() = identifier.namespace
@@ -232,7 +232,7 @@ private fun initGroupIndex() {
     val player = Vanilla.playerNullable()
     val features = player?.connection?.enabledFeatures()
     val lookup = player?.level()?.registryAccess()
-    val opTabEnabled = Vanilla.mc().options.operatorItemsTab().get() && Vanilla.playerNullable()?.canUseGameMasterBlocks() ?: false
+    val opTabEnabled = Vanilla.mc().options.operatorItemsTab().get() && player?.canUseGameMasterBlocks() ?: false
     if (features != null && lookup != null) {
         ItemGroups.tryRebuildTabContents(features, opTabEnabled, lookup).ifTrue {
             val sm = player.connection.searchTrees()
@@ -318,7 +318,7 @@ inline val FoodComponent.`(saturationModifier)`
 val COMPONENTS_CHANGES_CODEC: Codec<VanillaItemStack> = Codec.lazyInitialized {
     RecordCodecBuilder.create { instance ->
         instance.group(ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter {
-            stack -> stack?.componentsPatch
+            stack -> @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") stack?.componentsPatch
         }).apply(instance) { changes: ComponentChanges? ->
             VanillaItemStack(Registries.ITEM.get(Registries.ITEM.getKey(Items.AIR)).get(), 0, changes ?: ComponentChanges.EMPTY)
         }
@@ -372,6 +372,11 @@ inline val ItemType.isBucket: Boolean
 inline val ItemType.isFullBucket: Boolean
     get() = item is IMixinEntityBucketItem || item is PowderSnowBucketItem || (item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty())
 
+inline val ItemType.isEmptyBucket: Boolean
+    get() {
+        return item !is IMixinEntityBucketItem && item is IMixinBucketItem && (item.fluid as IMixinFluid).callIsEmpty()
+    }
+
 fun ItemType.isEmptyComparedTo(other: ItemType): Boolean {
     val otherItem = other.item
     return  if (item is PowderSnowBucketItem && otherItem is IMixinBucketItem && (otherItem.fluid as IMixinFluid).callIsEmpty()) {
@@ -390,12 +395,6 @@ fun ItemType.isFullComparedTo(other: ItemType): Boolean {
 
 }
 
-
-inline val ItemType.isEmptyBucket: Boolean
-    get() {
-        return item !is IMixinEntityBucketItem && item is IMixinBucketItem && (item.fluid as IMixinFluid).callIsEmpty()
-    }
-
 inline val ItemType.isHoneyBottle: Boolean
     get() = item == Items.HONEY_BOTTLE
 
@@ -407,7 +406,7 @@ inline val ItemType.isStew: Boolean
 //region ItemType Potion Relative
 
 inline val ItemType.hasPotionName: Boolean
-    get() = tag.has(DataComponentTypes.POTION_CONTENTS)
+    get() = tag?.has(DataComponentTypes.POTION_CONTENTS) ?: false
 
 inline val ItemType.potionName: String
     get() = if (hasPotionName) tag.get(DataComponentTypes.POTION_CONTENTS)?.potion?.get()?.value()?.name() ?: "" else ""
@@ -426,7 +425,7 @@ inline val ItemType.comparablePotionEffects: List<PotionEffect>
 
 @Suppress("ObjectPropertyName")
 inline val StatusEffectInstance.`(asComparable)`: PotionEffect
-    get() = PotionEffect(Registries.MOB_EFFECT.getId(this.effect.value())!!.toString(),
+    get() = PotionEffect(Registries.MOB_EFFECT.getKey(this.effect.value()).toString(),
                          this.amplifier,
                          this.duration)
 
@@ -480,7 +479,6 @@ object ItemTypeExtensionsObject {
         }
         return newValue
     }
-
 }
 
 inline val ItemType.`(equipmentSlot)`: EquipmentSlot?
@@ -489,15 +487,14 @@ inline val ItemType.`(equipmentSlot)`: EquipmentSlot?
         return equipable?.slot()
     }
 
-
 val ItemType.`(isBundle)`: Boolean
-    get()  {
-        return tag?.get(DataComponentTypes.BUNDLE_CONTENTS) != null
+    get() {
+        return tag.get(DataComponentTypes.BUNDLE_CONTENTS) != null
     }
 
 val ItemType.`(isBundleAndHasItems)`: Boolean
     get() {
-        return tag?.get(DataComponentTypes.BUNDLE_CONTENTS)?.size()?.let { it: Int -> it > 0 } ?: false
+        return tag.get(DataComponentTypes.BUNDLE_CONTENTS)?.size()?.let { it: Int -> it > 0 } ?: false
     }
 
 //endregion

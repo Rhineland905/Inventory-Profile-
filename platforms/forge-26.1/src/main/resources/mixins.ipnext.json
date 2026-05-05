@@ -19,7 +19,10 @@
         "MixinPlayerInventory",
         "MixinScreenHandler",
         "MixinServerBoundInteractPacket",
-        "MixinClientPacketListener"
+        "MixinClientPacketListener",
+        "IMixinBucketItem",
+        "IMixinFluid",
+        "IMixinEntityBucketItem"
     ],
     "injectors":          {
         "defaultRequire": 1
