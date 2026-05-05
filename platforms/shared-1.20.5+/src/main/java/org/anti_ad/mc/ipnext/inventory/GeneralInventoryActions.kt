@@ -134,8 +134,11 @@ object GeneralInventoryActions {
         if (!types.containsAny(setOf(SORTABLE_STORAGE,
                                      NO_SORTING_STORAGE,
                                      CRAFTING))) return
-        val forceToPlayer = ModSettings.MOVE_ALL_AT_CURSOR.booleanValue &&
-                vFocusedSlot()?.let { it.`(inventoryOrNull)` == null || it.`(inventory)` !is PlayerInventory } ?: false // hover slot exist and not player
+        val forceToPlayer = ModSettings.MOVE_ALL_AT_CURSOR.booleanValue && vFocusedSlot()?.let {
+            it.`(inventoryOrNull)` == null || it.`(inventory)` !is PlayerInventory
+        } ?: false // hover slot exist and not player
+
+
         if (forceToPlayer) {
             doMoveMatch(true) // container to player // non player and player by PlayerInventory
         } else {

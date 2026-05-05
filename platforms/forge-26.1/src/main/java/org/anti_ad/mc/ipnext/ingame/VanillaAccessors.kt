@@ -80,8 +80,6 @@ inline val VanillaItemStack.`(mutableItemStack)`: MutableItemStack
 inline val Container.`(slots)`: List<Slot>
     get() = slots
 
-inline val Container.`(syncId)`: Int
-    get() = containerId
 
 inline val Slot.`(id)`: Int
     get() = index

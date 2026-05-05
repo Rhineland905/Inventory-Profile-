@@ -20,7 +20,6 @@
 package org.anti_ad.mc.ipnext.item
 
 import com.mojang.serialization.Codec
-import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.world.item.component.TypedEntityData
 import org.anti_ad.mc.alias.component.ComponentChanges
@@ -273,4 +272,5 @@ object ComponentUtils {
     fun ComponentChanges.get(prototype: DataComponentType<*>): Optional<*>? {
         return this.map[prototype]
     }
+
 }

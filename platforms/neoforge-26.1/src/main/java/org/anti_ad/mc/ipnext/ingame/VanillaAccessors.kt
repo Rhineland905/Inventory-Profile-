@@ -80,9 +80,6 @@ inline val VanillaItemStack.`(mutableItemStack)`: MutableItemStack
 inline val Container.`(slots)`: List<Slot>
     get() = slots
 
-inline val Container.`(syncId)`: Int
-    get() = containerId
-
 inline val Slot.`(id)`: Int
     get() = index
 inline val Slot.`(invSlot)`: Int
@@ -112,8 +109,7 @@ fun Slot.`(canInsert)`(itemStack: ItemStack): Boolean {
 
 inline val Screen.`(focusedSlot)`: Slot?
     get() = (this as? ContainerScreen<*>)?.`(rawFocusedSlot)`?.let {
-        vPlayerSlotOf(it,
-                      this)
+        vPlayerSlotOf(it,this)
     }
 
 inline val ContainerScreen<*>.`(rawFocusedSlot)`: Slot?

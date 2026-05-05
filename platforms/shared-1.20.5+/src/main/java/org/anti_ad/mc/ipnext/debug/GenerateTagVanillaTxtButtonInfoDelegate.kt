@@ -20,17 +20,17 @@
 
 package org.anti_ad.mc.ipnext.debug
 
+import net.minecraft.core.HolderSet
 import org.anti_ad.mc.alias.item.Item
+import org.anti_ad.mc.alias.registry.Registries
+import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.extensions.div
 import org.anti_ad.mc.common.gui.widgets.ConfigButtonClickHandler
 import org.anti_ad.mc.common.vanilla.Vanilla
-import org.anti_ad.mc.alias.registry.Registries
-import org.anti_ad.mc.alias.registry.entry.RegistryEntryListNamed
-import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.common.vanilla.VanillaUtil
-import org.anti_ad.mc.ipnext.ModInfo
+import org.anti_ad.mc.ipnext.gen.ModInfo
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.name
 
@@ -41,7 +41,7 @@ import kotlin.io.path.name
 object GenerateTagVanillaTxtButtonInfoDelegate : ConfigButtonClickHandler() {
     val fileDatapack = VanillaUtil.configDirectory(ModInfo.MOD_ID) / "tags.combined.txt"
 
-    private fun RegistryEntryListNamed<Item>.toMutableListOf(): MutableList<Identifier> {
+    private fun HolderSet.Named<Item>.toMutableListOf(): MutableList<Identifier> {
 
         val res = mutableListOf<Identifier>()
         this.forEach {
@@ -91,7 +91,6 @@ object GenerateTagVanillaTxtButtonInfoDelegate : ConfigButtonClickHandler() {
                     namedTag.forEach { item ->
                         val unwrapKey = item.unwrapKey()
                         if (unwrapKey.isPresent) {
-
                             Log.trace {
                                 "${unwrapKey.get().identifier()}"
                             }

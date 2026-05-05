@@ -29,4 +29,3 @@ interface SpecificItemSlotMonitor {
 
     fun <T: Any> Holder<T>.isIn(id: TagKey<T>): Boolean = `is`(id)
 }
-

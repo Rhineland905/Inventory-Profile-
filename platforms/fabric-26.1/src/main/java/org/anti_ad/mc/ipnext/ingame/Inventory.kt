@@ -65,26 +65,8 @@ fun vMainhandIndex() =
 
 fun isInputFieldActive(scr: ContainerScreen<*>): Boolean {
     return scr.children()?.any {
-        (it is RecipeBookWidget<*> && (it.`(searchField)`?.isFocused == true)) || (it is TextFieldWidget && it.isFocused)
+        (it is RecipeBookWidget<*> && (it.`(searchField)`?.isFocused == true))
+        || (it is TextFieldWidget && it.isFocused)
     } == true
 }
 
-
-//fun vMainHandItem(): ItemStack =
-//  // clientPlayerEntity.getMainHandStack()
-//  Vanilla.player().mainHandStack.`(itemStack)`
-//
-//fun vOffHandItem(): ItemStack =
-//  Vanilla.player().offHandStack.`(itemStack)`
-//
-//fun vHeadItem(): ItemStack =
-//  Vanilla.player().getEquippedStack(EquipmentSlot.HEAD).`(itemStack)`
-//
-//fun vChestItem(): ItemStack =
-//  Vanilla.player().getEquippedStack(EquipmentSlot.CHEST).`(itemStack)`
-//
-//fun vLegsItem(): ItemStack =
-//  Vanilla.player().getEquippedStack(EquipmentSlot.LEGS).`(itemStack)`
-//
-//fun vFeetItem(): ItemStack =
-//  Vanilla.player().getEquippedStack(EquipmentSlot.FEET).`(itemStack)`
