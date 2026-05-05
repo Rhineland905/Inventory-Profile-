@@ -62,7 +62,7 @@ import org.anti_ad.mc.ipnext.item.empty
 import org.anti_ad.mc.ipnext.item.vanillaStack
 import org.anti_ad.mc.ipnext.mixin.IMixinContainerScreen
 import org.anti_ad.mc.ipnext.mixin.IMixinSlot
-import org.anti_ad.mc.ipnext.specific.asString
+import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
 
@@ -196,6 +196,11 @@ val ResourceKey<*>.`(identigier)`: Identifier
 // ============
 // nbt Tag
 // ============
+
+val NbtElement.asString: String
+    get() = this.asString().getOrElse { this.toString() }
+
+
 inline val NbtElement.`(type)`: Int
     get() = id.toInt()
 inline val NbtElement.`(asString)`: String

@@ -114,7 +114,7 @@ public class ForgeEventHandler {
         context.setOverlay(true);
         var screen = e.getContainerScreen();
         var matrix = context.getNative().pose().pushMatrix();
-        var topLeft = new Rectangle(screen.getGuiLeft(), screen.getGuiTop(), screen.getXSize(), screen.getYSize()).getTopLeft();
+        var topLeft = new Rectangle(screen.getLeftPos(), screen.getTopPos(), screen.getImageWidth(), screen.getImageHeight()).getTopLeft();
         context.getNative().pose().translate(-topLeft.getX(), -topLeft.getY(), matrix);
         ContainerScreenEventHandler.INSTANCE.onForegroundRender(context, e.getMouseX(), e.getMouseY(), 0);
         context.getNative().pose().popMatrix();

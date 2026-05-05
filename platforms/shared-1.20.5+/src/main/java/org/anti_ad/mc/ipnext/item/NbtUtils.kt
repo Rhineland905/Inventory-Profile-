@@ -25,7 +25,6 @@ import org.anti_ad.mc.alias.command.argument.NbtPathArgumentType
 import org.anti_ad.mc.alias.command.argument.NbtPathArgumentTypeNbtPath
 import org.anti_ad.mc.alias.component.ComponentType
 import org.anti_ad.mc.alias.item.Item
-import org.anti_ad.mc.alias.item.Items
 import org.anti_ad.mc.alias.nbt.AbstractNbtList
 import org.anti_ad.mc.alias.nbt.AbstractNbtNumber
 import org.anti_ad.mc.alias.nbt.NbtCompound
@@ -150,7 +149,6 @@ object NbtUtils {
         }
     }
 
-
     fun matchNbt(a: NbtElement?,
                  b: NbtElement?): Boolean { // b superset of a (a <= b)
         if (a == null) return true
@@ -210,9 +208,9 @@ object NbtUtils {
         val asString: String
             get() = value.`(asString)`
         val asNumber: Number // todo what if number is long > double precision range
-            get() = (value as? AbstractNbtNumber)?.doubleValue() ?: 0
+            get() = (value as? AbstractNbtNumber)?.asDouble()?.get() ?: 0
         val asDouble: Double
-            get() = (value as? AbstractNbtNumber)?.doubleValue() ?: 0.0
+            get() = (value as? AbstractNbtNumber)?.asDouble()?.get() ?: 0.0
         val asCompound: NbtCompound
             get() = value as? NbtCompound ?: NbtCompound()
         val asList: List<WrappedTag>
@@ -240,7 +238,7 @@ object NbtUtils {
     // ============
     private fun innerMatchNbt(a: NbtCompound?,
                               b: NbtCompound?): Boolean { // b superset of a (a <= b)
-        // NbtHelper.matches()
+
         return NbtHelper.compareNbt(a,
                                     b,
                                     true) // criteria, testTarget, allowExtra (for list)

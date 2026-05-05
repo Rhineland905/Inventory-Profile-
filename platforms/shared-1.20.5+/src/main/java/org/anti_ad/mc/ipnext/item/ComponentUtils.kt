@@ -66,6 +66,7 @@ object ComponentUtils {
             return if (this.hasEffects()) {
                 this.allEffects.toList().fold(0.0) {acc, statusEffectInstance ->
                     val effectType = statusEffectInstance.effect.value()
+                    @Suppress("SENSELESS_NULL_IN_WHEN")
                     var res: Double = when(effectType.category) {
                         StatusEffectCategory.HARMFUL -> {
                             -5.0
@@ -189,11 +190,13 @@ object ComponentUtils {
     fun compareComponents(item: ItemType, item1: ItemType): Int {
         val tag = item.tag
         val tag1 = item1.tag
+/*
         val b1 = tag == null
         val b2 = tag1 == null
         if (b1 != b2)
             return if (b1) -1 else 1 // no nbt = first
         if (tag == null || tag1 == null) return 0
+*/
         val list = tag.keySet().toList().sortedBy { it.toString() }
         val list1 = tag1.keySet().toList().sortedBy { it.toString() }
         val matching = list.filter {
