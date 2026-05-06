@@ -21,16 +21,10 @@
 package org.anti_ad.mc.ipnext.ingame
 
 import org.anti_ad.mc.alias.client.gui.screen.Screen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
-import org.anti_ad.mc.alias.client.gui.screen.recipebook.`(searchField)`
-import org.anti_ad.mc.alias.client.gui.screen.recipebook.RecipeBookWidget
-import org.anti_ad.mc.alias.client.gui.widget.TextFieldWidget
 import org.anti_ad.mc.alias.entity.player.PlayerInventory
 import org.anti_ad.mc.alias.screen.slot.Slot
 import org.anti_ad.mc.common.vanilla.Vanilla
-import org.anti_ad.mc.ipnext.item.EMPTY
-import org.anti_ad.mc.ipnext.item.ItemStack
 
 // ============
 // vanillamapping code depends on mappings
@@ -38,8 +32,6 @@ import org.anti_ad.mc.ipnext.item.ItemStack
 
 private inline val vPlayerSlots
     get() = Vanilla.playerContainer().`(slots)`
-
-fun vCursorStack() = Vanilla.playerInventory().player.containerMenu.carried?.`(itemStack)` ?: ItemStack.EMPTY
 
 fun vPlayerSlotOf(slot: Slot,
                   screen: Screen?): Slot { // creative slot to survival slot
@@ -53,20 +45,5 @@ fun vPlayerSlotOf(slot: Slot,
         invSlot in 0..45 && id == 0 -> vPlayerSlots[invSlot] // slot in backpack tab
         else -> slot
     }
-}
-
-// interpreted for creative inventory
-// in-game safe
-fun vFocusedSlot(): Slot? = Vanilla.screen()?.`(focusedSlot)`
-
-
-fun vMainhandIndex() =
-    Vanilla.playerInventory().`(selectedSlot)`
-
-fun isInputFieldActive(scr: ContainerScreen<*>): Boolean {
-    return scr.children()?.any {
-        (it is RecipeBookWidget<*> && (it.`(searchField)`?.isFocused == true))
-        || (it is TextFieldWidget && it.isFocused)
-    } == true
 }
 

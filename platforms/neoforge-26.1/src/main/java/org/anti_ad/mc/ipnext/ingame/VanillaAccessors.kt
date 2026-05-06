@@ -30,6 +30,9 @@ import org.anti_ad.mc.alias.client.Window
 import org.anti_ad.mc.alias.client.gui.screen.Screen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
+import org.anti_ad.mc.alias.client.gui.screen.recipebook.`(searchField)`
+import org.anti_ad.mc.alias.client.gui.screen.recipebook.RecipeBookWidget
+import org.anti_ad.mc.alias.client.gui.widget.TextFieldWidget
 import org.anti_ad.mc.alias.client.network.ClientPlayerInteractionManager
 import org.anti_ad.mc.alias.component.MergedComponentMap
 import org.anti_ad.mc.alias.component.type.ItemEnchantmentsComponent
@@ -50,6 +53,7 @@ import org.anti_ad.mc.alias.screen.slot.SlotActionType
 import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.common.math2d.Point
 import org.anti_ad.mc.common.math2d.Rectangle
+import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.ipnext.item.EMPTY
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.ItemType
@@ -208,3 +212,19 @@ val StonecutterContainer.`(selectedRecipe)`: Int
     get() = selectedRecipeIndex
 
 fun MinecraftClient.`(send)`(runnable: Runnable) = schedule(runnable)
+
+// interpreted for creative inventory
+// in-game safe
+fun vFocusedSlot(): Slot? = Vanilla.screen()?.`(focusedSlot)`
+
+fun vMainhandIndex() =
+        Vanilla.playerInventory().`(selectedSlot)`
+
+fun isInputFieldActive(scr: ContainerScreen<*>): Boolean {
+    return scr.children()?.any {
+        (it is RecipeBookWidget<*> && (it.`(searchField)`?.isFocused == true))
+        || (it is TextFieldWidget && it.isFocused)
+    } == true
+}
+
+fun vCursorStack() = Vanilla.playerInventory().player.containerMenu.carried?.`(itemStack)` ?: ItemStack.EMPTY
