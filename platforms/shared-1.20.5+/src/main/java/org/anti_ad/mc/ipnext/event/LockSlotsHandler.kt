@@ -439,7 +439,8 @@ object LockSlotsHandler: InventoryOverlay {
 
     private inline fun isQMoveActionAllowedInt(slot: Int, predicate: () -> Boolean): Boolean {
         if (slot == -1 || slot == -999) return true
-        val locked = lastMouseClickSlot?.let { isMappedSlotLocked(it) } ?: lockedInvSlots.contains(qMoveSlotMapping[slot])
+        val lockedByLastMouseClick = lastMouseClickSlot?.let { isMappedSlotLocked(it) }
+        val locked = lockedByLastMouseClick ?: lockedInvSlots.contains(qMoveSlotMapping[slot])
         if (!locked) return true
         return predicate()
     }

@@ -89,11 +89,12 @@ public abstract class MixinMinecraftClient {
     @Inject(at = @At("HEAD"),
             method = "handleKeybinds()V")
     public void handleInputEventsPre(CallbackInfo info) {
+        int selectedSlot = this.player.getInventory().getSelectedSlot() + 36;
         if(LockedSlotsSettings.INSTANCE.getLOCKED_SLOTS_DISABLE_THROW_FOR_NON_STACKABLE().getValue()
-           && InventoryMenu.isHotbarSlot(this.player.getInventory().getSelectedSlot())
+           && InventoryMenu.isHotbarSlot(selectedSlot)
            && (options.keyDrop.isDown() || options.keyDrop.consumeClick())) {
 
-            if (!LockSlotsHandler.INSTANCE.isHotbarQMoveActionAllowed(this.player.getInventory().getSelectedSlot() + 36, true)) {
+            if (!LockSlotsHandler.INSTANCE.isHotbarQMoveActionAllowed(selectedSlot, true)) {
                 IMixinKeyBinding drop = (IMixinKeyBinding) options.keyDrop;
                 drop.setPressed(false);
                 drop.setTimesPressed(0);
