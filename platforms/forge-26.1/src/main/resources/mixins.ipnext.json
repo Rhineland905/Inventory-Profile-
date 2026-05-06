@@ -22,7 +22,6 @@
         "MixinClientPacketListener",
         "IMixinBucketItem",
         "IMixinFluid",
-        "IMixinEntityBucketItem",
         "IMixinSlot"
     ],
     "injectors":          {

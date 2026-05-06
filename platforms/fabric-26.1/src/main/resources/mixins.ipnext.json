@@ -8,7 +8,6 @@
     "client":             [
         "IMixinBucketItem",
         "IMixinContainerScreen",
-        "IMixinEntityBucketItem",
         "IMixinFluid",
         "IMixinKeyBinding",
         "IMixinSlot",

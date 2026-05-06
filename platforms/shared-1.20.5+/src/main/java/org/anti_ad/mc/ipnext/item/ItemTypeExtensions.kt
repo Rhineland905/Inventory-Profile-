@@ -26,6 +26,7 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.network.chat.contents.TranslatableContents
 import net.minecraft.resources.ResourceKey
+import net.minecraft.world.item.MobBucketItem
 import net.minecraft.world.item.component.Consumable
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect
 import net.minecraft.world.item.consume_effects.ConsumeEffect
@@ -368,14 +369,14 @@ inline val ItemType.durability: Int
     get() = if (isDamageableFn())  maxDamage - damage else -1
 
 inline val ItemType.isBucket: Boolean
-    get() = item is BucketItem || item is IMixinEntityBucketItem || item is PowderSnowBucketItem
+    get() = item is BucketItem || item is PowderSnowBucketItem
 
 inline val ItemType.isFullBucket: Boolean
-    get() = item is IMixinEntityBucketItem || item is PowderSnowBucketItem || (item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty())
+    get() = item is MobBucketItem || item is PowderSnowBucketItem || (item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty())
 
 inline val ItemType.isEmptyBucket: Boolean
     get() {
-        return item !is IMixinEntityBucketItem && item is IMixinBucketItem && (item.fluid as IMixinFluid).callIsEmpty()
+        return item !is MobBucketItem && item is IMixinBucketItem && (item.fluid as IMixinFluid).callIsEmpty()
     }
 
 fun ItemType.isEmptyComparedTo(other: ItemType): Boolean {
@@ -384,7 +385,7 @@ fun ItemType.isEmptyComparedTo(other: ItemType): Boolean {
         true
     } else if (otherItem == Items.BUCKET && item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty()) {
         true
-    } else item is IMixinEntityBucketItem && otherItem is IMixinBucketItem && otherItem !is IMixinEntityBucketItem
+    } else item is MobBucketItem && otherItem is IMixinBucketItem && otherItem !is MobBucketItem
     //item is MilkBucketItem || item is IMixinEntityBucketItem || (item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty())
 }
 
@@ -392,7 +393,7 @@ fun ItemType.isFullComparedTo(other: ItemType): Boolean {
     val otherItem = other.item
     return if (item == Items.BUCKET && otherItem is PowderSnowBucketItem) {
         true
-    } else item !is IMixinEntityBucketItem && otherItem is IMixinEntityBucketItem
+    } else item !is MobBucketItem && otherItem is MobBucketItem
 
 }
 

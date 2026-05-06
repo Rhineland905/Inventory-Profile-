@@ -19,7 +19,6 @@
 package org.anti_ad.mc.ipnext.forge
 
 import net.minecraftforge.fml.ModList
-import net.minecraftforge.fml.loading.FMLLoader
 import org.anti_ad.mc.ipnext.gen.ModInfo
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
