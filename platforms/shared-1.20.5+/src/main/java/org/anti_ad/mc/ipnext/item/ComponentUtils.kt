@@ -20,26 +20,27 @@
 package org.anti_ad.mc.ipnext.item
 
 import com.mojang.serialization.Codec
+import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponentType
+import net.minecraft.core.component.DataComponents
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
+import net.minecraft.nbt.NbtOps
+import net.minecraft.nbt.StringTag
+import net.minecraft.nbt.Tag
+import net.minecraft.network.chat.Component
+import net.minecraft.tags.EnchantmentTags
+import net.minecraft.world.effect.MobEffectCategory
+import net.minecraft.world.item.alchemy.PotionContents
+import net.minecraft.world.item.component.ChargedProjectiles
+import net.minecraft.world.item.component.CustomData
+import net.minecraft.world.item.component.DyedItemColor
+import net.minecraft.world.item.component.MapItemColor
+import net.minecraft.world.item.component.MapPostProcessing
 import net.minecraft.world.item.component.TypedEntityData
-import org.anti_ad.mc.alias.component.ComponentChanges
-import org.anti_ad.mc.alias.component.ComponentType
-import org.anti_ad.mc.alias.component.DataComponentTypes
-import org.anti_ad.mc.alias.component.type.DyedColorComponent
-import org.anti_ad.mc.alias.component.type.ItemEnchantmentsComponent
-import org.anti_ad.mc.alias.component.type.MapColorComponent
-import org.anti_ad.mc.alias.component.type.MapIdComponent
-import org.anti_ad.mc.alias.component.type.MapPostProcessingComponent
-import org.anti_ad.mc.alias.component.type.PotionContentsComponent
-import org.anti_ad.mc.alias.component.type.*
-import org.anti_ad.mc.alias.entity.effect.StatusEffectCategory
-import org.anti_ad.mc.alias.nbt.NbtCompound
-import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.nbt.NbtList
-import org.anti_ad.mc.alias.nbt.NbtOps
-import org.anti_ad.mc.alias.nbt.NbtString
-import org.anti_ad.mc.alias.registry.tag.EnchantmentTags
-import org.anti_ad.mc.alias.text.Text
+import net.minecraft.world.item.enchantment.ItemEnchantments
+import net.minecraft.world.level.saveddata.maps.MapId
+
 import org.anti_ad.mc.common.vanilla.Vanilla
 
 import org.anti_ad.mc.ipnext.Log
@@ -54,27 +55,27 @@ object ComponentUtils {
 
     private val registry: MutableMap<String, Comparator<Any?>> = mutableMapOf()
 
-    private val ItemEnchantmentsComponent.score: Double
+    private val ItemEnchantments.score: Double
         get() {
             return -1 * this.entrySet().fold(0.0) { acc, (enchantment, level) ->
                 acc + if (enchantment.`is`(EnchantmentTags.CURSE)) -0.001 else level.toDouble() / enchantment.value().maxLevel
             }
         }
 
-    private val PotionContentsComponent.score: Double
+    private val PotionContents.score: Double
         get() {
             return if (this.hasEffects()) {
                 this.allEffects.toList().fold(0.0) {acc, statusEffectInstance ->
                     val effectType = statusEffectInstance.effect.value()
                     @Suppress("SENSELESS_NULL_IN_WHEN")
                     var res: Double = when(effectType.category) {
-                        StatusEffectCategory.HARMFUL -> {
+                        MobEffectCategory.HARMFUL       -> {
                             -5.0
                         }
-                        StatusEffectCategory.NEUTRAL, null -> {
+                        MobEffectCategory.NEUTRAL, null -> {
                             0.0
                         }
-                        StatusEffectCategory.BENEFICIAL -> {
+                        MobEffectCategory.BENEFICIAL -> {
                             5.0
                         }
                     }
@@ -98,18 +99,18 @@ object ComponentUtils {
             0
         }
     }.apply {
-        registry[DataComponentTypes.BLOCK_ENTITY_DATA.toString()] = this as Comparator<Any?>
-        registry[DataComponentTypes.ENTITY_DATA.toString()] = this as Comparator<Any?>
+        registry[DataComponents.BLOCK_ENTITY_DATA.toString()] = this as Comparator<Any?>
+        registry[DataComponents.ENTITY_DATA.toString()] = this as Comparator<Any?>
     }
 
-    private val nbtComparator: Comparator<NbtComponent?> = nullsLast { a: NbtComponent, b: NbtComponent ->
+    private val nbtComparator: Comparator<CustomData?> = nullsLast { a: CustomData, b: CustomData ->
         a.copyTag().compareTo(b.copyTag())
     }.apply {
-        registry[DataComponentTypes.CUSTOM_DATA.toString()] = this as Comparator<Any?>
-        registry[DataComponentTypes.BUCKET_ENTITY_DATA.toString()] = this as Comparator<Any?>
+        registry[DataComponents.CUSTOM_DATA.toString()] = this as Comparator<Any?>
+        registry[DataComponents.BUCKET_ENTITY_DATA.toString()] = this as Comparator<Any?>
     }
 
-    private val textComparator: Comparator<Text?> = nullsLast( compareBy<Text> { it.contents.toString() }
+    private val textComparator: Comparator<Component?> = nullsLast( compareBy<Component> { it.contents.toString() }
                                                                    .thenBy { it.siblings?.size ?: 0 }
                                                                    .thenComparing { a, b ->
                                                                        a.siblings.forEachIndexed { i, text ->
@@ -120,29 +121,29 @@ object ComponentUtils {
                                                                        0
                                                                    }
                                                              ).apply {
-        registry[DataComponentTypes.CUSTOM_NAME.toString()] = this as Comparator<Any?>
-        registry[DataComponentTypes.ITEM_NAME.toString()] = this as Comparator<Any?>
+        registry[DataComponents.CUSTOM_NAME.toString()] = this as Comparator<Any?>
+        registry[DataComponents.ITEM_NAME.toString()] = this as Comparator<Any?>
     }
-    private fun getTextComparator(): Comparator<Text?> = textComparator
+    private fun getTextComparator(): Comparator<Component?> = textComparator
 
 
-    private val mapColorComponentComparator = nullsLast( compareBy<MapColorComponent> { it.rgb }).apply {
-        registry[DataComponentTypes.MAP_COLOR.toString()] = this as Comparator<Any?>
-    }
-
-    private val dyedComponentComparator = nullsLast( compareBy<DyedColorComponent> { it.rgb }).apply {
-        registry[DataComponentTypes.DYED_COLOR.toString()] = this as Comparator<Any?>
+    private val mapColorComponentComparator = nullsLast( compareBy<MapItemColor> { it.rgb }).apply {
+        registry[DataComponents.MAP_COLOR.toString()] = this as Comparator<Any?>
     }
 
-    private val mapIdComparator = nullsLast( compareBy<MapIdComponent> {
+    private val dyedComponentComparator = nullsLast( compareBy<DyedItemColor> { it.rgb }).apply {
+        registry[DataComponents.DYED_COLOR.toString()] = this as Comparator<Any?>
+    }
+
+    private val mapIdComparator = nullsLast( compareBy<MapId> {
         it.id
     }).apply {
-        registry[DataComponentTypes.MAP_ID.toString()] = this as Comparator<Any?>
+        registry[DataComponents.MAP_ID.toString()] = this as Comparator<Any?>
     }
 
-    private val mapMapPostProcessingComponentComparator = nullsLast( compareBy<MapPostProcessingComponent> { it.id() })
+    private val mapMapPostProcessingComponentComparator = nullsLast( compareBy<MapPostProcessing> { it.id() })
         .apply {
-            registry[DataComponentTypes.MAP_POST_PROCESSING.toString()] = this as Comparator<Any?>
+            registry[DataComponents.MAP_POST_PROCESSING.toString()] = this as Comparator<Any?>
         }
 
     val itemTypeComparator = nullsLast ( compareBy<ItemType> { itemType -> itemType.itemId }
@@ -152,7 +153,7 @@ object ComponentUtils {
 
 
     private val chargedProjectilesComponentComparator = nullsLast(
-            compareBy<ChargedProjectilesComponent> { it.items.size.inv() }.thenComparator { o1, o2 ->
+            compareBy<ChargedProjectiles> { it.items.size.inv() }.thenComparator { o1, o2 ->
 
                 val l1: List<ItemType> = o1.itemCopies().map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
                 val l2: List<ItemType> = o2.itemCopies().map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
@@ -163,21 +164,21 @@ object ComponentUtils {
                 0
             })
         .apply {
-            registry[DataComponentTypes.CHARGED_PROJECTILES.toString()] = this as Comparator<Any?>
+            registry[DataComponents.CHARGED_PROJECTILES.toString()] = this as Comparator<Any?>
         }
 
-    private val itemEnchantmentsComponentComparator = nullsLast (compareBy<ItemEnchantmentsComponent> { it.score }).apply {
-        registry[DataComponentTypes.ENCHANTMENTS.toString()] = this as Comparator<Any?>
+    private val itemEnchantmentsComponentComparator = nullsLast (compareBy<ItemEnchantments> { it.score }).apply {
+        registry[DataComponents.ENCHANTMENTS.toString()] = this as Comparator<Any?>
     }
 
     private val potionEffectsComponentComparator = nullsLast (
-            compareBy<PotionContentsComponent> { it.score }).apply {
-        registry[DataComponentTypes.POTION_CONTENTS.toString()] = this as Comparator<Any?>
+            compareBy<PotionContents> { it.score }).apply {
+        registry[DataComponents.POTION_CONTENTS.toString()] = this as Comparator<Any?>
     }
 
 
 
-    fun ComponentType<*>?.comparatorFor(): Comparator<Any?> {
+    fun DataComponentType<*>?.comparatorFor(): Comparator<Any?> {
         registry[this.toString()]?.let {
             return it
         }
@@ -218,24 +219,24 @@ object ComponentUtils {
         return tag.size().compareTo(tag1.size())
     }
 
-    fun ComponentType<*>.toFilteredNbtOrNull(value: Optional<*>): NbtElement? {
+    fun DataComponentType<*>.toFilteredNbtOrNull(value: Optional<*>): Tag? {
         if (value.isEmpty) return null
         val codecAny: Codec<Any> = this.codecOrThrow() as Codec<Any>
         val realValue: Any? = value.get()
-        if (realValue != null && realValue is NbtElement) return realValue.copy()
+        if (realValue != null && realValue is Tag) return realValue.copy()
         val opt = codecAny.encodeStart(Vanilla.world().registryAccess().createSerializationContext(NbtOps.INSTANCE),
                                        value.get()).resultOrPartial()
         return if (opt.isPresent) {
             when (this) {
-                DataComponentTypes.ENCHANTMENTS -> {
-                    (opt.get() as NbtCompound).sanitizeEnchantments()
+                DataComponents.ENCHANTMENTS -> {
+                    (opt.get() as CompoundTag).sanitizeEnchantments()
                 }
 
-                DataComponentTypes.DAMAGE       -> {
+                DataComponents.DAMAGE       -> {
                     null
                 }
 
-                DataComponentTypes.CUSTOM_NAME  -> {
+                DataComponents.CUSTOM_NAME  -> {
                     null
                 }
 
@@ -246,11 +247,11 @@ object ComponentUtils {
         } else null
     }
 
-    fun ComponentType<*>.toFullNbtOrNull(value: Optional<*>): NbtElement? {
+    fun DataComponentType<*>.toFullNbtOrNull(value: Optional<*>): Tag? {
         if (value.isEmpty) return null
         val codecAny: Codec<Any> = this.codecOrThrow() as Codec<Any>
         val realValue: Any? = value.get()
-        if (realValue != null && realValue is NbtElement) return realValue.copy()
+        if (realValue != null && realValue is Tag) return realValue.copy()
         val opt = codecAny.encodeStart(Vanilla.world().registryAccess().createSerializationContext(NbtOps.INSTANCE),
                                        value.get()).resultOrPartial()
         return if (opt.isPresent) {
@@ -259,20 +260,20 @@ object ComponentUtils {
     }
 
 
-    private fun NbtCompound.sanitizeEnchantments(): NbtElement {
-        //val levels = this["levels"] as NbtCompound
-        val newLevels = NbtList()
+    private fun CompoundTag.sanitizeEnchantments(): Tag {
+        //val levels = this["levels"] as CompoundTag
+        val newLevels = ListTag()
         this.keySet().forEach { it ->
             Log.trace("found level $it")
-            newLevels.add(NbtString.valueOf(it))
+            newLevels.add(StringTag.valueOf(it))
         }
 
         return newLevels
     }
 
-    fun ComponentChanges.`(withRemovedIf)`(predicate: Predicate<ComponentType<*>>): ComponentChanges = this.forget(predicate)
+    fun DataComponentPatch.`(withRemovedIf)`(predicate: Predicate<DataComponentType<*>>): DataComponentPatch = this.forget(predicate)
 
-    fun ComponentChanges.get(prototype: DataComponentType<*>): Optional<*>? {
+    fun DataComponentPatch.get(prototype: DataComponentType<*>): Optional<*>? {
         return this.map[prototype]
     }
 

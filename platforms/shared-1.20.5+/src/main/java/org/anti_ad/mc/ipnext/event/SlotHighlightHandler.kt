@@ -19,7 +19,7 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.math2d.Point
 import org.anti_ad.mc.common.math2d.Rectangle
@@ -49,7 +49,7 @@ object SlotHighlightHandler: InventoryOverlay {
 
     override val slotLocations: Map<Int, Point> // id, location // ref: LockSlotsHandler
         get() {
-            val screen = Vanilla.screen() as? ContainerScreen<*> ?: return mapOf()
+            val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return mapOf()
             return Vanilla.container().`(slots)`.mapNotNull { slot ->
                 val playerSlot = vPlayerSlotOf(slot,
                                                screen)
@@ -105,7 +105,7 @@ object SlotHighlightHandler: InventoryOverlay {
 
     private fun drawSprite(context: NativeContext) {
         //if (!enabled) return
-        val screen = Vanilla.screen() as? ContainerScreen<*> ?: return
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return
         //    rClearDepth() // use translate or zOffset
         val localSlotLocations: MutableMap<Int, Point> = mutableMapOf()
         localSlotLocations.putAll(slotLocations)
@@ -144,7 +144,7 @@ object SlotHighlightHandler: InventoryOverlay {
 
     fun onTickInGame() {
         if (Features.HIGHLIGHT_FOUSED_ITEMS.booleanValue) {
-            val screen = Vanilla.screen() as? ContainerScreen<*> ?: return
+            val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return
             screen.`(focusedSlot)`?.let { slot ->
                 if (toHighlight != slot.`(itemStack)`.itemType) {
                     ticksSinceLastFocusChange--

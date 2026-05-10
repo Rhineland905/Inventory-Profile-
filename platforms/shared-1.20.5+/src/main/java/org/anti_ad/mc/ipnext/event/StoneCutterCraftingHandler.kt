@@ -19,9 +19,10 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.screen.Container
-import org.anti_ad.mc.alias.screen.StonecutterContainer
+
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.StonecutterMenu
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.input.KeybindSettings
 import org.anti_ad.mc.common.input.MainKeybind
@@ -44,7 +45,7 @@ import org.anti_ad.mc.ipnext.item.identifier
 import org.anti_ad.mc.ipnext.item.isEmpty
 
 
-abstract class CutterCraftingHandlerBase<T: Container> {
+abstract class CutterCraftingHandlerBase<T: AbstractContainerMenu> {
 
     var skipTick: Boolean = false
         private set
@@ -65,7 +66,7 @@ abstract class CutterCraftingHandlerBase<T: Container> {
     var isNewScreen = true
         protected set
 
-    private var currentScreen: ContainerScreen<*>? = null
+    private var currentScreen: AbstractContainerScreen<*>? = null
     private var currentContainer: T? = null
 
     protected val SHIFT = MainKeybind("LEFT_SHIFT", KeybindSettings.GUI_EXTRA)
@@ -92,9 +93,9 @@ abstract class CutterCraftingHandlerBase<T: Container> {
             }
         }
 
-    abstract fun typeSpecificOnTickInGame(screen: ContainerScreen<*>)
+    abstract fun typeSpecificOnTickInGame(screen: AbstractContainerScreen<*>)
 
-    abstract fun typeSpecificNewContainer(screen: ContainerScreen<*>)
+    abstract fun typeSpecificNewContainer(screen: AbstractContainerScreen<*>)
 
     abstract fun selectRecipe(container: T, recipe: Int);
 
@@ -111,7 +112,7 @@ abstract class CutterCraftingHandlerBase<T: Container> {
 
         val screen = Vanilla.screen()
         if (screen != null) {
-            if (enabled && screen is ContainerScreen<*>) {
+            if (enabled && screen is AbstractContainerScreen<*>) {
                 if (stillCrafting && !isRefillTick) {
                     Log.trace("Still crafting")
                     typeSpecificOnTickInGame(screen)
@@ -171,7 +172,7 @@ abstract class CutterCraftingHandlerBase<T: Container> {
         }
     }
 
-    protected fun init(screen: ContainerScreen<*>,
+    protected fun init(screen: AbstractContainerScreen<*>,
                        container: T) {
         currentContainer = container
         currentScreen = screen
@@ -251,12 +252,12 @@ object CuttersDispatcher {
     }
 }
 
-object StoneCutterCraftingHandler: CutterCraftingHandlerBase<StonecutterContainer>() {
+object StoneCutterCraftingHandler: CutterCraftingHandlerBase<StonecutterMenu>() {
 
 
-    override fun typeSpecificOnTickInGame(screen: ContainerScreen<*>) {
+    override fun typeSpecificOnTickInGame(screen: AbstractContainerScreen<*>) {
         val container = screen.`(container)`
-        if (container is StonecutterContainer) {
+        if (container is StonecutterMenu) {
             isNewScreen = false
             init(screen, container)
             Log.traceIf {
@@ -267,25 +268,25 @@ object StoneCutterCraftingHandler: CutterCraftingHandlerBase<StonecutterContaine
         }
     }
 
-    override fun typeSpecificNewContainer(screen: ContainerScreen<*>) {
+    override fun typeSpecificNewContainer(screen: AbstractContainerScreen<*>) {
         val container = screen.`(container)`
-        if (container is StonecutterContainer) {
+        if (container is StonecutterMenu) {
             isNewScreen = false
             init(screen, container)
         }
     }
 
-    override fun selectRecipe(container: StonecutterContainer,
+    override fun selectRecipe(container: StonecutterMenu,
                               recipe: Int) {
         Log.trace("selectRecipe: $recipe")
         container.selectRecipe(recipe)
     }
 
-    override fun selectedRecipe(container: StonecutterContainer): Int {
+    override fun selectedRecipe(container: StonecutterMenu): Int {
         return container.`(selectedRecipe)`
     }
 
-    override fun selectedRecipeOrNull(container: StonecutterContainer?): Int? {
+    override fun selectedRecipeOrNull(container: StonecutterMenu?): Int? {
         return container?.`(selectedRecipe)`
     }
 

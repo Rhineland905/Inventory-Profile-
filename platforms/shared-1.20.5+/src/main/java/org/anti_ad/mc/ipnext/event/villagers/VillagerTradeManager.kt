@@ -19,26 +19,31 @@
 
 package org.anti_ad.mc.ipnext.event.villagers
 
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.npc.villager.Villager
+import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader
+
+import net.minecraft.nbt.Tag
+
+import net.minecraft.client.gui.screens.inventory.MerchantScreen
+import net.minecraft.world.inventory.MerchantMenu
+
+import net.minecraft.world.item.trading.MerchantOffer
+
 import org.anti_ad.mc.alias.client.gui.screen.ingame.`(indexStartOffset)`
 import org.anti_ad.mc.alias.client.gui.screen.ingame.`(offers)`
 import org.anti_ad.mc.alias.client.gui.screen.ingame.`(recipes)`
 import org.anti_ad.mc.alias.client.gui.screen.ingame.`(selectedIndex)`
 import org.anti_ad.mc.alias.client.gui.screen.ingame.`(syncRecipeIndex)`
-import org.anti_ad.mc.alias.client.gui.screen.ingame.MerchantScreen
+
 import org.anti_ad.mc.alias.client.gui.widget.`(isHovered)`
 import org.anti_ad.mc.alias.entity.`(uuidString)`
-import org.anti_ad.mc.alias.entity.Entity
 import org.anti_ad.mc.alias.entity.passive.`(profession)`
-import org.anti_ad.mc.alias.entity.passive.VillagerEntity
-import org.anti_ad.mc.alias.entity.passive.WanderingTraderEntity
-import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.screen.MerchantContainer
 import org.anti_ad.mc.alias.village.`(isDisabled)`
 import org.anti_ad.mc.alias.village.`(originalFirstBuyItem)`
 import org.anti_ad.mc.alias.village.`(professionId)`
 import org.anti_ad.mc.alias.village.`(secondBuyItem)`
 import org.anti_ad.mc.alias.village.`(sellItem)`
-import org.anti_ad.mc.alias.village.TradeOffer
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.gui.NativeContext
@@ -132,8 +137,8 @@ object VillagerTradeManager: IInputHandler {
     private val Entity.profession: String?
         get() {
             return when (this) {
-                is VillagerEntity        -> this.`(profession)`.`(professionId)`
-                is WanderingTraderEntity -> "___+++___ wandering ___+++___"
+                is Villager        -> this.`(profession)`.`(professionId)`
+                is WanderingTrader -> "___+++___ wandering ___+++___"
                 else                     -> null
             }
 
@@ -148,12 +153,12 @@ object VillagerTradeManager: IInputHandler {
 
     val Entity.isLocalAvailable: Boolean
         get() {
-            return this is VillagerEntity
+            return this is Villager
         }
 
     val Entity.isOnlyLocal: Boolean
         get() {
-            return this !is VillagerEntity && this !is WanderingTraderEntity
+            return this !is Villager && this !is WanderingTrader
         }
 
 
@@ -168,7 +173,7 @@ object VillagerTradeManager: IInputHandler {
                       context: NativeContext,
                       mouseX: Int,
                       mouseY: Int,
-                      tradeOffer: TradeOffer,
+                      tradeOffer: MerchantOffer,
                       i: Int,
                       j: Int,
                       k: Int,
@@ -259,7 +264,7 @@ object VillagerTradeManager: IInputHandler {
     }
 
 
-    fun List<VillagerTradeData>.has(offer: TradeOffer): Boolean {
+    fun List<VillagerTradeData>.has(offer: MerchantOffer): Boolean {
         val cost1 = offer.`(originalFirstBuyItem)`.itemStack.`(itemType)`
         val second = offer.`(secondBuyItem)`?.itemStack
         val cost2 = second?.`(itemType)`
@@ -364,7 +369,7 @@ object VillagerTradeManager: IInputHandler {
     private fun doTradesReal(screen: MerchantScreen,
                              bookmarks: List<VillagerTradeData>) {
         if (Vanilla.screen() === screen) {
-            val container: MerchantContainer = screen.`(container)` as MerchantContainer
+            val container: MerchantMenu = screen.`(container)` as MerchantMenu
             if (container === Vanilla.container()) {
                 screen.`(recipes)`.mapIndexedNotNull { index, r ->
                     if (!r.`(isDisabled)` && bookmarks.has(r)) {
@@ -399,7 +404,7 @@ object VillagerTradeManager: IInputHandler {
     fun doTrades116(screen: MerchantScreen,
                     bookmarks: List<VillagerTradeData>) {
         if (Vanilla.screen() === screen) {
-            val container: MerchantContainer = screen.`(container)` as MerchantContainer
+            val container: MerchantMenu = screen.`(container)` as MerchantMenu
             if (container === Vanilla.container()) {
                 val trades = screen.`(recipes)`.mapIndexedNotNull { index, r ->
                     if (!r.`(isDisabled)` && bookmarks.has(r)) {
@@ -445,15 +450,15 @@ object VillagerTradeManager: IInputHandler {
 
         val tr1ItemType = trade.`(originalFirstBuyItem)`.itemStack.`(itemType)`
         val tr1 = tr1ItemType.itemId
-        val tr1Nbt: NbtElement? = tr1ItemType.`(componentsToNbt)`.nullIfEmpty()
+        val tr1Nbt: Tag? = tr1ItemType.`(componentsToNbt)`.nullIfEmpty()
 
         val tr2ItemType = trade.`(secondBuyItem)`?.itemStack?.`(itemType)`
         val tr2 = tr2ItemType?.itemId.nullIfAir()
-        val tr2Nbt: NbtElement? = if (tr2 != null) tr2ItemType?.`(componentsToNbt)`.nullIfEmpty() else null
+        val tr2Nbt: Tag? = if (tr2 != null) tr2ItemType?.`(componentsToNbt)`.nullIfEmpty() else null
 
         val sellItem = trade.`(sellItem)`.`(itemType)`
         val sellId = sellItem.identifier.toString()
-        val sellNbt: NbtElement? = sellItem.`(componentsToNbt)`.nullIfEmpty()
+        val sellNbt: Tag? = sellItem.`(componentsToNbt)`.nullIfEmpty()
 
         when (group) {
             0 -> doToggle(doGlobal,
@@ -485,11 +490,11 @@ object VillagerTradeManager: IInputHandler {
     }
 
     private fun Iterable<VillagerTradeData>.search(tr1: String,
-                                                   tr1Nbt: NbtElement?,
+                                                   tr1Nbt: Tag?,
                                                    tr2: String?,
-                                                   tr2Nbt: NbtElement?,
+                                                   tr2Nbt: Tag?,
                                                    sellId: String,
-                                                   sellNbt: NbtElement?): VillagerTradeData? {
+                                                   sellNbt: Tag?): VillagerTradeData? {
         return this.firstOrNull { tradeData ->
             tradeData.priceItem1 == tr1 && tradeData.price1Nbt.nullIfEmpty() == tr1Nbt.nullIfEmpty() &&
                     tradeData.priceItem2 == tr2 && tradeData.price2Nbt.nullIfEmpty() == tr2Nbt.nullIfEmpty() &&
@@ -500,11 +505,11 @@ object VillagerTradeManager: IInputHandler {
 
     private fun doToggle(doGlobal: Boolean,
                          tr1: String,
-                         tr1Nbt: NbtElement?,
+                         tr1Nbt: Tag?,
                          tr2: String?,
-                         tr2Nbt: NbtElement?,
+                         tr2Nbt: Tag?,
                          sellId: String,
-                         sellNbt: NbtElement?,
+                         sellNbt: Tag?,
                          villager: Entity) {
 
         if (doGlobal) {
@@ -549,11 +554,11 @@ object VillagerTradeManager: IInputHandler {
 
     private fun doToggle1(doGlobal: Boolean,
                           tr1: String,
-                          tr1Nbt: NbtElement?,
+                          tr1Nbt: Tag?,
                           tr2: String?,
-                          tr2Nbt: NbtElement?,
+                          tr2Nbt: Tag?,
                           sellId: String,
-                          sellNbt: NbtElement?,
+                          sellNbt: Tag?,
                           villager: Entity) {
         if (doGlobal) {
             val found = currentGlobalBookmarks1.search(tr1, tr1Nbt, tr2, tr2Nbt, sellId, sellNbt)
@@ -596,11 +601,11 @@ object VillagerTradeManager: IInputHandler {
 
     private fun doToggle2(doGlobal: Boolean,
                           tr1: String,
-                          tr1Nbt: NbtElement?,
+                          tr1Nbt: Tag?,
                           tr2: String?,
-                          tr2Nbt: NbtElement?,
+                          tr2Nbt: Tag?,
                           sellId: String,
-                          sellNbt: NbtElement?,
+                          sellNbt: Tag?,
                           villager: Entity) {
         if (doGlobal) {
             val found = currentGlobalBookmarks2.search(tr1, tr1Nbt, tr2, tr2Nbt, sellId, sellNbt)
@@ -643,7 +648,7 @@ object VillagerTradeManager: IInputHandler {
 
     class VillageTrader(private val indexes: List<Int>,
                         private val screen: MerchantScreen,
-                        private val container: MerchantContainer): Runnable {
+                        private val container: MerchantMenu): Runnable {
 
         private var atIndex = 0
         private var changeIndex = false

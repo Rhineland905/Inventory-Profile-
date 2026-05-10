@@ -20,10 +20,10 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.inventory.CraftingInventory
-import org.anti_ad.mc.alias.screen.Container
-import org.anti_ad.mc.alias.screen.slot.Slot
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.CraftingContainer
+import net.minecraft.world.inventory.Slot
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.input.KeybindSettings
 import org.anti_ad.mc.common.input.MainKeybind
@@ -60,11 +60,11 @@ object ContinuousCraftingHandler {
 
     private val enabled
         get() = GuiSettings.CONTINUOUS_CRAFTING_SAVED_VALUE.booleanValue
-    private var trackingScreen: ContainerScreen<*>? = null
+    private var trackingScreen: AbstractContainerScreen<*>? = null
 
     fun onTickInGame() {
         val screen = Vanilla.screen()
-        if (enabled && screen is ContainerScreen<*>) {
+        if (enabled && screen is AbstractContainerScreen<*>) {
             if (screen != trackingScreen) {
                 trackingScreen = screen
                 init()
@@ -185,9 +185,9 @@ object ContinuousCraftingHandler {
         fun save()
     }
 
-    private class Monitor(container: Container): IMonitor {
+    private class Monitor(container: AbstractContainerMenu): IMonitor {
         override val containerSlots = container.`(slots)`
-        override val ingredientSlots = containerSlots.filter { it.`(inventoryOrNull)` is CraftingInventory }
+        override val ingredientSlots = containerSlots.filter { it.`(inventoryOrNull)` is CraftingContainer }
 
         //    val resultSlot = containerSlots.filterIsInstance<CraftingResultSlot>() // should be 1
         override val slotMonitors = ingredientSlots.map { ItemSlotMonitor(it) }
@@ -289,9 +289,9 @@ object ContinuousCraftingHandler {
 
 
 
-    private class MonitorP(container: Container): IMonitor {
+    private class MonitorP(container: AbstractContainerMenu): IMonitor {
         override val containerSlots = container.`(slots)`
-        override val ingredientSlots = containerSlots.filter { it.`(inventoryOrNull)` is CraftingInventory }
+        override val ingredientSlots = containerSlots.filter { it.`(inventoryOrNull)` is CraftingContainer }
 
         //    val resultSlot = containerSlots.filterIsInstance<CraftingResultSlot>() // should be 1
         override val slotMonitors = ingredientSlots.map { ItemSlotMonitorP(it) }

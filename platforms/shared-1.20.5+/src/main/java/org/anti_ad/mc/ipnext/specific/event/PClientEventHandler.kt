@@ -20,61 +20,61 @@
 
 package org.anti_ad.mc.ipnext.specific.event
 
+import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
-import org.anti_ad.mc.alias.text.MutableText
-import org.anti_ad.mc.alias.text.Style
-import org.anti_ad.mc.alias.text.Text
-import org.anti_ad.mc.alias.text.getLiteral
+import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Style
+
 import org.anti_ad.mc.common.moreinfo.SemVer
 
-import org.anti_ad.mc.common.vanilla.alias.Formatting
 import org.anti_ad.mc.common.vanilla.alias.glue.I18n
 import java.net.URI
 
 interface PClientEventHandler {
 
-    fun createHoverEventText(text: String): HoverEvent =   HoverEvent.ShowText(getLiteral(text))
+    fun createHoverEventText(text: String): HoverEvent =   HoverEvent.ShowText(Component.literal(text))
 
-    fun createChatMessage(new: SemVer): MutableText = Text.literal("")
-        .append(Text.literal("Inventory Profiles Next:")
+    fun createChatMessage(new: SemVer): MutableComponent = Component.literal("")
+        .append(Component.literal("Inventory Profiles Next:")
                     .apply {
                         style = Style.EMPTY
                             .withBold(true)
-                            .withColor(Formatting.AQUA)
+                            .withColor(ChatFormatting.AQUA)
                     }
                )
-        .append(Text.literal(I18n.translate("inventoryprofiles.update.version"))
+        .append(Component.literal(I18n.translate("inventoryprofiles.update.version"))
                     .apply {
                         style = Style.EMPTY
                     })
-        .append(Text.literal("'$new'")
+        .append(Component.literal("'$new'")
                     .apply {
                         style = Style.EMPTY
                             .withBold(true)
-                            .withColor(Formatting.DARK_GREEN)
+                            .withColor(ChatFormatting.DARK_GREEN)
                     })
-        .append(Text.literal(I18n.translate("inventoryprofiles.update.available"))
+        .append(Component.literal(I18n.translate("inventoryprofiles.update.available"))
                     .apply {
                         style = Style.EMPTY
                     })
         .append(I18n.translate("inventoryprofiles.update.get"))
-        .append(Text.literal("\"Modrinth\"")
+        .append(Component.literal("\"Modrinth\"")
                     .apply {
                         style = Style.EMPTY
                             .withBold(true)
-                            .withColor(Formatting.DARK_GREEN)
+                            .withColor(ChatFormatting.DARK_GREEN)
                             .withUnderlined(true)
                             .withClickEvent(ClickEvent.OpenUrl(URI("https://modrinth.com/mod/inventory-profiles-next")))
                             .withHoverEvent(createHoverEventText("https://modrinth.com/mod/inventory-profiles-next"))
                     })
-        .append(Text.literal(I18n.translate("inventoryprofiles.update.or"))
+        .append(Component.literal(I18n.translate("inventoryprofiles.update.or"))
                     .apply { style = Style.EMPTY })
-        .append(Text.literal("\"CurseForge\"")
+        .append(Component.literal("\"CurseForge\"")
                     .apply {
                         style = Style.EMPTY
                             .withBold(true)
-                            .withColor(Formatting.DARK_RED)
+                            .withColor(ChatFormatting.DARK_RED)
                             .withUnderlined(true)
                             .withClickEvent(ClickEvent.OpenUrl(URI("https://www.curseforge.com/minecraft/mc-mods/inventory-profiles-next")))
                             .withHoverEvent(createHoverEventText("https://www.curseforge.com/minecraft/mc-mods/inventory-profiles-next"))

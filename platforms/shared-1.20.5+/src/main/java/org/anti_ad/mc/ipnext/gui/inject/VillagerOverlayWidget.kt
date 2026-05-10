@@ -19,12 +19,14 @@
 
 package org.anti_ad.mc.ipnext.gui.inject
 
+import net.minecraft.world.entity.npc.villager.Villager
+
+import net.minecraft.client.gui.screens.inventory.MerchantScreen
+import net.minecraft.world.inventory.MerchantMenu
+
 import org.anti_ad.mc.alias.client.gui.screen.ingame.`(indexStartOffset)`
 import org.anti_ad.mc.alias.client.gui.screen.ingame.`(offers)`
-import org.anti_ad.mc.alias.client.gui.screen.ingame.MerchantScreen
 import org.anti_ad.mc.alias.client.gui.widget.`(isHovered)`
-import org.anti_ad.mc.alias.entity.passive.VillagerEntity
-import org.anti_ad.mc.alias.screen.MerchantContainer
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.gui.layout.Overflow
 import org.anti_ad.mc.common.gui.layout.setTopLeft
@@ -98,7 +100,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
         private val hints = HintsManagerNG.getHints(screen.javaClass)
 
         private val bookmarksTop: Int = VillagerTradeManager.currentVillager?.let {
-            if (it is VillagerEntity) {
+            if (it is Villager) {
                 17
             } else {
                 23
@@ -181,7 +183,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             checked = {true}
             this@VillagerOverlayWidget.addChild(this)
             visible = VillagerTradeManager.currentVillager?.let {
-                it is VillagerEntity
+                it is Villager
             } ?: false
             tooltipText = I18n.translate("inventoryprofiles.tooltip.do_local_trades_button")
             id = "do_local_trades_button"
@@ -204,7 +206,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             checked = {true}
             this@VillagerOverlayWidget.addChild(this)
             visible = VillagerTradeManager.currentVillager?.let {
-                it is VillagerEntity
+                it is Villager
             } ?: false
             tooltipText = I18n.translate("inventoryprofiles.tooltip.do_local_trades_button1")
             id = "do_local_trades_button"
@@ -227,7 +229,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             checked = {true}
             this@VillagerOverlayWidget.addChild(this)
             visible = VillagerTradeManager.currentVillager?.let {
-                it is VillagerEntity
+                it is Villager
             } ?: false
             tooltipText = I18n.translate("inventoryprofiles.tooltip.do_local_trades_button2")
             id = "do_local_trades_button"
@@ -252,11 +254,11 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             this.init("inventoryprofiles.tooltip.set_local_bookmark",
                       "localBookmark_button")
             visible = VillagerTradeManager.currentVillager?.let {
-                it is VillagerEntity
+                it is Villager
             } ?: false
             visibleOverride = { default ->
                 val activeVillager = VillagerTradeManager.currentVillager
-                (activeVillager == null || activeVillager is VillagerEntity) && default
+                (activeVillager == null || activeVillager is Villager) && default
 
             }
             hintableList.add(this)
@@ -277,12 +279,12 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             this.init("inventoryprofiles.tooltip.set_local_bookmark1",
                       "localBookmark_button")
             visible = VillagerTradeManager.currentVillager?.let {
-                it is VillagerEntity
+                it is Villager
             } ?: false
             visibleOverride = { default ->
                 val activeVillager = VillagerTradeManager.currentVillager
                 ModSettings.VILLAGER_TRADING_GROUP_1.booleanValue
-                && (activeVillager == null || activeVillager is VillagerEntity)
+                && (activeVillager == null || activeVillager is Villager)
                 && default
 
             }
@@ -304,12 +306,12 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             this.init("inventoryprofiles.tooltip.set_local_bookmark2",
                       "localBookmark_button")
             visible = VillagerTradeManager.currentVillager?.let {
-                it is VillagerEntity
+                it is Villager
             } ?: false
             visibleOverride = { default ->
                 val activeVillager = VillagerTradeManager.currentVillager
                 ModSettings.VILLAGER_TRADING_GROUP_2.booleanValue
-                && (activeVillager == null || activeVillager is VillagerEntity)
+                && (activeVillager == null || activeVillager is Villager)
                 && default
 
             }
@@ -425,7 +427,7 @@ class VillagerOverlayWidget(override val screen: MerchantScreen,
             }
             if (System.currentTimeMillis() - lastSelectChange > 250) {
                 screen.`(offers)`.firstOrNull { offer -> offer.`(isHovered)` }?.let { page ->
-                    val container = screen.`(container)` as MerchantContainer
+                    val container = screen.`(container)` as MerchantMenu
                     selectedTrade = page.index + screen.`(indexStartOffset)`
                 }
                 lastSelectChange = System.currentTimeMillis()

@@ -19,10 +19,12 @@
 
 package org.anti_ad.mc.ipnext.gui
 
-import org.anti_ad.mc.alias.client.gui.screen.Screen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+
+import net.minecraft.world.inventory.AbstractContainerMenu
+
 import org.anti_ad.mc.alias.client.gui.screen.ingame.vanillaScreens
-import org.anti_ad.mc.alias.screen.Container
 import org.anti_ad.mc.alias.screen.vanillaContainers
 import org.anti_ad.mc.common.config.IConfigOption
 import org.anti_ad.mc.common.config.options.ConfigBoolean
@@ -66,7 +68,7 @@ import org.anti_ad.mc.ipnext.inventory.ContainerTypes
 
 
 class GUIDEEditorScreen(private val target: Screen,
-                        private val container: Container,
+                        private val container: AbstractContainerMenu,
                         targets: MutableList<InsertableWidget>): BaseOverlay() {
 
     companion object {
@@ -256,7 +258,7 @@ class GUIDEEditorScreen(private val target: Screen,
                          { I18n.translateOrEmpty("$DESCRIPTION_ROOT.$it") },
                          3).apply {
             height = rScreenHeight - nextTop - 5
-            val targetBounds = (target as ContainerScreen<*>).`(containerBounds)`
+            val targetBounds = (target as AbstractContainerScreen<*>).`(containerBounds)`
             width = rScreenWidth - targetBounds.width - targetBounds.x - 3
             this@GUIDEEditorScreen.addWidget(this)
             overflow = Overflow.VISIBLE

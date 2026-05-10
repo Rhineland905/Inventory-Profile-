@@ -24,29 +24,36 @@ package org.anti_ad.mc.ipnext.item
 
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.core.component.DataComponents
+import net.minecraft.core.component.PatchedDataComponentMap
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.NbtOps
+import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.contents.TranslatableContents
+import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
+import net.minecraft.tags.EnchantmentTags
+import net.minecraft.world.effect.MobEffectCategory
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.food.FoodProperties
+import net.minecraft.world.item.BlockItem
+import net.minecraft.world.item.BucketItem
+import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.item.CreativeModeTabs
+import net.minecraft.world.item.Items
 import net.minecraft.world.item.MobBucketItem
+import net.minecraft.world.item.SolidBucketItem
 import net.minecraft.world.item.component.Consumable
+import net.minecraft.world.item.component.ItemContainerContents
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect
 import net.minecraft.world.item.consume_effects.ConsumeEffect
+import net.minecraft.world.item.enchantment.Enchantment
+import net.minecraft.world.item.enchantment.EnchantmentHelper
 import net.minecraft.world.item.equipment.Equippable
+import net.minecraft.world.level.block.ShulkerBoxBlock
 
-import org.anti_ad.mc.alias.block.ShulkerBoxBlock
-import org.anti_ad.mc.alias.component.*
-import org.anti_ad.mc.alias.component.type.*
-import org.anti_ad.mc.alias.enchantment.Enchantment
-import org.anti_ad.mc.alias.enchantment.EnchantmentHelper
-import org.anti_ad.mc.alias.entity.EquipmentSlot
-import org.anti_ad.mc.alias.entity.effect.StatusEffectCategory
-import org.anti_ad.mc.alias.entity.effect.StatusEffectInstance
-import org.anti_ad.mc.alias.item.*
-import org.anti_ad.mc.alias.item.ItemGroups
-import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.nbt.NbtOps
-import org.anti_ad.mc.alias.registry.Registries
-import org.anti_ad.mc.alias.registry.tag.EnchantmentTags
-import org.anti_ad.mc.alias.util.Identifier
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.alias.glue.I18n
@@ -58,7 +65,7 @@ import org.anti_ad.mc.ipnext.ingame.*
 import org.anti_ad.mc.ipnext.mixin.*
 import org.anti_ad.mc.ipnext.mixinhelpers.IMixinItemGroup
 import java.util.*
-import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
+import net.minecraft.world.item.ItemStack as VanillaItemStack
 
 // ============
 // vanillamapping code depends on mappings
@@ -77,9 +84,8 @@ fun ItemType.toNamespacedString(): String { // like ItemType.toString() but with
 }
 
 val ItemType.Companion.EMPTY
-    get() = ItemType(Items.AIR,
-                     MergedComponentMap(Items.AIR.components()),
-                     ComponentChanges.EMPTY,
+    get() = ItemType(Items.AIR, PatchedDataComponentMap(Items.AIR.components()),
+                     DataComponentPatch.EMPTY,
                      { false })
 
 fun ItemType.isEmpty(): Boolean {
@@ -93,11 +99,11 @@ inline val ItemType.isShulker: Boolean
 val ItemType.isEmptyShulker: Boolean
     get() {
         val iss = isShulker
-        return iss && (tag?.get(DataComponentTypes.CONTAINER).isEmpty())
+        return iss && (tag?.get(DataComponents.CONTAINER).isEmpty())
     }
 
-private fun ContainerComponent?.isEmpty(): Boolean {
-    return this == null || this === ContainerComponent.EMPTY || this == ContainerComponent.EMPTY
+private fun ItemContainerContents?.isEmpty(): Boolean {
+    return this == null || this === ItemContainerContents.EMPTY || this == ItemContainerContents.EMPTY
 }
 
 inline val ItemType.maxCount: Int
@@ -126,10 +132,10 @@ inline val ItemType.vanillaStack: VanillaItemStack
 fun ItemType.vanillaStackWithCount(count: Int): VanillaItemStack =
     VanillaItemStack(this.item.builtInRegistryHolder(),
                      count,
-                     this@vanillaStackWithCount.tag as MergedComponentMap) // nbt was tag
+                     this@vanillaStackWithCount.tag as PatchedDataComponentMap) // nbt was tag
 
 inline val ItemType.identifier: Identifier
-    get() = Registries.ITEM.getKey(item)
+    get() = BuiltInRegistries.ITEM.getKey(item)
 
 inline val ItemType.namespace: String
     get() = identifier.namespace
@@ -140,7 +146,7 @@ inline val ItemType.itemClass
 //region ItemType String Relative
 
 inline val ItemType.hasCustomName: Boolean
-    get() = this.vanillaStack.components[DataComponentTypes.CUSTOM_NAME] != null
+    get() = this.vanillaStack.components[DataComponents.CUSTOM_NAME] != null
 inline val ItemType.customName: String
     get() = if (hasCustomName) displayName else ""
 inline val ItemType.displayName: String
@@ -161,7 +167,7 @@ inline val ItemType.customOrTranslatedName: String
 
 //region ItemType Number Relative
 
-inline val ItemGroup.`(priorityIndex)`: Int
+inline val CreativeModeTab.`(priorityIndex)`: Int
     get() {
         if (this is IMixinItemGroup) {
             var index = ipnPriorityIndex
@@ -181,10 +187,10 @@ inline val ItemGroup.`(priorityIndex)`: Int
         return Int.MAX_VALUE
     }
 
-private class ItemGroupComparator: Comparator<ItemGroup> {
+private class ItemGroupComparator: Comparator<CreativeModeTab> {
 
-    override fun compare(g1: ItemGroup?,
-                         g2: ItemGroup?): Int {
+    override fun compare(g1: CreativeModeTab?,
+                         g2: CreativeModeTab?): Int {
 
         val defaultCompare = {
             if (g1 == null && g2 == null) {
@@ -235,9 +241,9 @@ private fun initGroupIndex() {
     val lookup = player?.level()?.registryAccess()
     val opTabEnabled = Vanilla.mc().options.operatorItemsTab().get() && player?.canUseGameMasterBlocks() ?: false
     if (features != null && lookup != null) {
-        ItemGroups.tryRebuildTabContents(features, opTabEnabled, lookup).ifTrue {
+        CreativeModeTabs.tryRebuildTabContents(features, opTabEnabled, lookup).ifTrue {
             val sm = player.connection.searchTrees()
-            val list = ItemGroups.searchTab().displayItems.toList()
+            val list = CreativeModeTabs.searchTab().displayItems.toList()
             sm.updateCreativeTooltips(lookup, list)
             sm.updateCreativeTags(list)
         }
@@ -247,7 +253,7 @@ private fun initGroupIndex() {
 val ItemType.searchTabIndex: Int
     get() {
         initGroupIndex()
-        val index = ItemGroups.searchTab().searchTabDisplayItems.indexOfFirst { itemStack ->
+        val index = CreativeModeTabs.searchTab().searchTabDisplayItems.indexOfFirst { itemStack ->
             @Suppress("SENSELESS_COMPARISON")
             itemStack != null && itemStack.`(itemType)`.item == this.item
         }
@@ -262,9 +268,9 @@ val ItemType.groupIndex: Int
         val stack = this.searchItemStack
         initGroupIndex()
         var result = Int.MAX_VALUE
-        val grps = ItemGroups.allTabs().filter {
-            val grType = it.type ?: ItemGroupType.INVENTORY
-            grType === ItemGroupType.CATEGORY
+        val grps = CreativeModeTabs.allTabs().filter {
+            val grType = it.type ?: CreativeModeTab.Type.INVENTORY
+            grType === CreativeModeTab.Type.CATEGORY
         }.sortedWith(ItemGroupComparator())
 
         run earlyStop@ {
@@ -282,14 +288,14 @@ val ItemType.groupIndex: Int
         return result
     }
 
-inline val ItemType.`(foodComponent)`: FoodComponent
-    get() = item.components().get(DataComponentTypes.FOOD) ?: error("this shouldn't happen")
+inline val ItemType.`(foodComponent)`: FoodProperties
+    get() = item.components().get(DataComponents.FOOD) ?: error("this shouldn't happen")
 
 inline val ItemType.`(consumableComponent)`: Consumable
-    get() = item.components().get(DataComponentTypes.CONSUMABLE) ?: error("this shouldn't happen")
+    get() = item.components().get(DataComponents.CONSUMABLE) ?: error("this shouldn't happen")
 
 inline val ItemType.`(isFood)`: Boolean
-    get() = item.components().get(DataComponentTypes.FOOD) != null
+    get() = item.components().get(DataComponents.FOOD) != null
 
 
 inline val Consumable.`(consumeEffects)`: List<ConsumeEffect>
@@ -305,7 +311,7 @@ inline val Consumable.`(isHarmful)`: Boolean
             if (it.type === ConsumeEffect.Type.APPLY_EFFECTS) {
                 val effects = it as ApplyStatusEffectsConsumeEffect
                 effects.effects.forEach {
-                    if (it.effect.value()?.category === StatusEffectCategory.HARMFUL) {
+                    if (it.effect.value()?.category === MobEffectCategory.HARMFUL) {
                         return true
                     }
                 }
@@ -314,15 +320,15 @@ inline val Consumable.`(isHarmful)`: Boolean
         return false
     }
 
-inline val FoodComponent.`(saturationModifier)`
+inline val FoodProperties.`(saturationModifier)`
     get() = this.saturation
 
 val COMPONENTS_CHANGES_CODEC: Codec<VanillaItemStack> = Codec.lazyInitialized {
     RecordCodecBuilder.create { instance ->
-        instance.group(ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter {
+        instance.group(DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter {
             stack -> @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") stack?.componentsPatch
-        }).apply(instance) { changes: ComponentChanges? ->
-            VanillaItemStack(Registries.ITEM.get(Registries.ITEM.getKey(Items.AIR)).get(), 0, changes ?: ComponentChanges.EMPTY)
+        }).apply(instance) { changes: DataComponentPatch? ->
+            VanillaItemStack(BuiltInRegistries.ITEM.get(BuiltInRegistries.ITEM.getKey(Items.AIR)).get(), 0, changes ?: DataComponentPatch.EMPTY)
         }
     }
 }
@@ -339,7 +345,7 @@ fun VanillaItemStack.`(componentsToCodecList)`(): MutableList<Codec<*>> {
 }
 
 
-inline val ItemType.`(componentsToNbt)`: NbtElement?
+inline val ItemType.`(componentsToNbt)`: Tag?
     get() = if (!this.isEmpty()) {
         COMPONENTS_CHANGES_CODEC.encodeStart(Vanilla.world().registryAccess().createSerializationContext(NbtOps.INSTANCE), this.vanillaStack).getOrThrow();
     } else {
@@ -347,7 +353,7 @@ inline val ItemType.`(componentsToNbt)`: NbtElement?
     }
 
 inline val ItemType.rawId: Int
-    get() = Registries.ITEM.`(getRawId)`(item)
+    get() = BuiltInRegistries.ITEM.`(getRawId)`(item)
 inline val ItemType.damage: Int
     get() = vanillaStack.damageValue
 
@@ -369,10 +375,10 @@ inline val ItemType.durability: Int
     get() = if (isDamageableFn())  maxDamage - damage else -1
 
 inline val ItemType.isBucket: Boolean
-    get() = item is BucketItem || item is PowderSnowBucketItem
+    get() = item is BucketItem || item is SolidBucketItem
 
 inline val ItemType.isFullBucket: Boolean
-    get() = item is MobBucketItem || item is PowderSnowBucketItem || (item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty())
+    get() = item is MobBucketItem || item is SolidBucketItem || (item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty())
 
 inline val ItemType.isEmptyBucket: Boolean
     get() {
@@ -381,7 +387,7 @@ inline val ItemType.isEmptyBucket: Boolean
 
 fun ItemType.isEmptyComparedTo(other: ItemType): Boolean {
     val otherItem = other.item
-    return  if (item is PowderSnowBucketItem && otherItem is IMixinBucketItem && (otherItem.fluid as IMixinFluid).callIsEmpty()) {
+    return  if (item is SolidBucketItem && otherItem is IMixinBucketItem && (otherItem.fluid as IMixinFluid).callIsEmpty()) {
         true
     } else if (otherItem == Items.BUCKET && item is IMixinBucketItem && !(item.fluid as IMixinFluid).callIsEmpty()) {
         true
@@ -391,7 +397,7 @@ fun ItemType.isEmptyComparedTo(other: ItemType): Boolean {
 
 fun ItemType.isFullComparedTo(other: ItemType): Boolean {
     val otherItem = other.item
-    return if (item == Items.BUCKET && otherItem is PowderSnowBucketItem) {
+    return if (item == Items.BUCKET && otherItem is SolidBucketItem) {
         true
     } else item !is MobBucketItem && otherItem is MobBucketItem
 
@@ -402,32 +408,32 @@ inline val ItemType.isHoneyBottle: Boolean
 
 inline val ItemType.isStew: Boolean
     get() = `(isFood)`
-            && (vanillaStack.components[DataComponentTypes.USE_REMAINDER]?.convertInto?.item == Items.BOWL && vanillaStack.components[DataComponentTypes.USE_REMAINDER]?.convertInto?.count == 1)
+            && (vanillaStack.components[DataComponents.USE_REMAINDER]?.convertInto?.item == Items.BOWL && vanillaStack.components[DataComponents.USE_REMAINDER]?.convertInto?.count == 1)
 
 
 //region ItemType Potion Relative
 
 inline val ItemType.hasPotionName: Boolean
-    get() = tag?.has(DataComponentTypes.POTION_CONTENTS) ?: false
+    get() = tag?.has(DataComponents.POTION_CONTENTS) ?: false
 
 inline val ItemType.potionName: String
-    get() = if (hasPotionName) tag.get(DataComponentTypes.POTION_CONTENTS)?.potion?.get()?.value()?.name() ?: "" else ""
+    get() = if (hasPotionName) tag.get(DataComponents.POTION_CONTENTS)?.potion?.get()?.value()?.name() ?: "" else ""
 
 inline val ItemType.hasPotionEffects: Boolean
-    get() = tag?.get(DataComponentTypes.POTION_CONTENTS)?.hasEffects() ?: false
+    get() = tag?.get(DataComponents.POTION_CONTENTS)?.hasEffects() ?: false
 
 inline val ItemType.hasCustomPotionEffects: Boolean
-    get() = tag?.get(DataComponentTypes.POTION_CONTENTS)?.customEffects?.isNotEmpty() ?: false
+    get() = tag?.get(DataComponents.POTION_CONTENTS)?.customEffects?.isNotEmpty() ?: false
 
-inline val ItemType.potionEffects: List<StatusEffectInstance>
-    get() = tag?.get(DataComponentTypes.POTION_CONTENTS)?.allEffects?.toList() ?: listOf()
+inline val ItemType.potionEffects: List<MobEffectInstance>
+    get() = tag?.get(DataComponents.POTION_CONTENTS)?.allEffects?.toList() ?: listOf()
 
 inline val ItemType.comparablePotionEffects: List<PotionEffect>
     get() = potionEffects.map { it.`(asComparable)` }
 
 @Suppress("ObjectPropertyName")
-inline val StatusEffectInstance.`(asComparable)`: PotionEffect
-    get() = PotionEffect(Registries.MOB_EFFECT.getKey(this.effect.value()).toString(),
+inline val MobEffectInstance.`(asComparable)`: PotionEffect
+    get() = PotionEffect(BuiltInRegistries.MOB_EFFECT.getKey(this.effect.value()).toString(),
                          this.amplifier,
                          this.duration)
 
@@ -450,7 +456,7 @@ object ItemTypeExtensionsObject {
     fun priorityListChanged() {
         initGroupIndex()
         translationKeysPriorityList.clear()
-        ItemGroups.allTabs().forEach {
+        CreativeModeTabs.allTabs().forEach {
             (it as IMixinItemGroup).ipnPriorityIndex = -1;
         }
         SortSettings.CATEGORY_PRIORITY_LIST.value.split(",").forEach {
@@ -471,8 +477,8 @@ object ItemTypeExtensionsObject {
 
     fun makeDefaultList(): String {
         var newValue = ""
-        ItemGroups.allTabs().forEach {
-            if (it.type == ItemGroupType.CATEGORY) {
+        CreativeModeTabs.allTabs().forEach {
+            if (it.type == CreativeModeTab.Type.CATEGORY) {
                 val content = it.displayName.contents
                 if (content is TranslatableContents) {
                     newValue = if (newValue != "") "$newValue, ${content.key}" else content.key
@@ -485,18 +491,18 @@ object ItemTypeExtensionsObject {
 
 inline val ItemType.`(equipmentSlot)`: EquipmentSlot?
     get() {
-        val equipable: Equippable? = this.tag.get(DataComponentTypes.EQUIPPABLE)
+        val equipable: Equippable? = this.tag.get(DataComponents.EQUIPPABLE)
         return equipable?.slot()
     }
 
 val ItemType.`(isBundle)`: Boolean
     get() {
-        return tag.get(DataComponentTypes.BUNDLE_CONTENTS) != null
+        return tag.get(DataComponents.BUNDLE_CONTENTS) != null
     }
 
 val ItemType.`(isBundleAndHasItems)`: Boolean
     get() {
-        return tag.get(DataComponentTypes.BUNDLE_CONTENTS)?.size()?.let { it: Int -> it > 0 } ?: false
+        return tag.get(DataComponents.BUNDLE_CONTENTS)?.size()?.let { it: Int -> it > 0 } ?: false
     }
 
 //endregion

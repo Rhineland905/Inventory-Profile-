@@ -20,9 +20,11 @@
 
 package org.anti_ad.mc.ipnext.gui.inject
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.MerchantScreen
-import org.anti_ad.mc.alias.client.gui.widget.ClickableWidget
+import net.minecraft.client.gui.components.AbstractButton
+
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.inventory.MerchantScreen
+
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.gui.TooltipsManager
@@ -31,9 +33,7 @@ import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.ipnext.integration.HintsManagerNG
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.ipn.api.IPNButton
-import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.GuiSettings
-import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler
 import org.anti_ad.mc.ipnext.event.LockSlotsHandler
 import org.anti_ad.mc.ipnext.event.SlotHighlightHandler
@@ -46,8 +46,8 @@ object ContainerScreenEventHandler {
 
     var currentWidgets: MutableList<InsertableWidget>? = null
 
-    fun onScreenInit(target: ContainerScreen<*>,
-                     @Suppress("UNUSED_PARAMETER") addWidget: (ClickableWidget) -> Unit) {
+    fun onScreenInit(target: AbstractContainerScreen<*>,
+                     @Suppress("UNUSED_PARAMETER") addWidget: (AbstractButton) -> Unit) {
         if (target != Vanilla.screen()) return
         if (target.javaClass.name == "tictim.paraglider.client.screen.BargainScreen") return
         Log.trace("Showing screen of type ${target.javaClass.name}")
@@ -149,7 +149,7 @@ object ContainerScreenEventHandler {
 
     }
 
-    fun onScreenRemoved(target: ContainerScreen<*>) {
+    fun onScreenRemoved(target: AbstractContainerScreen<*>) {
         if (target is MerchantScreen) {
             VillagerTradeManager.currentVillager = null
         }

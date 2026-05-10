@@ -20,10 +20,11 @@
 
 package org.anti_ad.mc.ipnext.gui.inject
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
-import org.anti_ad.mc.alias.screen.AnvilContainer
-import org.anti_ad.mc.alias.screen.Container
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+
+import net.minecraft.world.inventory.AnvilMenu
+
 import org.anti_ad.mc.common.extensions.containsAny
 import org.anti_ad.mc.common.extensions.detectable
 import org.anti_ad.mc.common.gui.NativeContext
@@ -57,10 +58,10 @@ import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions
 
 //todo REFACTOR THIS SHIT
 
-class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
+class SortingButtonCollectionWidget(override val screen: AbstractContainerScreen<*>,
                                     val hints: HintClassData) : InsertableWidget() {
 
-    override val container: Container = Vanilla.container()
+    override val container = Vanilla.container()
 
     override fun render(context: NativeContext,
                         mouseX: Int,
@@ -131,7 +132,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                                 mouseX: Int,
                                 mouseY: Int,
                                 partialTicks: Float) {
-                if (screen !is CreativeInventoryScreen) return
+                if (screen !is CreativeModeInventoryScreen) return
                 val visible = screen.`(isInventoryTab)`
                 buttons.forEachIndexed { index, button ->
                     button.visible = originalVisibles[index] && visible
@@ -159,7 +160,7 @@ class SortingButtonCollectionWidget(override val screen: ContainerScreen<*>,
                     val container = Vanilla.container()
                     return if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) {
                         false
-                    } else if (container is AnvilContainer) {
+                    } else if (container is AnvilMenu) {
                         container.cost == 0 && super.visible
                     } else {
                         super.visible

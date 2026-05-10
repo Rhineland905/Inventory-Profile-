@@ -21,20 +21,20 @@
 package org.anti_ad.mc.ipnext.item
 
 import com.mojang.brigadier.StringReader
-import org.anti_ad.mc.alias.command.argument.NbtPathArgumentType
-import org.anti_ad.mc.alias.command.argument.NbtPathArgumentTypeNbtPath
-import org.anti_ad.mc.alias.component.ComponentType
-import org.anti_ad.mc.alias.item.Item
-import org.anti_ad.mc.alias.nbt.AbstractNbtList
-import org.anti_ad.mc.alias.nbt.AbstractNbtNumber
-import org.anti_ad.mc.alias.nbt.NbtCompound
-import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.nbt.NbtHelper
-import org.anti_ad.mc.alias.nbt.NbtList
-import org.anti_ad.mc.alias.nbt.NbtOps
-import org.anti_ad.mc.alias.nbt.StringNbtReader
-import org.anti_ad.mc.alias.registry.Registries
-import org.anti_ad.mc.alias.util.Identifier
+import net.minecraft.commands.arguments.NbtPathArgument
+import net.minecraft.core.component.DataComponentType
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CollectionTag
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
+import net.minecraft.nbt.NbtOps
+import net.minecraft.nbt.NumericTag
+import net.minecraft.nbt.Tag
+import net.minecraft.nbt.TagParser
+import net.minecraft.nbt.NbtUtils as VanillaNbtUtils
+import net.minecraft.resources.Identifier
+import net.minecraft.world.item.Item
+
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.extensions.AsComparable
 import org.anti_ad.mc.common.extensions.asComparable
@@ -58,11 +58,11 @@ object NbtUtils {
     // Vanilla Item
     // ============
     fun getItemFromId(id: Identifier): Item? {
-        return Registries.ITEM.`(getByIdentifier)`(id)
+        return BuiltInRegistries.ITEM.`(getByIdentifier)`(id)
     }
 
     fun getTagFromId(id: Identifier): List<Item>? {
-        return Registries.ITEM.tags.iterator().asSequence().firstOrNull {
+        return BuiltInRegistries.ITEM.tags.iterator().asSequence().firstOrNull {
             it.key().location == id
         }?.map { item ->
             item.value()
@@ -72,8 +72,8 @@ object NbtUtils {
     // ============
     // nbt
     // ============
-    fun compareNbt(a: NbtCompound?,
-                   b: NbtCompound?): Int {
+    fun compareNbt(a: CompoundTag?,
+                   b: CompoundTag?): Int {
         val b1 = a == null
         val b2 = b == null
         if (b1 != b2)
@@ -86,8 +86,8 @@ object NbtUtils {
         return pairs1.compareTo(pairs2)
     }
 
-    private fun compareStringTag(p1: Pair<String, NbtElement?>,
-                                 p2: Pair<String, NbtElement?>): Int {
+    private fun compareStringTag(p1: Pair<String, Tag?>,
+                                 p2: Pair<String, Tag?>): Int {
         val (key1, tag1) = p1
         val (key2, tag2) = p2
         val result = key1.compareTo(key2)
@@ -96,7 +96,7 @@ object NbtUtils {
         return tag1.compareTo(tag2)
     }
 
-    fun NbtElement.compareTo(other: NbtElement): Int {
+    fun Tag.compareTo(other: Tag): Int {
         val w1 = WrappedTag(this)
         val w2 = WrappedTag(other)
         return when {
@@ -110,22 +110,22 @@ object NbtUtils {
         } ?: w1.asString.compareTo(w2.asString)
     }
 
-    fun parseNbt(nbt: String): NbtCompound? {
-        // StringNbtReader
-        return tryCatch { StringNbtReader.parseCompoundFully(nbt) }
+    fun parseNbt(nbt: String): CompoundTag? {
+        // TagParser
+        return tryCatch { TagParser.parseCompoundFully(nbt) }
     }
 
-    fun parseNbtOrEmpty(nbt: String): NbtElement {
+    fun parseNbtOrEmpty(nbt: String): Tag {
         return tryCatch {
-            StringNbtReader.create(NbtOps.INSTANCE).parseFully(StringReader(nbt))
-        } ?: NbtCompound()
+            TagParser.create(NbtOps.INSTANCE).parseFully(StringReader(nbt))
+        } ?: CompoundTag()
     }
 
     // ============
     // match nbt
     // ============
-    fun matchNbtNoExtra(a: NbtElement?,
-                        b: NbtElement?): Boolean { // b superset of a (a <= b)
+    fun matchNbtNoExtra(a: Tag?,
+                        b: Tag?): Boolean { // b superset of a (a <= b)
         if (a == null) return true
         if (b == null) return false
 
@@ -137,20 +137,20 @@ object NbtUtils {
             wrappedA.isNumber -> wrappedA.asNumber == wrappedB.asNumber
             wrappedA.isString -> wrappedA.asString == wrappedB.asString
             wrappedA.isList -> {
-                a as NbtList
-                b as NbtList
+                a as ListTag
+                b as ListTag
                 a.size == b.size && a.containsAll(b)
             }
             else -> {
-                a as NbtCompound
-                b as NbtCompound
+                a as CompoundTag
+                b as CompoundTag
                 return a.unlessIt { isEmpty } == b.unlessIt { isEmpty }
             }
         }
     }
 
-    fun matchNbt(a: NbtElement?,
-                 b: NbtElement?): Boolean { // b superset of a (a <= b)
+    fun matchNbt(a: Tag?,
+                 b: Tag?): Boolean { // b superset of a (a <= b)
         if (a == null) return true
         if (b == null) return false
 
@@ -162,13 +162,13 @@ object NbtUtils {
             wrappedA.isNumber -> wrappedA.asNumber == wrappedB.asNumber
             wrappedA.isString -> wrappedA.asString == wrappedB.asString
             wrappedA.isList -> {
-                a as NbtList
-                b as NbtList
+                a as ListTag
+                b as ListTag
                 b.containsAll(a)
             }
             else -> {
-                a as NbtCompound
-                b as NbtCompound
+                a as CompoundTag
+                b as CompoundTag
                 if (a.isEmpty && b.isEmpty) return true
                 if (b.isEmpty) return false
 
@@ -177,14 +177,14 @@ object NbtUtils {
         }
     }
 
-    class NbtPath(val value: NbtPathArgumentTypeNbtPath) { // wrapper class to avoid direct imports to vanilla code
+    class NbtPath(val value: NbtPathArgument.NbtPath) { // wrapper class to avoid direct imports to vanilla code
         companion object {
             fun of(string: String): NbtPath? {
                 return getNbtPath(string)?.let { NbtPath(it) }
             }
         }
 
-        fun getTags(itemType: ItemType, componentType: ComponentType<*>?): List<WrappedTag> {
+        fun getTags(itemType: ItemType, componentType: DataComponentType<*>?): List<WrappedTag> {
             val tag = itemType.tag
             tag ?: return listOf()
             val nbt = componentType?.toFilteredNbtOrNull(Optional.ofNullable(tag.get(componentType)))
@@ -193,7 +193,7 @@ object NbtUtils {
         }
     }
 
-    class WrappedTag(val value: NbtElement) {
+    class WrappedTag(val value: Tag) {
         val isString: Boolean
             get() = value.`(type)` == 8
         val isNumber: Boolean
@@ -208,16 +208,16 @@ object NbtUtils {
         val asString: String
             get() = value.`(asString)`
         val asNumber: Number // todo what if number is long > double precision range
-            get() = (value as? AbstractNbtNumber)?.asDouble()?.get() ?: 0
+            get() = (value as? NumericTag)?.asDouble()?.get() ?: 0
         val asDouble: Double
-            get() = (value as? AbstractNbtNumber)?.asDouble()?.get() ?: 0.0
-        val asCompound: NbtCompound
-            get() = value as? NbtCompound ?: NbtCompound()
+            get() = (value as? NumericTag)?.asDouble()?.get() ?: 0.0
+        val asCompound: CompoundTag
+            get() = value as? CompoundTag ?: CompoundTag()
         val asList: List<WrappedTag>
-            get() = (value as? AbstractNbtList)?.map { WrappedTag(it) } ?: listOf()
-        val asListUnwrapped: List<NbtElement>
-            get() = (value as? AbstractNbtList)?.toList() ?: listOf()
-        val asListComparable: List<AsComparable<NbtElement>>
+            get() = (value as? CollectionTag)?.map { WrappedTag(it) } ?: listOf()
+        val asListUnwrapped: List<Tag>
+            get() = (value as? CollectionTag)?.toList() ?: listOf()
+        val asListComparable: List<AsComparable<Tag>>
             get() = asListUnwrapped.map { it.asComparable { a, b -> a.compareTo(b) } }
 
         fun sameType(other: WrappedTag): Boolean {
@@ -236,29 +236,29 @@ object NbtUtils {
     // ============
     // private
     // ============
-    private fun innerMatchNbt(a: NbtCompound?,
-                              b: NbtCompound?): Boolean { // b superset of a (a <= b)
+    private fun innerMatchNbt(a: CompoundTag?,
+                              b: CompoundTag?): Boolean { // b superset of a (a <= b)
 
-        return NbtHelper.compareNbt(a,
-                                    b,
-                                    true) // criteria, testTarget, allowExtra (for list)
+        return VanillaNbtUtils.compareNbt(a,
+                                          b,
+                                          true) // criteria, testTarget, allowExtra (for list)
     }
 
-    private fun getNbtPath(path: String): NbtPathArgumentTypeNbtPath? {
+    private fun getNbtPath(path: String): NbtPathArgument.NbtPath? {
         // NbtPathArgumentType().parse(StringReader(path))
-        return tryOrPrint(Log::warn) { NbtPathArgumentType().parse(StringReader(path)) }
+        return tryOrPrint(Log::warn) { NbtPathArgument().parse(StringReader(path)) }
     }
 
-    private fun getTagsForPath(nbtPath: NbtPathArgumentTypeNbtPath,
-                               target: NbtElement): List<NbtElement> {
+    private fun getTagsForPath(nbtPath: NbtPathArgument.NbtPath,
+                               target: Tag): List<Tag> {
         return trySwallow(listOf()) { nbtPath.get(target) }
     }
 
-    fun NbtElement?.nullIfEmpty(): NbtElement? {
+    fun Tag?.nullIfEmpty(): Tag? {
         return if (this == null) {
             null
         }
-        else if (this is NbtCompound && this.isEmpty || this is NbtList && this.isEmpty()) {
+        else if (this is CompoundTag && this.isEmpty || this is ListTag && this.isEmpty()) {
             null
         } else {
             this

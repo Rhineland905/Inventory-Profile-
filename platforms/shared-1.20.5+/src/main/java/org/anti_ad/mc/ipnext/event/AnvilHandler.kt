@@ -19,10 +19,10 @@
 
 package org.anti_ad.mc.ipnext.event
 
+import net.minecraft.client.gui.screens.inventory.AnvilScreen
+import net.minecraft.world.inventory.AnvilMenu
 import org.anti_ad.mc.alias.client.gui.screen.ingame.`(nameFieldText)`
-import org.anti_ad.mc.alias.client.gui.screen.ingame.AnvilScreen
 import org.anti_ad.mc.alias.screen.`(inputSlotIndices)`
-import org.anti_ad.mc.alias.screen.AnvilContainer
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.config.GuiSettings
@@ -30,7 +30,6 @@ import org.anti_ad.mc.ipnext.ingame.`(id)`
 import org.anti_ad.mc.ipnext.ingame.`(itemStack)`
 import org.anti_ad.mc.ipnext.ingame.`(send)`
 import org.anti_ad.mc.ipnext.ingame.`(slots)`
-import org.anti_ad.mc.ipnext.ingame.vCursorStack
 import org.anti_ad.mc.ipnext.inventory.AreaTypes
 import org.anti_ad.mc.ipnext.inventory.ContainerClicker
 import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions
@@ -43,9 +42,9 @@ object AnvilHandler {
     val mainSync = Any()
     var ticksAfterLastPacket: Int = 2
     private var lastText: String = ""
-    private val slots: MutableList<Pair<Int,ItemType>> = mutableListOf()
+    private val slots: MutableList<Pair<Int, ItemType>> = mutableListOf()
     private var afterPre: Boolean = false
-    private var container: AnvilContainer? = null
+    private var container: AnvilMenu? = null
     private var stillProcessingLast: Boolean = false
     private var skipNext: Boolean = false
 
@@ -54,7 +53,7 @@ object AnvilHandler {
     private val enabled
         get() = GuiSettings.FAST_RENAME_SAVED_VALUE.booleanValue
 
-    fun onTakeOutPre(container: AnvilContainer): Boolean {
+    fun onTakeOutPre(container: AnvilMenu): Boolean {
         synchronized(mainSync) {
             if (!enabled) return false
             if (stillProcessingLast) {
@@ -80,7 +79,7 @@ object AnvilHandler {
         }
     }
 
-    fun onTakeOutPost(container: AnvilContainer) {
+    fun onTakeOutPost(container: AnvilMenu) {
         synchronized(mainSync) {
             if (!enabled) return
             if (stillProcessingLast) {
@@ -104,7 +103,7 @@ object AnvilHandler {
     }
 
     private fun restoreState(screen: AnvilScreen,
-                             container: AnvilContainer,
+                             container: AnvilMenu,
                              lastText: String,
                              idToType: List<Pair<Int, ItemType>>) {
         if (!enabled) return
@@ -119,9 +118,8 @@ object AnvilHandler {
         }
     }
 
-
     private class FirstStageRunnable(private val screen: AnvilScreen,
-                                     private val container: AnvilContainer,
+                                     private val container: AnvilMenu,
                                      private val lastText: String,
                                      private val idToType: List<Pair<Int, ItemType>>): Runnable {
 
@@ -203,8 +201,6 @@ object AnvilHandler {
             }
         }
     }
-
-
 
     fun addOnTickRunnable(runnable: Runnable) {
         synchronized(onTickRunnableList) {

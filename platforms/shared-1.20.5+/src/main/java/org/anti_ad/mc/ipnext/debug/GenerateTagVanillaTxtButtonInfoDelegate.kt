@@ -21,9 +21,9 @@
 package org.anti_ad.mc.ipnext.debug
 
 import net.minecraft.core.HolderSet
-import org.anti_ad.mc.alias.item.Item
-import org.anti_ad.mc.alias.registry.Registries
-import org.anti_ad.mc.alias.util.Identifier
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.resources.Identifier
+import net.minecraft.world.item.Item
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.extensions.div
@@ -45,8 +45,8 @@ object GenerateTagVanillaTxtButtonInfoDelegate : ConfigButtonClickHandler() {
 
         val res = mutableListOf<Identifier>()
         this.forEach {
-            Registries.ITEM.getKey(it.value()).also { id ->
-                if (id != Registries.ITEM.defaultKey) {
+            BuiltInRegistries.ITEM.getKey(it.value()).also { id ->
+                if (id != BuiltInRegistries.ITEM.defaultKey) {
                     res.add(id)
                 }
             }
@@ -61,7 +61,7 @@ object GenerateTagVanillaTxtButtonInfoDelegate : ConfigButtonClickHandler() {
 
         val m = mutableMapOf<Identifier, MutableList<Identifier>>()
 
-        Registries.ITEM.tags.forEach { namedTag ->
+        BuiltInRegistries.ITEM.tags.forEach { namedTag ->
             val tagId = namedTag.key().location
             m[tagId] = namedTag.mapNotNullTo(mutableListOf()) { item ->
                 val unwrapKey = item.unwrapKey()
@@ -83,7 +83,7 @@ object GenerateTagVanillaTxtButtonInfoDelegate : ConfigButtonClickHandler() {
         }
 
         Log.traceIf {
-            Registries.ITEM.tags.forEach { namedTag ->
+            BuiltInRegistries.ITEM.tags.forEach { namedTag ->
                 Log.trace {
                     "${namedTag.key().location} -> "
                 }

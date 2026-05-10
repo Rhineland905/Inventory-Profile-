@@ -20,11 +20,9 @@
 
 package org.anti_ad.mc.ipnext.inventory
 
-import org.anti_ad.mc.alias.inventory.CraftingInventory
-import org.anti_ad.mc.alias.screen.Container
+import net.minecraft.world.inventory.AbstractContainerMenu
 import org.anti_ad.mc.ipnext.integration.HintsManagerNG
 import org.anti_ad.mc.ipnext.container.versionSpecificContainerTypes
-import org.anti_ad.mc.ipnext.ingame.`(inventory)`
 import org.anti_ad.mc.ipnext.ingame.`(slots)`
 import org.anti_ad.mc.ipnext.integration.HintClassData
 import org.anti_ad.mc.ipnext.inventory.ContainerType.*
@@ -69,7 +67,7 @@ object ContainerTypes {
         init()
     }
 
-    private val <T: Container> T.unknownContainerDefaultTypes : Set<ContainerType>
+    private val <T: AbstractContainerMenu> T.unknownContainerDefaultTypes : Set<ContainerType>
         get() {
 
 /*
@@ -110,7 +108,7 @@ object ContainerTypes {
                                  without: Set<ContainerType> = setOf()) =
         this.containsAll(with) && without.all { it !in this }
 
-    private fun getRepresentingClass(container: Container): Class<*>? {
+    private fun getRepresentingClass(container: AbstractContainerMenu): Class<*>? {
         if (outerMap.containsKey(container.javaClass)) {
             return container.javaClass
         }
@@ -129,7 +127,7 @@ object ContainerTypes {
         }
     }
 
-    fun getTypes(container: Container,
+    fun getTypes(container: AbstractContainerMenu,
                  hints: HintClassData = HintsManagerNG.getHints(container.javaClass)): Set<ContainerType> {
 
         val v: Set<ContainerType>

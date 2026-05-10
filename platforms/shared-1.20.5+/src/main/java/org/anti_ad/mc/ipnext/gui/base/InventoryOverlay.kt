@@ -20,8 +20,8 @@
 
 package org.anti_ad.mc.ipnext.gui.base
 
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.math2d.Point
 import org.anti_ad.mc.common.math2d.Rectangle
@@ -76,7 +76,7 @@ interface InventoryOverlay {
         postRender(context)
     }
 
-    fun processSwipe(slotList: MutableSet<Int>, screen: ContainerScreen<*>, mode: Int) {
+    fun processSwipe(slotList: MutableSet<Int>, screen: AbstractContainerScreen<*>, mode: Int) {
         val line = MouseTracer.asLine
         val topLeft = screen.`(containerBounds)`.topLeft - Size(1, 1)
         for ((invSlot, slotTopLeft) in slotLocations) {

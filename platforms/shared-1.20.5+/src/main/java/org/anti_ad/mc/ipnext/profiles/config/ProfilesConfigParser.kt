@@ -23,13 +23,12 @@ import com.yevdo.jwildcard.JWildcard
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
-import org.anti_ad.mc.alias.component.ComponentType
-import org.anti_ad.mc.alias.item.Items
-import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.registry.`(get)`
-import org.anti_ad.mc.alias.registry.Registries
-import org.anti_ad.mc.alias.util.Identifier
-import org.anti_ad.mc.alias.util.IdentifierOf
+import net.minecraft.core.component.DataComponentType
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.Tag
+import net.minecraft.resources.Identifier
+import net.minecraft.world.item.Items
+
 import org.anti_ad.mc.common.annotation.MayThrow
 import org.anti_ad.mc.common.extensions.tryOrPrint
 import org.anti_ad.mc.ipnext.Log
@@ -98,7 +97,7 @@ fun List<ProfileData>.dump() {
 }
 
 val String.`(asIdentifier)`: Identifier
-    get() = IdentifierOf(this)
+    get() = Identifier.parse(this)
 
 private fun ProfilesParser.ScriptContext.toProfileList(): List<ProfileData> {
     return profile().map { profile ->
@@ -180,9 +179,9 @@ data class ProfileSlot(val id: ProfileSlotId,
 }
 
 data class ProfileComponentData(val id: ProfileComponentType,
-                                val componentNbt: NbtElement?) {
+                                val componentNbt: Tag?) {
 
-    constructor(id: String, component: NbtElement?) : this(ProfileComponentType.of(id), component)
+    constructor(id: String, component: Tag?) : this(ProfileComponentType.of(id), component)
 
     override fun toString(): String {
         return when (componentNbt) {
@@ -259,8 +258,8 @@ sealed interface ProfileItemId: Predicate<ItemType> {
             val tag = idLike.NamespacedTag()?.text?.unescape()
             val wildcard = idLike.IdWildcard()?.text?.unescape()
 
-            val result = id?.let { Id(IdentifierOf(it)) }
-                         ?: tag?.let { Tag(IdentifierOf(it.removePrefix("#"))) }
+            val result = id?.let { Id(Identifier.parse(it)) }
+                         ?: tag?.let { Tag(Identifier.parse(it.removePrefix("#"))) }
                          ?: wildcard?.let { Wildcard(it) }
                          ?: Wildcard(idLike.text.unescape()) // unreachable; something went wrong
 
@@ -275,8 +274,8 @@ sealed interface ProfileItemId: Predicate<ItemType> {
 
 data class ProfileComponentType(val id: Identifier) {
 
-    val type: ComponentType<*>? by lazy {
-        Registries.DATA_COMPONENT_TYPE.`(get)`(id) ?: null.also { Log.warn("unknown data component: $id") }
+    val type: DataComponentType<*>? by lazy {
+        BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(id) ?: null.also { Log.warn("unknown data component: $id") }
     }
 
     override fun toString(): String = id.toString()
@@ -284,7 +283,7 @@ data class ProfileComponentType(val id: Identifier) {
     companion object {
 
         fun of(id: String): ProfileComponentType {
-            val result = ProfileComponentType(IdentifierOf(id))
+            val result = ProfileComponentType(Identifier.parse(id))
             tryOrPrint(Log::warn) {
                 result.type // trigger validation but do not throw
             }

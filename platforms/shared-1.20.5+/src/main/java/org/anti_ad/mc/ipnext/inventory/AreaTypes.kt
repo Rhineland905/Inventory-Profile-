@@ -20,15 +20,17 @@
 
 package org.anti_ad.mc.ipnext.inventory
 
-import org.anti_ad.mc.alias.inventory.CraftingInventory
-import org.anti_ad.mc.alias.inventory.CraftingResultInventory
-import org.anti_ad.mc.alias.inventory.PlayerInventory
-import org.anti_ad.mc.alias.screen.Container
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.CraftingContainer
+import net.minecraft.world.inventory.MerchantResultSlot
+import net.minecraft.world.inventory.ResultContainer
+import net.minecraft.world.inventory.ResultSlot
+import net.minecraft.world.inventory.Slot
+
 import org.anti_ad.mc.alias.screen.slot.`(disablesDynamicDisplay)`
 import org.anti_ad.mc.alias.screen.slot.`(isEnabled)`
-import org.anti_ad.mc.alias.screen.slot.CraftingResultSlot
-import org.anti_ad.mc.alias.screen.slot.Slot
-import org.anti_ad.mc.alias.screen.slot.TradeOutputSlot
+
 import org.anti_ad.mc.common.extensions.indexed
 import org.anti_ad.mc.common.math2d.Point
 import org.anti_ad.mc.common.math2d.Size
@@ -115,7 +117,7 @@ object AreaTypes {
                           slotIndices: MutableList<Int>) {
         val isHorse = types.contains(HORSE_STORAGE)
         for ((slotIndex, slot) in vanillaSlots.withIndex()) {
-            if (slot.`(inventoryOrNull)` is PlayerInventory) continue
+            if (slot.`(inventoryOrNull)` is Inventory) continue
             // first two slot of horse is not item storage
             if (!(isHorse && slot.`(invSlot)` in 0..1)) {
                 slotIndices.add(slotIndex)
@@ -126,7 +128,7 @@ object AreaTypes {
     val lockedSlots = AreaType.playerInvSlots { LockSlotsHandler.lockedInvSlots }
 
 
-    val <T: Container> T.disabled
+    val <T: AbstractContainerMenu> T.disabled
         get() = AreaType.match { it ->
             val className = it::class.jvmName
             it.`(disablesDynamicDisplay)` || !it.`(isEnabled)` || it.x < 0 || it.y < 0 || SlotIntegrationHints.hintFor(className).ignore ||
@@ -134,27 +136,27 @@ object AreaTypes {
                         val cl: Class<*> = this.javaClass
                         val hints = HintsManagerNG.getHints(cl)
                         it.`(inventory)`.javaClass === cl && hints.slotIgnoreInventoryTypes.contains(className)
-                                || (hints.ignoreCraftingGrid && (it.`(inventory)` is CraftingInventory || it.`(inventory)` is CraftingResultInventory))
+                                || (hints.ignoreCraftingGrid && (it.`(inventory)` is CraftingContainer || it.`(inventory)` is ResultContainer))
                     }
         }
 
 
-    //  val nonPlayer = AreaType.match { it.`(inventory)` !is PlayerInventory }
+    //  val nonPlayer = AreaType.match { it.`(inventory)` !is Inventory }
 //  val nonPlayerNonOutput = AreaType.match {
-//    it.`(inventory)` !is PlayerInventory
-//        && it.`(inventory)` !is CraftingResultInventory
-//        && it !is CraftingResultSlot
-//        && it !is TradeOutputSlot
+//    it.`(inventory)` !is Inventory
+//        && it.`(inventory)` !is ResultContainer
+//        && it !is ResultSlot
+//        && it !is MerchantResultSlot
 //  }
 
     //  val playerHotbarAndOffhand = AreaType.player(hotbarInvSlots + offhandInvSlot)
 //  val playerStorageAndHotbarAndOffhand = AreaType.player(storageInvSlots + hotbarInvSlots + offhandInvSlot)
 
     val craftingIngredient = AreaType.match {
-        it.`(inventoryOrNull)` is CraftingInventory
-                && (it.`(inventoryOrNull)` != null && it.`(inventory)` !is CraftingResultInventory)
-                && it !is CraftingResultSlot
-                && it !is TradeOutputSlot
+        it.`(inventoryOrNull)` is CraftingContainer
+                && (it.`(inventoryOrNull)` != null && it.`(inventory)` !is ResultContainer)
+                && it !is ResultSlot
+                && it !is MerchantResultSlot
     }
 }
 
@@ -189,7 +191,7 @@ fun interface AreaType {
                            invSlots: () -> Iterable<Int>) = AreaType { _, vanillaSlots ->
             val slotIndexOfInvSlot = mutableMapOf<Int, Int>() // invSlot, slotIndex
             vanillaSlots.forEachIndexed { slotIndex, slot ->
-                if (slot.`(inventoryOrNull)` is PlayerInventory) {
+                if (slot.`(inventoryOrNull)` is Inventory) {
                     slotIndexOfInvSlot[slot.`(invSlot)`] = slotIndex
                 }
             }
@@ -198,7 +200,7 @@ fun interface AreaType {
         }
     }
 
-    fun getItemArea(vanillaContainer: Container,
+    fun getItemArea(vanillaContainer: AbstractContainerMenu,
                     vanillaSlots: List<Slot>): ItemArea
 
     operator fun plus(other: AreaType) = AreaType { vanillaContainer, vanillaSlots ->
@@ -333,25 +335,25 @@ object SectionRegister {
   //   storage 9 - 35    left to right, top to bottom
   val playerMainhand =
     Section(preserveSlot = true) {
-      it.slot.`(inventory)`.let { inv -> inv is PlayerInventory && inv.`(selectedSlot)` == it.slot.`(invSlot)` }
+      it.slot.`(inventory)`.let { inv -> inv is Inventory && inv.`(selectedSlot)` == it.slot.`(invSlot)` }
     }
-  val playerHotbar = section<PlayerInventory>(0 until 9)
-  val playerStorage = section<PlayerInventory>(9..35)
-  val playerArmor = section<PlayerInventory>(36..39, preserveSlot = true)
+  val playerHotbar = section<Inventory>(0 until 9)
+  val playerStorage = section<Inventory>(9..35)
+  val playerArmor = section<Inventory>(36..39, preserveSlot = true)
     .apply { sort = { list -> list.sortedByDescending { it.slot.`(invSlot)` } } }
-  val playerHand = section<PlayerInventory>(39)
-  val playerChest = section<PlayerInventory>(38)
-  val playerLegs = section<PlayerInventory>(37)
-  val playerFeet = section<PlayerInventory>(36)
-  val playerOffhand = section<PlayerInventory>(40)
-  val playerRemaining = section<PlayerInventory>()
+  val playerHand = section<Inventory>(39)
+  val playerChest = section<Inventory>(38)
+  val playerLegs = section<Inventory>(37)
+  val playerFeet = section<Inventory>(36)
+  val playerOffhand = section<Inventory>(40)
+  val playerRemaining = section<Inventory>()
 
   val nonPlayer = copyOfRemaining()
   val trader = section<TraderInventory>(preserveSlot = true)
-  val traderOutput = Section { it.slot is TradeOutputSlot }
+  val traderOutput = Section { it.slot is MerchantResultSlot }
   val traderInput = section<TraderInventory>()
-  val crafting = section<CraftingInventory>()
-  val craftingResult = section<CraftingResultInventory>()
+  val crafting = section<CraftingContainer>()
+  val craftingResult = section<ResultContainer>()
 
   val horseEquipment = Section { it.owner.container is HorseContainer && it.slot.`(invSlot)` in 0..1 }
   val sortableStorage = Section { it.owner.properties.category == ContainerCategory.SORTABLE_STORAGE }

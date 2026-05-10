@@ -20,9 +20,8 @@
 
 package org.anti_ad.mc.ipnext.item.rule.parameter
 
-import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.util.Identifier
-import org.anti_ad.mc.alias.util.IdentifierOf
+import net.minecraft.nbt.Tag
+import net.minecraft.resources.Identifier
 import org.anti_ad.mc.common.extensions.trySwallow
 import org.anti_ad.mc.common.extensions.usefulName
 
@@ -34,7 +33,7 @@ import org.anti_ad.mc.ipnext.parser.TemporaryRuleParser
 
 object IdentifierArgumentType: ArgumentType<Identifier> {
     override fun toString(value: Identifier) = "${value.namespace}:${value.path}"
-    override fun parse(argument: String) = IdentifierOf(argument)
+    override fun parse(argument: String) = Identifier.parse(argument)
 }
 object StringArgumentType : ArgumentType<String> {
     override fun toString(value: String) = value
@@ -56,8 +55,8 @@ class EnumArgumentType<T : Enum<T>>(val enumClass: Class<T>) : ArgumentType<T> {
         }
 }
 
-object NbtArgumentType : ArgumentType<NbtElement> {
-    override fun toString(value: NbtElement) = value.toString()
+object NbtArgumentType : ArgumentType<Tag> {
+    override fun toString(value: Tag) = value.toString()
     override fun parse(argument: String) = NbtUtils.parseNbtOrEmpty(argument)
 }
 

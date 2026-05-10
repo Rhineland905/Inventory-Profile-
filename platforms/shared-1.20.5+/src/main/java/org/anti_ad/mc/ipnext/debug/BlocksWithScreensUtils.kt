@@ -26,7 +26,6 @@ import org.anti_ad.mc.alias.registry.`(REGISTRIES-ITEM-IDS)`
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.extensions.ifTrue
-import org.anti_ad.mc.common.vanilla.alias.*
 import org.anti_ad.mc.common.extensions.plus
 import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.vanilla.Vanilla
@@ -76,7 +75,7 @@ fun generateCommands(@Suppress("UNUSED_PARAMETER")
     blocks.keys.forEach { namespace ->
         val blocksToProcess = blocks[namespace]
         if (blocksToProcess != null) {
-///setblock 1000 126 905 minecraft:oak_sign[rotation=12,waterlogged=false]{Text1:"{\"text\":\"test\"}"}
+            //setblock 1000 126 905 minecraft:oak_sign[rotation=12,waterlogged=false]{Text1:"{\"text\":\"test\"}"}
             script.add("/setblock ${px - 2} $py ${pz - pos} minecraft:oak_sign[rotation=12,waterlogged=false]{Text1:\"{\\\"text\\\":\\\"$namespace\\\"}\"} destroy")
             genRowScript(px, py, pz - pos, script, playerName, width)
             var blockPos = 0

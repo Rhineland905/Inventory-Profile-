@@ -20,12 +20,10 @@
 
 package org.anti_ad.mc.ipnext.inventory
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeContainer
-import org.anti_ad.mc.alias.component.ComponentType
-import org.anti_ad.mc.alias.component.DataComponentTypes
-import org.anti_ad.mc.alias.component.type.BundleContentsComponent
-import org.anti_ad.mc.alias.screen.Container
-import org.anti_ad.mc.alias.screen.slot.Slot
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.Slot
+
 import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.annotation.ThrowsCaught
 import org.anti_ad.mc.common.extensions.tryOrElse
@@ -51,7 +49,7 @@ import org.anti_ad.mc.ipnext.item.isEmpty
 import org.anti_ad.mc.ipnext.item.isFull
 import org.anti_ad.mc.ipnext.item.stackableWith
 
-class AdvancedContainer(val vanillaContainer: Container,
+class AdvancedContainer(val vanillaContainer: AbstractContainerMenu,
                         cursor: ItemStack = vCursorStack()) {
 
     private val vanillaSlots: List<Slot>
@@ -142,7 +140,7 @@ class AdvancedContainer(val vanillaContainer: Container,
 
         fun create(): AdvancedContainer {
             val container = Vanilla.container()
-            return AdvancedContainer(if (container is CreativeContainer) {
+            return AdvancedContainer(if (container is CreativeModeInventoryScreen.ItemPickerMenu) {
                 Vanilla.playerContainer()
             } else {
                 container

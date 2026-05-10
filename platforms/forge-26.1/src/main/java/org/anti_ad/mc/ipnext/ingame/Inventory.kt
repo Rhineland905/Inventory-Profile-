@@ -20,10 +20,10 @@
 
 package org.anti_ad.mc.ipnext.ingame
 
-import org.anti_ad.mc.alias.client.gui.screen.Screen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
-import org.anti_ad.mc.alias.entity.player.PlayerInventory
-import org.anti_ad.mc.alias.screen.slot.Slot
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.inventory.Slot
 import org.anti_ad.mc.common.vanilla.Vanilla
 
 // ============
@@ -36,9 +36,9 @@ private inline val vPlayerSlots: List<Slot>
 
 fun vPlayerSlotOf(slot: Slot,
                   screen: Screen?): Slot { // creative slot to survival slot
-    if (screen !is CreativeInventoryScreen) return slot
+    if (screen !is CreativeModeInventoryScreen) return slot
     val inventory = slot.`(inventoryOrNull)` ?: return slot
-    if (inventory !is PlayerInventory) return slot
+    if (inventory !is Inventory) return slot
     val id = slot.`(id)`
     val invSlot = slot.`(invSlot)`
     return when {

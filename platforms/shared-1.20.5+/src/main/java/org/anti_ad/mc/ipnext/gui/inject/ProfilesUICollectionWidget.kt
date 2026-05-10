@@ -20,7 +20,8 @@
 
 package org.anti_ad.mc.ipnext.gui.inject
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.gui.TooltipsManager
@@ -49,7 +50,7 @@ import org.anti_ad.mc.ipnext.ingame.`(containerBounds)`
 import org.anti_ad.mc.ipnext.inventory.ContainerType
 import org.anti_ad.mc.ipnext.inventory.ContainerTypes
 
-class ProfilesUICollectionWidget(override val screen: ContainerScreen<*>,
+class ProfilesUICollectionWidget(override val screen: AbstractContainerScreen<*>,
                                  hintsData: HintClassData = HintsManagerNG.getHints(screen.javaClass)): InsertableWidget(), Hintable {
 
     override var hints: ButtonPositionHint = hintsData.hintFor(IPNButton.PROFILE_SELECTOR)

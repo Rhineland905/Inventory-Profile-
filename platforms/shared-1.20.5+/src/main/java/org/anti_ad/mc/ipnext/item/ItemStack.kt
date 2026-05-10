@@ -20,7 +20,7 @@
 
 package org.anti_ad.mc.ipnext.item
 
-import org.anti_ad.mc.alias.screen.slot.Slot
+import net.minecraft.world.inventory.Slot
 
 sealed class ItemStack {
     abstract val itemType: ItemType

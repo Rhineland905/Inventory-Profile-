@@ -20,10 +20,11 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.inventory.PlayerInventory
-import org.anti_ad.mc.alias.screen.slot.Slot
-import org.anti_ad.mc.alias.world.GameType
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.inventory.Slot
+import net.minecraft.world.level.GameType
+
 import org.anti_ad.mc.common.extensions.detectable
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.gui.NativeContext
@@ -32,13 +33,11 @@ import org.anti_ad.mc.common.math2d.Point
 import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.common.math2d.Size
 import org.anti_ad.mc.common.vanilla.Vanilla
-
 import org.anti_ad.mc.common.vanilla.render.glue.Sprite
 import org.anti_ad.mc.common.vanilla.render.glue.rDrawCenteredSprite
 import org.anti_ad.mc.common.vanilla.render.glue.rFillRect
 import org.anti_ad.mc.ipnext.config.Features
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings
-import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.config.SwitchType.HOLD
 import org.anti_ad.mc.ipnext.config.SwitchType.TOGGLE
 import org.anti_ad.mc.ipnext.gui.base.InventoryOverlay
@@ -78,7 +77,7 @@ object LockSlotsHandler: InventoryOverlay {
 
     override val slotLocations: Map<Int, Point>
         get() {
-            val screen = Vanilla.screen() as? ContainerScreen<*> ?: return mapOf()
+            val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return mapOf()
             @Suppress("USELESS_ELVIS")
             val container = Vanilla.container() ?: return mapOf()
             return container.`(slots)`.mapNotNull { slot ->
@@ -86,7 +85,7 @@ object LockSlotsHandler: InventoryOverlay {
                                                screen)
                 val topLeft =slot.`(topLeft)`
                 val inv = playerSlot.`(inventoryOrNull)` ?: return@mapNotNull null
-                return@mapNotNull if (inv is PlayerInventory) playerSlot.`(invSlot)` to topLeft else null
+                return@mapNotNull if (inv is Inventory) playerSlot.`(invSlot)` to topLeft else null
             }.toMap()
         }
 
@@ -104,10 +103,10 @@ object LockSlotsHandler: InventoryOverlay {
     fun isSlotLocked(i: Int) = lockedInvSlots.contains(i)
 
     fun isMappedSlotLocked(slot: Slot): Boolean {
-        val screen = Vanilla.screen() as? ContainerScreen<*> ?: return false
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return false
         val playerSlot = vPlayerSlotOf(slot,
                                        screen)
-        return if (playerSlot.`(inventoryOrNull)` is PlayerInventory) {
+        return if (playerSlot.`(inventoryOrNull)` is Inventory) {
             lockedInvSlots.contains(playerSlot.`(invSlot)`)
         } else {
             false
@@ -216,7 +215,7 @@ object LockSlotsHandler: InventoryOverlay {
                            lockedSprite: ((NativeContext, Point, Point) -> Unit)?,
                            openSprite: ((NativeContext, Point, Point) -> Unit)?) {
         //if (!enabledForeground) return
-        val screen = Vanilla.screen() as? ContainerScreen<*> ?: return
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return
         //    rClearDepth() // use translate or zOffset
         //rDisableDepth()
         //LibIPNRenderSystem._enableBlend()
@@ -324,7 +323,7 @@ object LockSlotsHandler: InventoryOverlay {
 
     fun onTickInGame() {
         if (!enabledForeground) return
-        val screen = Vanilla.screen() as? ContainerScreen<*> ?: run {
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: run {
             displayingConfig = false
             clicked = false
             return
@@ -336,7 +335,7 @@ object LockSlotsHandler: InventoryOverlay {
 
     fun onCancellableInput(): Boolean {
         if (!enabledForeground) return false
-        val screen = Vanilla.screen() as? ContainerScreen<*> ?: return false
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return false
         when (LockedSlotsSettings.LOCK_SLOTS_CONFIG_SWITCH_TYPE.value) {
             TOGGLE -> {
                 if (LockedSlotsSettings.LOCK_SLOTS_SWITCH_CONFIG_MODIFIER.isActivated()) {

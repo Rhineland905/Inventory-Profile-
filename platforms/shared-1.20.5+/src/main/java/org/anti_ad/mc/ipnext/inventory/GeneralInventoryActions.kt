@@ -20,13 +20,15 @@
 
 package org.anti_ad.mc.ipnext.inventory
 
+import net.minecraft.core.component.DataComponentType
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.BeaconMenu
+import net.minecraft.world.inventory.Slot
+
 import org.anti_ad.mc.alias.component.`(types)`
-import org.anti_ad.mc.alias.component.ComponentType
-import org.anti_ad.mc.alias.inventory.PlayerInventory
 import org.anti_ad.mc.alias.nbt.NbtHelper_toFormattedString
-import org.anti_ad.mc.alias.screen.BeaconContainer
-import org.anti_ad.mc.alias.screen.Container
-import org.anti_ad.mc.alias.screen.slot.Slot
+
 import org.anti_ad.mc.common.LogBase
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.TellPlayer
@@ -75,7 +77,7 @@ import java.util.Optional
 object GeneralInventoryActions {
 
     @Suppress("UNUSED_PARAMETER")
-    fun doSort(container: Container, gui: Boolean = false, forcePlayer: Boolean = false) {
+    fun doSort(container: AbstractContainerMenu, gui: Boolean = false, forcePlayer: Boolean = false) {
         if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
         with(GuiSettings) {
             doSort(REGULAR_SORT_ORDER,
@@ -86,7 +88,7 @@ object GeneralInventoryActions {
         }
     }
 
-    fun doSortInColumns(container: Container,
+    fun doSortInColumns(container: AbstractContainerMenu,
                         gui: Boolean = false,
                         forcePlayer: Boolean = false) {
         if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
@@ -99,7 +101,7 @@ object GeneralInventoryActions {
         }
     }
 
-    fun doSortInRows(container: Container,
+    fun doSortInRows(container: AbstractContainerMenu,
                      gui: Boolean = false,
                      forcePlayer: Boolean = false) {
         if (!Features.ENABLE_SORTING_AND_MOVING.booleanValue) return
@@ -116,7 +118,7 @@ object GeneralInventoryActions {
                        customRule: ConfigString,
                        postAction: ConfigEnum<PostAction>,
                        forcePlayer: Boolean,
-                       container: Container) {
+                       container: AbstractContainerMenu) {
 
         TellPlayer.listenLog(LogBase.LogLevel.WARN) {
             InnerActions.doSort(sortOrder.value.rule(customRule.value),
@@ -135,7 +137,7 @@ object GeneralInventoryActions {
                                      NO_SORTING_STORAGE,
                                      CRAFTING))) return
         val forceToPlayer = ModSettings.MOVE_ALL_AT_CURSOR.booleanValue && vFocusedSlot()?.let {
-            it.`(inventoryOrNull)` == null || it.`(inventory)` !is PlayerInventory
+            it.`(inventoryOrNull)` == null || it.`(inventory)` !is Inventory
         } ?: false // hover slot exist and not player
 
 
@@ -179,7 +181,7 @@ object GeneralInventoryActions {
             return
         }
         val isContainer = ModSettings.MOVE_ALL_AT_CURSOR.booleanValue &&
-                vFocusedSlot()?.let { it.`(inventoryOrNull)` != null && it.`(inventory)` !is PlayerInventory } ?: false // hover slot exist and not player
+                vFocusedSlot()?.let { it.`(inventoryOrNull)` != null && it.`(inventory)` !is Inventory } ?: false // hover slot exist and not player
 
         val includeHotbar = // xor
                 ModSettings.INCLUDE_HOTBAR_MODIFIER.isPressing() != ModSettings.ALWAYS_INCLUDE_HOTBAR.booleanValue
@@ -190,7 +192,7 @@ object GeneralInventoryActions {
     }
 
     private fun executeThrow(includeHotbar: Boolean,
-                             vanillaContainer: Container,
+                             vanillaContainer: AbstractContainerMenu,
                              isContainer: Boolean,
                              throwAll: Boolean,
                              type: ItemStack? = null) {
@@ -274,7 +276,7 @@ object GeneralInventoryActions {
         }
     }
 
-    fun doMoveMatchCrafting(vanillaContainer: Container) {
+    fun doMoveMatchCrafting(vanillaContainer: AbstractContainerMenu) {
         //val includeHotbar = VanillaUtil.altDown()
         val includeHotbar = ModSettings.INCLUDE_HOTBAR_MODIFIER.isPressing()
         AdvancedContainer.tracker {
@@ -302,7 +304,7 @@ object GeneralInventoryActions {
             var item = "${stack.itemType.itemId} => [\n"
             val tg = stack.itemType.tag
             if (tg != null) {
-                tg.`(types)`.forEach { type: ComponentType<*> ->
+                tg.`(types)`.forEach { type: DataComponentType<*> ->
                     val value = tg.get(type)
                     if (value != null) {
                         type.toFullNbtOrNull(Optional.of<Any>(value))?.let {
@@ -425,7 +427,7 @@ object GeneralInventoryActions {
             if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
                 scrollToChest(focusedItem)
             } else {
-                if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+                if (vFocusedSlot()?.`(inventoryOrNull)` is Inventory) {
                     scrollToChest(focusedItem)
                 } else {
                     scrollToPlayer(focusedItem)
@@ -443,7 +445,7 @@ object GeneralInventoryActions {
             if (ScrollSettings.DIRECTION_ABSOLUTE.booleanValue) {
                 scrollToPlayer(focusedItem)
             } else {
-                if (vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) {
+                if (vFocusedSlot()?.`(inventoryOrNull)` is Inventory) {
                     scrollToPlayer(focusedItem)
                 } else {
                     scrollToChest(focusedItem)
@@ -462,14 +464,14 @@ object GeneralInventoryActions {
 private object InnerActions {
 
     private fun forcePlayerSide(): Boolean { // default container side
-        return (SortSettings.SORT_AT_CURSOR.booleanValue && vFocusedSlot()?.`(inventoryOrNull)` is PlayerInventory) ||
+        return (SortSettings.SORT_AT_CURSOR.booleanValue && vFocusedSlot()?.`(inventoryOrNull)` is Inventory) ||
                 HintsManagerNG.isPlayerSideOnly(Vanilla.screen()?.javaClass)
     }
 
     fun doSort(sortingRule: Rule,
                postAction: PostAction,
                forcePlayer: Boolean,
-               container: Container) = tryCatch {
+               container: AbstractContainerMenu) = tryCatch {
         innerDoSort(sortingRule,
                     postAction,
                     forcePlayer,
@@ -479,7 +481,7 @@ private object InnerActions {
     fun innerDoSort(sortingRule: Rule,
                     postAction: PostAction,
                     forcePlayer: Boolean,
-                    container: Container) {
+                    container: AbstractContainerMenu) {
         AdvancedContainer.tracker {
             with(AreaTypes) {
                 val forcePlayerSide = forcePlayer || forcePlayerSide()
@@ -511,7 +513,7 @@ private object InnerActions {
         // in vanilla, seems only beacon will drop the item, handle beacon only
         //   - clicking cancel button in beacon will bypass
         //     ClientPlayerEntity.closeContainer (by GuiCloseC2SPacket instead)
-        if (Vanilla.container() !is BeaconContainer) return
+        if (Vanilla.container() !is BeaconMenu) return
         if (!Vanilla.container().`(slots)`[0].`(itemStack)`.isEmpty()) { // beacon item
             ContainerClicker.shiftClick(0)
         }

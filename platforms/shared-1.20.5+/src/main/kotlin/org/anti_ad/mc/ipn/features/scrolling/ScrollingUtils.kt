@@ -19,7 +19,7 @@
 
 package org.anti_ad.mc.ipn.features.scrolling
 
-import org.anti_ad.mc.alias.screen.slot.Slot
+import net.minecraft.world.inventory.Slot
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.extensions.containsAny
 import org.anti_ad.mc.common.extensions.ifTrue

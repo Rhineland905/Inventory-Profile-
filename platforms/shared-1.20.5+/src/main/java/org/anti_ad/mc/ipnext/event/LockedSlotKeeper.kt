@@ -21,8 +21,8 @@
 package org.anti_ad.mc.ipnext.event
 
 import com.yevdo.jwildcard.JWildcard
-import org.anti_ad.mc.alias.item.ItemStack
-import org.anti_ad.mc.alias.screen.PlayerContainer
+import net.minecraft.world.inventory.InventoryMenu
+import net.minecraft.world.item.ItemStack
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.extensions.ifTrue
 import org.anti_ad.mc.common.vanilla.Vanilla
@@ -134,7 +134,7 @@ object LockedSlotKeeper {
                     Log.trace("Inventory is NOT empty initialising - 2")
                     init()
                 } else {
-                    if (Vanilla.container() is PlayerContainer) {
+                    if (Vanilla.container() is InventoryMenu) {
                         checkNewItems()
                     }
                 }
@@ -198,7 +198,7 @@ object LockedSlotKeeper {
                     return
                 }
                 emptyNonLockedHotbarSlots.forEach { slotId ->
-                    if (Vanilla.container() !is PlayerContainer) {
+                    if (Vanilla.container() !is InventoryMenu) {
                         Log.trace("Current container is: ${Vanilla.container().javaClass.name}" )
                     }
                     val stack = Vanilla.container().`(slots)`[slotId].`(vanillaStack)`

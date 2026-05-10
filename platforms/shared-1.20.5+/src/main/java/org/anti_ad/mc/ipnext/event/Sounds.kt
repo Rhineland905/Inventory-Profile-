@@ -20,8 +20,9 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import org.anti_ad.mc.alias.client.PositionedSoundInstance_Master
-import org.anti_ad.mc.alias.util.*
+
+import net.minecraft.client.resources.sounds.SimpleSoundInstance
+import net.minecraft.resources.Identifier
 import org.anti_ad.mc.common.vanilla.VanillaSound
 import org.anti_ad.mc.ipnext.gen.ModInfo.MOD_ID
 
@@ -47,15 +48,15 @@ enum class Sounds(private val loc: String, pitch: Float = 1.0F) {
 
     }
 
-    private val soundEvent = VanillaSound.createSoundEvent(IdentifierOf(MOD_ID, loc))
+    private val soundEvent = VanillaSound.createSoundEvent(Identifier.fromNamespaceAndPath(MOD_ID, loc))
 
     fun play()  {
-        VanillaSound.play(PositionedSoundInstance_Master(soundEvent, defaultPitch, .75F))
+        VanillaSound.play(SimpleSoundInstance.forUI(soundEvent, defaultPitch, .75F))
     }
 
-    fun play(pitch: Float) = VanillaSound.play(PositionedSoundInstance_Master(soundEvent, pitch, .75f))
+    fun play(pitch: Float) = VanillaSound.play(SimpleSoundInstance.forUI(soundEvent, pitch, .75f))
 
-    fun play(pitch: Float, delay: Int) = VanillaSound.play(PositionedSoundInstance_Master(soundEvent, pitch, .75f), delay)
+    fun play(pitch: Float, delay: Int) = VanillaSound.play(SimpleSoundInstance.forUI(soundEvent, pitch, .75f), delay)
 
 
     companion object {

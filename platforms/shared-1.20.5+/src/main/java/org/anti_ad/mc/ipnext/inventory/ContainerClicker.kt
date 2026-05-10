@@ -20,19 +20,19 @@
 
 package org.anti_ad.mc.ipnext.inventory
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeContainer
-import org.anti_ad.mc.alias.screen.Container
-import org.anti_ad.mc.alias.screen.slot.Slot
-import org.anti_ad.mc.alias.screen.slot.SlotActionType
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.ContainerInput
+import net.minecraft.world.inventory.Slot
 import org.anti_ad.mc.common.gui.NativeContext
-import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.math2d.Point
 import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.common.math2d.Size
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.render.alpha
 import org.anti_ad.mc.common.vanilla.render.glue.rFillRect
+import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.config.ModSettings
 import org.anti_ad.mc.ipnext.event.LockSlotsHandler
 import org.anti_ad.mc.ipnext.ingame.`(clickSlot)`
@@ -53,30 +53,25 @@ import kotlin.concurrent.timer
 // ============
 
 object ContainerClicker {
-    fun leftClick(slotId: Int) = click(slotId,
-                                       0)
 
-    fun rightClick(slotId: Int) = click(slotId,
-                                        1)
+    fun leftClick(slotId: Int) = click(slotId, 0)
 
-    fun shiftClick(slotId: Int) { // SlotActionType.QUICK_MOVE
-        genericClick(slotId,
-                     0,
-                     SlotActionType.QUICK_MOVE)
+    fun rightClick(slotId: Int) = click(slotId, 1)
+
+    fun shiftClick(slotId: Int) { // ContainerInput.QUICK_MOVE
+        genericClick(slotId, 0, ContainerInput.QUICK_MOVE)
     }
 
-    fun qClick(slotId: Int) { // SlotActionType.QUICK_MOVE
-        genericClick(slotId,
-                     1,
-                     SlotActionType.THROW)
+    fun qClick(slotId: Int) { // ContainerInput.QUICK_MOVE
+        genericClick(slotId, 1, ContainerInput.THROW)
     }
 
-    private fun swapClick(to: Int, foundSlotId: Int) {
+    private fun swapClick(to: Int,
+                          foundSlotId: Int) {
         GeneralInventoryActions.cleanCursor()
-        if ((to - 36) in 0..8) { // use swap
+        if ((to - 36) in 0 .. 8) { // use swap
             //handles hotbar
-            swap(foundSlotId,
-                 to - 36)
+            swap(foundSlotId, to - 36)
         } else {
             //handles offhand and armor slots
             leftClick(foundSlotId)
@@ -88,53 +83,37 @@ object ContainerClicker {
     }
 
     fun click(slotId: Int,
-              button: Int) { // SlotActionType.PICKUP
+              button: Int) { // ContainerInput.PICKUP
         //Log.trace("Click $button on slot $slotId")
-        genericClick(slotId,
-                     button,
-                     SlotActionType.PICKUP)
+        genericClick(slotId, button, ContainerInput.PICKUP)
     }
 
     fun swap(slotId: Int,
-             hotbarSlotId: Int) { // hotbarSlotId 0 - 8 SlotActionType.SWAP
-        genericClick(slotId,
-                     hotbarSlotId,
-                     SlotActionType.SWAP)
+             hotbarSlotId: Int) { // hotbarSlotId 0 - 8 ContainerInput.SWAP
+        genericClick(slotId, hotbarSlotId, ContainerInput.SWAP)
     }
 
     var doSendContentUpdates = true
     fun genericClick(slotId: Int,
                      button: Int,
-                     actionType: SlotActionType) =
-        genericClick(Vanilla.container(),
-                     slotId,
-                     button,
-                     actionType,
-                     doSendContentUpdates)
+                     actionType: ContainerInput) = genericClick(Vanilla.container(), slotId, button, actionType, doSendContentUpdates)
 
-    fun genericClick(container: Container,
+    fun genericClick(container: AbstractContainerMenu,
                      slotId: Int,
                      button: Int,
-                     actionType: SlotActionType,
+                     actionType: ContainerInput,
                      contentUpdates: Boolean = true) {
 
         Log.trace("Clicking: on slot: $slotId with button: $button, and action type: ${actionType.name}")
-        if (container is CreativeContainer) {
+        if (container is CreativeModeInventoryScreen.ItemPickerMenu) {
             // creative menu dont use method_2906
             // simulate the action in CreativeInventoryScreen line 135
-            Vanilla.playerContainer().`(onSlotClick)`(slotId,
-                                                      button,
-                                                      actionType,
-                                                      Vanilla.player())
+            Vanilla.playerContainer().`(onSlotClick)`(slotId, button, actionType, Vanilla.player())
             if (contentUpdates) sendContentUpdates()
             return
         }
         // clickSlot() = method_2906()
-        Vanilla.interactionManager().`(clickSlot)`(container.containerId,
-                                                   slotId,
-                                                   button,
-                                                   actionType,
-                                                   Vanilla.player())
+        Vanilla.interactionManager().`(clickSlot)`(container.containerId, slotId, button, actionType, Vanilla.player())
     }
 
     fun sendContentUpdates() {
@@ -144,7 +123,7 @@ object ContainerClicker {
     fun executeQClicks(clicks: Map<Int, Slot>,
                        interval: Int) {
         if (interval == 0) {
-            if (Vanilla.container() is CreativeContainer) { // bulk content updates
+            if (Vanilla.container() is CreativeModeInventoryScreen.ItemPickerMenu) { // bulk content updates
                 doSendContentUpdates = false
                 clicks.forEach { (index, slot) ->
                     LockSlotsHandler.lastMouseClickSlot = slot
@@ -203,7 +182,7 @@ object ContainerClicker {
     fun executeSwapClicks(clicks: Map<Int, Int>,
                           interval: Int) {
         if (interval == 0) {
-            if (Vanilla.container() is CreativeContainer) { // bulk content updates
+            if (Vanilla.container() is CreativeModeInventoryScreen.ItemPickerMenu) { // bulk content updates
                 doSendContentUpdates = false
                 clicks.forEach { (first, second) ->
                     swapClick(first, second)
@@ -250,8 +229,7 @@ object ContainerClicker {
                         firstHighlight.id = slotId.key
                         secondHighlight.id = slotId.value
                         LockSlotsHandler.lastMouseClickSlot = Vanilla.container().getSlot(slotId.key)
-                        swapClick(slotId.key,
-                                  slotId.value)
+                        swapClick(slotId.key, slotId.value)
                     }
                 } else {
                     cancel()
@@ -264,28 +242,22 @@ object ContainerClicker {
         }
     }
 
-
     fun executeClicks(clicks: List<Pair<Int, Int>>,
                       interval: Int) { // slotId, button
         val lclick = clicks.count { it.second == 0 }
         val rclick = clicks.count { it.second == 1 }
-        logClicks(clicks.size,
-                  lclick,
-                  rclick,
-                  interval)
+        logClicks(clicks.size, lclick, rclick, interval)
         if (interval == 0) {
-            if (Vanilla.container() is CreativeContainer) { // bulk content updates
+            if (Vanilla.container() is CreativeModeInventoryScreen.ItemPickerMenu) { // bulk content updates
                 doSendContentUpdates = false
                 clicks.forEach {
-                    click(it.first,
-                          it.second)
+                    click(it.first, it.second)
                 }
                 sendContentUpdates()
                 doSendContentUpdates = true
             } else {
                 clicks.forEach {
-                    click(it.first,
-                          it.second)
+                    click(it.first, it.second)
                 }
             }
         } else {
@@ -316,8 +288,7 @@ object ContainerClicker {
                     val (slotId, button) = iterator.next()
                     Vanilla.mc().execute {
                         highlight.id = slotId
-                        click(slotId,
-                              button)
+                        click(slotId, button)
                     }
                 } else {
                     cancel()
@@ -332,20 +303,16 @@ object ContainerClicker {
                           lclick: Int,
                           rclick: Int,
                           interval: Int) {
-        Log.debug(
-            "Click count total $total. $lclick left. $rclick right." +
-                    " Time = ${total * interval / 1000.toDouble()}s"
-        )
+        Log.debug("Click count total $total. $lclick left. $rclick right." + " Time = ${total * interval / 1000.toDouble()}s")
     }
 
     private class Highlight(var id: Int)
 
     private val slotLocations: Map<Int, Point> // id, location // ref: LockSlotsHandler
         get() {
-            val screen = Vanilla.screen() as? ContainerScreen<*> ?: return mapOf()
+            val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return mapOf()
             return Vanilla.container().`(slots)`.map { slot ->
-                val playerSlot = vPlayerSlotOf(slot,
-                                               screen)
+                val playerSlot = vPlayerSlotOf(slot, screen)
                 return@map playerSlot.`(id)` to slot.`(topLeft)`
             }.toMap()
         }
@@ -353,15 +320,11 @@ object ContainerClicker {
     private val highlights: MutableSet<Highlight> = ConcurrentHashMap.newKeySet()
 
     private fun drawHighlight(context: NativeContext) {
-        val screen = Vanilla.screen() as? ContainerScreen<*> ?: return
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return
         val topLeft = screen.`(containerBounds)`.topLeft
         val slotLocations = slotLocations
         highlights.mapNotNull { slotLocations[it.id] }.forEach {
-            rFillRect(context,
-                      Rectangle(topLeft + it,
-                                Size(16,
-                                     16)),
-                      (-1).alpha(0.5f))
+            rFillRect(context, Rectangle(topLeft + it, Size(16, 16)), (-1).alpha(0.5f))
         }
     }
 
@@ -375,23 +338,23 @@ object ContainerClicker {
 }
 
 //fun leftClick(slotId: Int): Click? {
-//  return Click(slotId, 0, SlotActionType.PICKUP)
+//  return Click(slotId, 0, ContainerInput.PICKUP)
 //}
 //
 //fun rightClick(slotId: Int): Click? {
-//  return Click(slotId, 1, SlotActionType.PICKUP)
+//  return Click(slotId, 1, ContainerInput.PICKUP)
 //}
 //
 //fun shiftClick(slotId: Int): Click? {
-//  return Click(slotId, 0, SlotActionType.QUICK_MOVE)
+//  return Click(slotId, 0, ContainerInput.QUICK_MOVE)
 //}
 //
 //fun dropOne(slotId: Int): Click? {
-//  return Click(slotId, 0, SlotActionType.THROW)
+//  return Click(slotId, 0, ContainerInput.THROW)
 //}
 //
 //fun dropAll(slotId: Int): Click? {
-//  return Click(slotId, 1, SlotActionType.THROW)
+//  return Click(slotId, 1, ContainerInput.THROW)
 //}
 //
 //fun dropOneCursor(): Click? {

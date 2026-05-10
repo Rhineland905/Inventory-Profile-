@@ -20,8 +20,7 @@
 
 package org.anti_ad.mc.ipnext.item.rule.parameter
 
-import org.anti_ad.mc.alias.util.Identifier
-import org.anti_ad.mc.alias.util.IdentifierOf
+import net.minecraft.resources.Identifier
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.extensions.trySwallow
 import org.anti_ad.mc.ipnext.item.ItemType
@@ -57,13 +56,13 @@ sealed class ItemTypeMatcher: Predicate<ItemType> {
 
     companion object {
         fun forTag(id: String): ItemTypeMatcher? {
-            val identifier = trySwallow { IdentifierOf(id) }
+            val identifier = trySwallow { Identifier.parse(id) }
             identifier ?: return null
             return IsTag(identifier)
         }
 
         fun forItem(id: String): ItemTypeMatcher? {
-            val identifier = trySwallow { IdentifierOf(id) }
+            val identifier = trySwallow { Identifier.parse(id) }
             identifier ?: return null
             return IsItem(identifier)
         }

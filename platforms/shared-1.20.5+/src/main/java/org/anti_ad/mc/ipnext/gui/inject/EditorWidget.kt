@@ -20,7 +20,8 @@
 
 package org.anti_ad.mc.ipnext.gui.inject
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.gui.layout.fillParent
 import org.anti_ad.mc.common.gui.layout.setTopLeft
@@ -41,7 +42,7 @@ import org.anti_ad.mc.ipnext.gui.GUIDEEditorScreen
 import org.anti_ad.mc.ipnext.gui.inject.base.InsertableWidget
 import org.anti_ad.mc.ipnext.gui.inject.base.SortButtonWidget
 
-class EditorWidget(override val screen: ContainerScreen<*>,
+class EditorWidget(override val screen: AbstractContainerScreen<*>,
                    hintsData: HintClassData = HintsManagerNG.getHints(screen.javaClass)): InsertableWidget(), Hintable {
 
     private val targets = mutableListOf<InsertableWidget>()

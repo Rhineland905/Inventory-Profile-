@@ -20,11 +20,9 @@
 
 package org.anti_ad.mc.ipnext.input
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.client.gui.screen.recipebook.`(searchField)`
-import org.anti_ad.mc.alias.client.gui.screen.recipebook.RecipeBookWidget
-import org.anti_ad.mc.alias.client.gui.widget.TextFieldWidget
-import org.anti_ad.mc.alias.screen.Container
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.world.inventory.AbstractContainerMenu
+
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.config.options.ConfigHotkey
 import org.anti_ad.mc.common.gui.NativeInputContextBase
@@ -57,7 +55,7 @@ object InventoryInputHandler : IInputHandler {
             return false
         }
 
-        infix fun ConfigHotkey.run(action: (Container) -> Unit): Boolean {
+        infix fun ConfigHotkey.run(action: (AbstractContainerMenu) -> Unit): Boolean {
             try {
                 if (this.isActivated()) {
                     action(ctr)
@@ -70,7 +68,7 @@ object InventoryInputHandler : IInputHandler {
         }
 
 
-        if (scr != null && scr is ContainerScreen<*> ) {
+        if (scr != null && scr is AbstractContainerScreen<*>) {
             val screenHints = HintsManagerNG.getHints(scr.javaClass)
             val containerHints = HintsManagerNG.getHints(ctr.javaClass)
             if (!screenHints.ignore && !containerHints.ignore && !isInputFieldActive(scr)) {

@@ -22,35 +22,42 @@
 
 package org.anti_ad.mc.ipnext.ingame
 
+import com.mojang.blaze3d.platform.Window
+import net.minecraft.client.Minecraft
+import net.minecraft.client.Options
+import net.minecraft.client.KeyMapping
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent
+
+import net.minecraft.client.gui.components.EditBox
+
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+import net.minecraft.client.multiplayer.MultiPlayerGameMode
+
+import net.minecraft.core.DefaultedRegistry
+import net.minecraft.core.Holder
+
+import net.minecraft.core.component.PatchedDataComponentMap
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.Tag
+import net.minecraft.resources.Identifier
+import net.minecraft.tags.TagKey
+
 import net.minecraft.resources.ResourceKey
-import org.anti_ad.mc.alias.client.GameOptions
-import org.anti_ad.mc.alias.client.KeyBinding
-import org.anti_ad.mc.alias.client.MinecraftClient
-import org.anti_ad.mc.alias.client.Window
-import org.anti_ad.mc.alias.client.gui.screen.Screen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeInventoryScreen
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.Container
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.inventory.ContainerInput
+import net.minecraft.world.inventory.InventoryMenu
+import net.minecraft.world.inventory.Slot
+import net.minecraft.world.inventory.StonecutterMenu
+import net.minecraft.world.item.enchantment.ItemEnchantments
+import net.minecraft.world.item.enchantment.Enchantment
+
 import org.anti_ad.mc.alias.client.gui.screen.recipebook.`(searchField)`
-import org.anti_ad.mc.alias.client.gui.screen.recipebook.RecipeBookWidget
-import org.anti_ad.mc.alias.client.gui.widget.TextFieldWidget
-import org.anti_ad.mc.alias.client.network.ClientPlayerInteractionManager
-import org.anti_ad.mc.alias.component.MergedComponentMap
-import org.anti_ad.mc.alias.component.type.ItemEnchantmentsComponent
-import org.anti_ad.mc.alias.enchantment.Enchantment
-import org.anti_ad.mc.alias.entity.player.PlayerEntity
-import org.anti_ad.mc.alias.inventory.Inventory
-import org.anti_ad.mc.alias.inventory.PlayerInventory
-import org.anti_ad.mc.alias.nbt.NbtCompound
-import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.registry.DefaultedRegistry
-import org.anti_ad.mc.alias.registry.entry.RegistryEntry
-import org.anti_ad.mc.alias.registry.tag.TagKey
-import org.anti_ad.mc.alias.screen.Container
-import org.anti_ad.mc.alias.screen.PlayerContainer
-import org.anti_ad.mc.alias.screen.StonecutterContainer
-import org.anti_ad.mc.alias.screen.slot.Slot
-import org.anti_ad.mc.alias.screen.slot.SlotActionType
-import org.anti_ad.mc.alias.util.Identifier
+
 import org.anti_ad.mc.common.math2d.Point
 import org.anti_ad.mc.common.math2d.Rectangle
 import org.anti_ad.mc.common.vanilla.Vanilla
@@ -63,7 +70,7 @@ import org.anti_ad.mc.ipnext.item.vanillaStack
 import org.anti_ad.mc.ipnext.mixin.IMixinSlot
 import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
-import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
+import net.minecraft.world.item.ItemStack as VanillaItemStack
 
 // ============
 // vanillamapping code depends on mappings
@@ -73,7 +80,7 @@ import org.anti_ad.mc.alias.item.ItemStack as VanillaItemStack
 
 val VanillaItemStack.`(itemType)`: ItemType
     get() = ItemType(item,
-                     components as MergedComponentMap,
+                     components as PatchedDataComponentMap,
                      componentsPatch,
                      { this.isDamageableItem })
 val VanillaItemStack.`(itemStack)`: ItemStack
@@ -83,7 +90,7 @@ val VanillaItemStack.`(mutableItemStack)`: MutableItemStack
     get() = if (isEmpty) MutableItemStack.empty() else MutableItemStack(`(itemType)`,
                                                                         count)
 
-val Container.`(slots)`: List<Slot>
+val AbstractContainerMenu.`(slots)`: List<Slot>
     get() = slots
 
 val Slot.`(id)`: Int
@@ -97,9 +104,9 @@ val Slot.`(vanillaStack)`: VanillaItemStack
 
 val Slot.`(mutableItemStack)`: MutableItemStack
     get() = item.`(mutableItemStack)`
-val Slot.`(inventory)`: Inventory
+val Slot.`(inventory)`: Container
     get() = container
-val Slot.`(inventoryOrNull)`: Inventory?
+val Slot.`(inventoryOrNull)`: Container?
     get() = container
 val Slot.`(left)`: Int
     get() = x
@@ -114,32 +121,32 @@ fun Slot.`(canInsert)`(itemStack: ItemStack): Boolean {
 }
 
 val Screen.`(focusedSlot)`: Slot?
-    get() = (this as? ContainerScreen<*>)?.`(rawFocusedSlot)`?.let {
+    get() = (this as? AbstractContainerScreen<*>)?.`(rawFocusedSlot)`?.let {
         vPlayerSlotOf(it,
                       this)
     }
 
-val ContainerScreen<*>.`(rawFocusedSlot)`: Slot?
+val AbstractContainerScreen<*>.`(rawFocusedSlot)`: Slot?
     get() = hoveredSlot
-val ContainerScreen<*>.`(containerBounds)`: Rectangle
+val AbstractContainerScreen<*>.`(containerBounds)`: Rectangle
     get() = Rectangle(leftPos,
                       topPos,
                       imageWidth,
                       imageHeight)
 
-val ContainerScreen<*>.`(container)`: Container
+val AbstractContainerScreen<*>.`(container)`: AbstractContainerMenu
     get() = menu
 
-var PlayerInventory.`(selectedSlot)`: Int
+var Inventory.`(selectedSlot)`: Int
     get() = selectedSlot
     set(value) {
         selectedSlot = value
     }
 
-val CreativeInventoryScreen.`(isInventoryTab)`: Boolean // method_2469() == ItemGroup.INVENTORY.getIndex()
+val CreativeModeInventoryScreen.`(isInventoryTab)`: Boolean // method_2469() == ItemGroup.INVENTORY.getIndex()
     get() = this.isInventoryOpen
 
-val ItemEnchantmentsComponent.`(enchantments)`: Set<RegistryEntry<Enchantment>>
+val ItemEnchantments.`(enchantments)`: Set<Holder<Enchantment>>
     get() = this.keySet()
 
 // ============
@@ -154,12 +161,12 @@ fun <T: Any> DefaultedRegistry<T>.`(getByIdentifier)`(id: Identifier): T {
     return getValue(id)
 }
 
-fun <T: Any> RegistryEntry<T>.`(is)`(id: Identifier): Boolean = this.`is`(id)
-fun <T: Any> RegistryEntry<T>.`(is)`(id: TagKey<T>): Boolean = this.`is`(id)
-fun <T: Any> RegistryEntry<T>.`(is)`(id: ResourceKey<T>): Boolean = this.`is`(id)
-val <T: Any> RegistryEntry<T>.`(key)`: ResourceKey<T>?
+fun <T: Any> Holder<T>.`(is)`(id: Identifier): Boolean = this.`is`(id)
+fun <T: Any> Holder<T>.`(is)`(id: TagKey<T>): Boolean = this.`is`(id)
+fun <T: Any> Holder<T>.`(is)`(id: ResourceKey<T>): Boolean = this.`is`(id)
+val <T: Any> Holder<T>.`(key)`: ResourceKey<T>?
     get() = this.unwrapKey().getOrNull()
-val <T: Any> RegistryEntry<T>.`(value)`: T?
+val <T: Any> Holder<T>.`(value)`: T?
     get() = this.value()
 val ResourceKey<*>.`(registry)`: Identifier
     get() = this.registry()
@@ -170,28 +177,28 @@ val ResourceKey<*>.`(identigier)`: Identifier
 // nbt Tag
 // ============
 
-val NbtElement.asString: String
+val Tag.asString: String
     get() = this.asString().getOrElse { this.toString() }
 
 
-val NbtElement.`(type)`: Int
+val Tag.`(type)`: Int
     get() = id.toInt()
-val NbtElement.`(asString)`: String
+val Tag.`(asString)`: String
     get() = this.asString
 
-val NbtCompound.`(keys)`: Set<String>
+val CompoundTag.`(keys)`: Set<String>
     get() = keySet()
 
-val MinecraftClient.`(window)`: Window
+val Minecraft.`(window)`: Window
     get() = window
 
-val MinecraftClient.`(options)`: GameOptions
+val Minecraft.`(options)`: Options
     get() = options
 
-val GameOptions.`(keyDrop)`: KeyBinding
+val Options.`(keyDrop)`: KeyMapping
     get() = keyDrop
 
-val KeyBinding.`(isPressed)`: Boolean
+val KeyMapping.`(isPressed)`: Boolean
     get() = isDown
 
 val Window.`(scaledWidth)`: Int
@@ -200,18 +207,18 @@ val Window.`(scaledWidth)`: Int
 val Window.`(scaledHeight)`: Int
     get() = guiScaledHeight
 
-fun ClientPlayerInteractionManager.`(clickSlot)`(i: Int, j: Int, k: Int, slotActionType: SlotActionType, playerEntity: PlayerEntity) =
+fun MultiPlayerGameMode.`(clickSlot)`(i: Int, j: Int, k: Int, slotActionType: ContainerInput, playerEntity: Player) =
         this.handleContainerInput(i, j, k, slotActionType, playerEntity)
 
-fun PlayerContainer.`(onSlotClick)`(slotIndex: Int, button: Int, actionType: SlotActionType, player: PlayerEntity) =
+fun InventoryMenu.`(onSlotClick)`(slotIndex: Int, button: Int, actionType: ContainerInput, player: Player) =
         this.clicked(slotIndex, button, actionType, player)
 
-fun PlayerContainer.`(sendContentUpdates)`() = broadcastChanges()
+fun InventoryMenu.`(sendContentUpdates)`() = broadcastChanges()
 
-val StonecutterContainer.`(selectedRecipe)`: Int
+val StonecutterMenu.`(selectedRecipe)`: Int
     get() = selectedRecipeIndex
 
-fun MinecraftClient.`(send)`(runnable: Runnable) = schedule(runnable)
+fun Minecraft.`(send)`(runnable: Runnable) = schedule(runnable)
 
 // interpreted for creative inventory
 // in-game safe
@@ -220,10 +227,10 @@ fun vFocusedSlot(): Slot? = Vanilla.screen()?.`(focusedSlot)`
 fun vMainhandIndex() =
         Vanilla.playerInventory().`(selectedSlot)`
 
-fun isInputFieldActive(scr: ContainerScreen<*>): Boolean {
+fun isInputFieldActive(scr: AbstractContainerScreen<*>): Boolean {
     return scr.children()?.any {
-        (it is RecipeBookWidget<*> && (it.`(searchField)`?.isFocused == true))
-        || (it is TextFieldWidget && it.isFocused)
+        (it is RecipeBookComponent<*> && (it.`(searchField)`?.isFocused == true))
+        || (it is EditBox && it.isFocused)
     } == true
 }
 

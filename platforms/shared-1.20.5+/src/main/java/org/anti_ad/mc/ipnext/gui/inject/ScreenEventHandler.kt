@@ -20,9 +20,11 @@
 
 package org.anti_ad.mc.ipnext.gui.inject
 
-import org.anti_ad.mc.alias.client.gui.screen.Screen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.client.gui.widget.ClickableWidget
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.Screen
+
+import net.minecraft.client.gui.components.AbstractButton
+
 import org.anti_ad.mc.common.extensions.detectable
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.input.GlobalScreenEventListener
@@ -31,15 +33,15 @@ import org.anti_ad.mc.common.vanilla.render.rScreenSize
 
 object ScreenEventHandler {
     fun onScreenInit(target: Screen,
-                     addWidget: (ClickableWidget) -> Unit) {
-        if (target is ContainerScreen<*>) {
+                     addWidget: (AbstractButton) -> Unit) {
+        if (target is AbstractContainerScreen<*>) {
             ContainerScreenEventHandler.onScreenInit(target,
                                                      addWidget)
         }
     }
 
     fun onScreenRemoved(target: Screen) {
-        if (target is ContainerScreen<*>) {
+        if (target is AbstractContainerScreen<*>) {
             ContainerScreenEventHandler.onScreenRemoved(target)
         }
     }

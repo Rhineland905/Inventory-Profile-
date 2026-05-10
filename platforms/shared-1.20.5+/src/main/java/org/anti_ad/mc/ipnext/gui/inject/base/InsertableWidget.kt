@@ -20,8 +20,10 @@
 
 package org.anti_ad.mc.ipnext.gui.inject.base
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.screen.Container
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+
+import net.minecraft.world.inventory.AbstractContainerMenu
+
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.ipnext.gui.widgets.Hintable
 import org.anti_ad.mc.common.gui.widgets.Widget
@@ -33,8 +35,8 @@ abstract class InsertableWidget: Widget() {
                                       mouseY: Int,
                                       partialTicks: Float);
 
-    abstract val screen: ContainerScreen<*>
-    abstract val container: Container
+    abstract val screen: AbstractContainerScreen<*>
+    abstract val container: AbstractContainerMenu
 
     val hintableList = mutableListOf<Hintable>()
 

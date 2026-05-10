@@ -19,18 +19,17 @@
 
 package org.anti_ad.mc.ipnext.event.villagers
 
+import net.minecraft.world.entity.npc.villager.VillagerProfession
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import org.anti_ad.mc.alias.village.`(professionId)`
-import org.anti_ad.mc.alias.village.VillagerProfession
 import org.anti_ad.mc.common.TellPlayer
 import org.anti_ad.mc.common.extensions.exists
-import org.anti_ad.mc.common.extensions.trySwallow
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.ipnext.NotificationManager
 import org.anti_ad.mc.ipnext.config.Features
-import org.anti_ad.mc.ipnext.config.ModSettings
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.Timer

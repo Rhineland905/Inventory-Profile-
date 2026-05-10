@@ -19,7 +19,8 @@
 
 package org.anti_ad.mc.ipnext.gui.inject.base
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+
 import org.anti_ad.mc.common.extensions.tryCatch
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.gui.layout.fillParent
@@ -40,7 +41,7 @@ import org.anti_ad.mc.ipnext.config.ConfigScreenSettings
 import org.anti_ad.mc.ipnext.config.Debugs
 import org.anti_ad.mc.ipnext.config.GuiSettings
 
-class SettingsWidget(override val screen: ContainerScreen<*>,
+class SettingsWidget(override val screen: AbstractContainerScreen<*>,
                      hintsData: HintClassData = HintsManagerNG.getHints(screen.javaClass)): InsertableWidget(), Hintable {
 
     override var hints: ButtonPositionHint = hintsData.hintFor(IPNButton.SETTINGS)

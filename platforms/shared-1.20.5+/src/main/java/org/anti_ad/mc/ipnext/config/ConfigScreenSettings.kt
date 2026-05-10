@@ -19,8 +19,7 @@
 
 package org.anti_ad.mc.ipnext.config
 
-import org.anti_ad.mc.alias.text.Text
-import org.anti_ad.mc.alias.text.getTranslatable
+import net.minecraft.network.chat.Component
 import org.anti_ad.mc.common.Savable
 import org.anti_ad.mc.common.config.builder.ConfigDeclaration
 import org.anti_ad.mc.common.config.builder.ConfigSaveLoadManager
@@ -55,9 +54,9 @@ object ConfigScreenSettings: BaseConfigScreenSettings() {
         configs.toMultiConfig()
     }
 
-    override val configScreenTitle: Text
+    override val configScreenTitle: Component
         get() {
-            return getTranslatable("${CONFIG_SCREEN_LABELS_PREFIX}title", ModInfo.MOD_VERSION)
+            return Component.translatable("${CONFIG_SCREEN_LABELS_PREFIX}title", ModInfo.MOD_VERSION)
         }
 
     override val saveManager: Savable = saveLoadManager

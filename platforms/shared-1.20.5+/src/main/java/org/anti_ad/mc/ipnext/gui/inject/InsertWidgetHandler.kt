@@ -20,8 +20,8 @@
 
 package org.anti_ad.mc.ipnext.gui.inject
 
-import org.anti_ad.mc.alias.client.gui.screen.Screen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.vanillaScreens
+import net.minecraft.client.gui.screens.Screen
+
 import org.anti_ad.mc.common.ScreenEventListener
 import org.anti_ad.mc.common.gui.NativeInputContextBase
 import org.anti_ad.mc.common.gui.widgets.Widget

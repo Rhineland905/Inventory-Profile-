@@ -20,7 +20,6 @@
 
 package org.anti_ad.mc.ipnext.inventory.sandbox
 
-import org.anti_ad.mc.alias.component.DataComponentTypes
 import org.anti_ad.mc.ipnext.compat.integrations.Integrations
 import org.anti_ad.mc.ipnext.inventory.data.ItemTracker
 import org.anti_ad.mc.ipnext.inventory.data.MutableItemTracker

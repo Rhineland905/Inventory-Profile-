@@ -19,61 +19,55 @@
 
 package org.anti_ad.mc.ipnext.container
 
-import org.anti_ad.mc.alias.client.gui.screen.ingame.CreativeContainer
-import org.anti_ad.mc.alias.screen.*
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+import net.minecraft.world.inventory.*
 import org.anti_ad.mc.common.vanilla.Vanilla
-import org.anti_ad.mc.ipnext.inventory.ContainerType
-import org.anti_ad.mc.ipnext.inventory.nonStorage
-import org.anti_ad.mc.ipnext.inventory.playerOnly
-import org.anti_ad.mc.ipnext.inventory.simple
+import org.anti_ad.mc.ipnext.inventory.*
 
-val versionSpecificContainerTypes = setOf(PlayerContainer::class.java           /**/ to playerOnly,
-                                          CreativeContainer::class.java         /**/ to setOf(ContainerType.PURE_BACKPACK,
-                                                                                              ContainerType.CREATIVE),
-
-                                          EnchantingTableContainer::class.java  /**/ to setOf(ContainerType.PURE_BACKPACK),
-                                          AnvilContainer::class.java            /**/ to setOf(ContainerType.PURE_BACKPACK,
-                                                                                              ContainerType.ANVIL),
-                                          BeaconContainer::class.java           /**/ to nonStorage,
-                                          BlastFurnaceContainer::class.java     /**/ to simple,
-                                          CartographyTableContainer::class.java /**/ to simple,
-                                          ForgingContainer::class.java          /**/ to simple,
-                                          FurnaceContainer::class.java          /**/ to simple,
-                                          GrindstoneContainer::class.java       /**/ to simple,
-                                          LecternContainer::class.java          /**/ to nonStorage,
-                                          LoomContainer::class.java             /**/ to nonStorage,
-                                          StonecutterContainer::class.java      /**/ to setOf(ContainerType.PURE_BACKPACK,
-                                                                                              ContainerType.STONECUTTER),
-                                          SmithingTableContainer::class.java    /**/ to simple,
-                                          SmokerContainer::class.java           /**/ to simple,
-
-                                          MerchantContainer::class.java         /**/ to setOf(ContainerType.TRADER),
-                                          CraftingTableContainer::class.java    /**/ to setOf(ContainerType.CRAFTING),
-                                          CrafterContainer::class.java          /**/ to simple,
-
-                                          HopperContainer::class.java           /**/ to setOf(ContainerType.NO_SORTING_STORAGE,
-                                                                                              ContainerType.PURE_BACKPACK), //setOf(ContainerType.NO_SORTING_STORAGE),
-                                          BrewingStandContainer::class.java     /**/ to nonStorage, //setOf(ContainerType.NO_SORTING_STORAGE),
-                                          AbstractFurnaceContainer::class.java  /**/ to simple, //setOf(ContainerType.NO_SORTING_STORAGE),
-
-                                          GenericContainer::class.java          /**/ to setOf(ContainerType.SORTABLE_STORAGE,
-                                                                                              ContainerType.RECTANGULAR,
-                                                                                              ContainerType.WIDTH_9),
-                                          ShulkerBoxContainer::class.java       /**/ to setOf(ContainerType.SORTABLE_STORAGE,
-                                                                                              ContainerType.RECTANGULAR,
-                                                                                              ContainerType.WIDTH_9),
-                                          HorseContainer::class.java            /**/ to setOf(ContainerType.SORTABLE_STORAGE,
-                                                                                              ContainerType.RECTANGULAR,
-                                                                                              ContainerType.HEIGHT_3,
-                                                                                              ContainerType.HORSE_STORAGE),
-                                          Generic3x3Container::class.java       /**/ to setOf(ContainerType.SORTABLE_STORAGE,
-                                                                                              ContainerType.RECTANGULAR,
-                                                                                              ContainerType.HEIGHT_3)).toTypedArray()
+val versionSpecificContainerTypes =
+        setOf(InventoryMenu::class.java                              /**/ to playerOnly,
+              CreativeModeInventoryScreen.ItemPickerMenu::class.java /**/ to setOf(ContainerType.PURE_BACKPACK,
+                                                                                   ContainerType.CREATIVE),
+              EnchantmentMenu::class.java                            /**/ to setOf(ContainerType.PURE_BACKPACK),
+              AnvilMenu::class.java                                  /**/ to setOf(ContainerType.PURE_BACKPACK,
+                                                                                   ContainerType.ANVIL),
+              BeaconMenu::class.java                                 /**/ to nonStorage,
+              BlastFurnaceMenu::class.java                           /**/ to simple,
+              CartographyTableMenu::class.java                       /**/ to simple,
+              ItemCombinerMenu::class.java                           /**/ to simple,
+              FurnaceMenu::class.java                                /**/ to simple,
+              GrindstoneMenu::class.java                             /**/ to simple,
+              LecternMenu::class.java                                /**/ to nonStorage,
+              LoomMenu::class.java                                   /**/ to nonStorage,
+              StonecutterMenu::class.java                            /**/ to setOf(ContainerType.PURE_BACKPACK,
+                                                                                   ContainerType.STONECUTTER),
+              SmithingMenu::class.java                               /**/ to simple,
+              SmokerMenu::class.java                                 /**/ to simple,
+              MerchantMenu::class.java                               /**/ to setOf(ContainerType.TRADER),
+              CraftingMenu::class.java                               /**/ to setOf(ContainerType.CRAFTING),
+              CrafterMenu::class.java                                /**/ to simple,
+              HopperMenu::class.java                                 /**/ to setOf(ContainerType.NO_SORTING_STORAGE,
+                                                                                   ContainerType.PURE_BACKPACK), //setOf(ContainerType.NO_SORTING_STORAGE),
+              BrewingStandMenu::class.java                           /**/ to nonStorage,
+              AbstractFurnaceMenu::class.java                        /**/ to simple,
+              ChestMenu::class.java                                  /**/ to setOf(ContainerType.SORTABLE_STORAGE,
+                                                                                   ContainerType.RECTANGULAR,
+                                                                                   ContainerType.WIDTH_9),
+              ShulkerBoxMenu::class.java                             /**/ to setOf(ContainerType.SORTABLE_STORAGE,
+                                                                                   ContainerType.RECTANGULAR,
+                                                                                   ContainerType.WIDTH_9),
+              HorseInventoryMenu::class.java                         /**/ to setOf(ContainerType.SORTABLE_STORAGE,
+                                                                                   ContainerType.RECTANGULAR,
+                                                                                   ContainerType.HEIGHT_3,
+                                                                                   ContainerType.HORSE_STORAGE),
+              DispenserMenu::class.java                              /**/ to setOf(ContainerType.SORTABLE_STORAGE,
+                                                                                   ContainerType.RECTANGULAR,
+                                                                                   ContainerType.HEIGHT_3)).toTypedArray()
 
 var selectPostAction: () -> Unit = {}
 var selectPreAction: () -> Unit = {}
 
-fun StonecutterContainer.selectRecipe(id: Int) {
+fun StonecutterMenu.selectRecipe(id: Int) {
     clickMenuButton(Vanilla.player(), id)
     Vanilla.interactionManager().handleInventoryButtonClick(containerId, id)
 }

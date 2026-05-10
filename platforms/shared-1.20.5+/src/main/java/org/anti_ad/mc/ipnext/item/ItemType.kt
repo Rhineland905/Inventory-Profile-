@@ -20,13 +20,14 @@
 
 package org.anti_ad.mc.ipnext.item
 
-import org.anti_ad.mc.alias.component.ComponentChanges
-import org.anti_ad.mc.alias.component.ComponentMap
-import org.anti_ad.mc.alias.component.MergedComponentMap
-import org.anti_ad.mc.alias.component.ComponentType
-import org.anti_ad.mc.alias.component.DataComponentTypes
-import org.anti_ad.mc.alias.item.Item
-import org.anti_ad.mc.alias.item.Items
+import net.minecraft.core.component.DataComponentMap
+import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.core.component.DataComponentType
+import net.minecraft.core.component.DataComponents
+import net.minecraft.core.component.PatchedDataComponentMap
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
+
 import org.anti_ad.mc.ipnext.item.ComponentUtils.`(withRemovedIf)`
 
 import org.anti_ad.mc.ipnext.item.rule.CountSink
@@ -35,21 +36,21 @@ import java.util.function.*
 
 // different nbt is treated as different type, as they can't stack together
 data class ItemType(val item: Item,
-                    private val aTag: MergedComponentMap?,
-                    private val aChanges: ComponentChanges?,
+                    private val aTag: PatchedDataComponentMap?,
+                    private val aChanges: DataComponentPatch?,
                     val isDamageableFn: (() -> Boolean),
                     var ignoreDurability: Boolean = false,
                     private val isDamageable: Boolean = isDamageableFn(),
                     private var stackSource: (ItemType) -> ItemStack? = { null }): CountSink<ItemType> {
 
 
-    private val EMPTY_COMPONENT_MAP = MergedComponentMap(ComponentMap.EMPTY)
+    private val EMPTY_COMPONENT_MAP = PatchedDataComponentMap(DataComponentMap.EMPTY)
 
     val sourceStack: ItemStack? = stackSource(this)
 
-    val tag: MergedComponentMap
+    val tag: PatchedDataComponentMap
 
-    val changes: ComponentChanges
+    val changes: DataComponentPatch
 
     val accumulatedCount: Int
         get() {
@@ -62,14 +63,14 @@ data class ItemType(val item: Item,
         if (aTag == null) {
             if (item != Items.AIR) {
                 tag = EMPTY_COMPONENT_MAP
-                changes = ComponentChanges.EMPTY
+                changes = DataComponentPatch.EMPTY
             } else {
-                tag = MergedComponentMap(item.components())
-                changes = aChanges ?: ComponentChanges.EMPTY
+                tag = PatchedDataComponentMap(item.components())
+                changes = aChanges ?: DataComponentPatch.EMPTY
             }
         } else {
             tag = aTag
-            changes = aChanges ?: ComponentChanges.EMPTY
+            changes = aChanges ?: DataComponentPatch.EMPTY
         }
     }
 
@@ -88,8 +89,8 @@ data class ItemType(val item: Item,
         if (!ignoreDurability || !isDamageable) {
             if (changes != other.changes) return false
         } else {
-            val removePredicate: Predicate<ComponentType<*>> = Predicate { type ->
-                type == DataComponentTypes.DAMAGE
+            val removePredicate: Predicate<DataComponentType<*>> = Predicate { type ->
+                type == DataComponents.DAMAGE
             }
             val ourLocalChanges = this.changes.`(withRemovedIf)`(removePredicate)
             val otherLocalChanges = other.changes.`(withRemovedIf)`(removePredicate)

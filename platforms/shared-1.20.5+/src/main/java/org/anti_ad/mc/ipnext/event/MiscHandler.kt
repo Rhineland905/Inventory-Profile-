@@ -20,12 +20,13 @@
 
 package org.anti_ad.mc.ipnext.event
 
-import org.anti_ad.mc.alias.client.gui.screen.Screen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.inventory.CraftingInventory
-import org.anti_ad.mc.alias.inventory.CraftingResultInventory
-import org.anti_ad.mc.alias.inventory.PlayerInventory
-import org.anti_ad.mc.alias.screen.slot.Slot
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.world.inventory.CraftingContainer
+import net.minecraft.world.inventory.ResultContainer
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.inventory.Slot
+
 import org.anti_ad.mc.common.extensions.containsAny
 import org.anti_ad.mc.common.input.GlobalInputHandler
 import org.anti_ad.mc.common.input.KeyCodes
@@ -87,7 +88,7 @@ object MiscHandler {
         // fixed mouse too fast skip slots
         // use ContainerScreen.isPointOverSlot()/.getSlotAt() / Slot.x/yPosition
         val screen = Vanilla.screen()
-        val topLeft = (screen as? ContainerScreen<*>)?.`(containerBounds)`?.topLeft ?: return
+        val topLeft = (screen as? AbstractContainerScreen<*>)?.`(containerBounds)`?.topLeft ?: return
         val slots = if (HintsManagerNG.isFastSwipeDisabled(screen.javaClass)) {
             var all: List<Slot> = listOf()
             screen.`(rawFocusedSlot)`?.let {
@@ -111,11 +112,11 @@ object MiscHandler {
             if (slot.`(inventoryOrNull)` != null) {
                 // disable for non storage (tmp solution for crafting table result slot)
                 if (!Tweaks.SWIPE_MOVE_CRAFTING_RESULT_SLOT.booleanValue) {
-                    if (!types.containsAny(matchSet) && slot.`(inventory)` !is PlayerInventory) continue
-                    if (slot.`(inventory)` is CraftingInventory || slot.`(inventory)` is CraftingResultInventory) continue
+                    if (!types.containsAny(matchSet) && slot.`(inventory)` !is Inventory) continue
+                    if (slot.`(inventory)` is CraftingContainer || slot.`(inventory)` is ResultContainer) continue
                 } else if (types.contains(ContainerType.STONECUTTER)
-                    && (slot.`(inventory)` is CraftingInventory
-                            || slot.`(inventory)` is CraftingResultInventory)) {
+                    && (slot.`(inventory)` is CraftingContainer
+                        || slot.`(inventory)` is ResultContainer)) {
                     continue
                 }
 
@@ -146,59 +147,4 @@ object MiscHandler {
             }
         }
     }
-
-    /*
-    fun onBackgroundRender() {
-        drawSprite()
-    }
-
-    private fun drawSprite() {
-        //if (!enabled) return
-        val screen = Vanilla.screen()
-        val topLeft = (screen as? ContainerScreen<*>)?.`(containerBounds)`?.topLeft ?: return
-        val container = (screen as? ContainerScreen<*> )?.`(container)`
-        val slots = if ( container != null) {
-            //container.slots
-            //Vanilla.container().`(slots)`
-            listOf(screen.`(rawFocusedSlot)`)
-        } else {
-            //Vanilla.container().`(slots)`
-            listOf(screen.`(rawFocusedSlot)`)
-        }
-        if (!vCursorStack().isEmpty()) return
-
-        val line = MouseTracer.asLine
-
-        val types = ContainerTypes.getTypes(Vanilla.container())
-
-        val matchSet = setOf(ContainerType.NO_SORTING_STORAGE,
-                             ContainerType.SORTABLE_STORAGE,
-                             ContainerType.PURE_BACKPACK)
-
-        for (slot in slots) {
-            if (slot == null) continue
-            // disable for non storage (tmp solution for crafting table result slot)
-            if (!Tweaks.SWIPE_MOVE_CRAFTING_RESULT_SLOT.booleanValue) {
-                if (!types.containsAny(matchSet) && slot.`(inventory)` !is PlayerInventory) continue
-                if (slot.`(inventory)` is CraftingInventory || slot.`(inventory)` is CraftingResultInventory) continue
-            }
-
-            val rect = Rectangle(topLeft + slot.`(topLeft)`,
-                                 Size(16,
-                                      16))
-            if (line.intersects(rect)) {
-                if (slot.`(itemStack)`.isEmpty()) continue
-                val matrixStack2: MatrixStack = RenderSystem.getModelViewStack()
-                Log.trace("$matrixStack2")
-                rDisableDepth()
-                RenderSystem.enableBlend()
-                rFillRect(rect,
-                          180.r(1).g(0x96).b(0x6b))
-                RenderSystem.disableBlend()
-                rEnableDepth()
-
-            }
-        }
-    }
-*/
 }

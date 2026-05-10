@@ -21,16 +21,16 @@
 package org.anti_ad.mc.ipnext.gui
 
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.screen.Container
-import org.anti_ad.mc.alias.screen.slot.Slot
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.Slot
+
 import org.anti_ad.mc.common.extensions.usefulName
 import org.anti_ad.mc.common.gui.debug.BaseDebugScreen
 import org.anti_ad.mc.common.gui.debug.DebugInfos
 import org.anti_ad.mc.common.gui.widgets.Page
 import org.anti_ad.mc.common.gui.widgets.Widget
 import org.anti_ad.mc.common.vanilla.Vanilla
-import org.anti_ad.mc.common.vanilla.alias.DrawContext
 import org.anti_ad.mc.ipnext.ingame.`(container)`
 import org.anti_ad.mc.ipnext.ingame.`(containerBounds)`
 import org.anti_ad.mc.ipnext.ingame.`(focusedSlot)`
@@ -109,7 +109,7 @@ class DebugScreen: BaseDebugScreen() {
                               d).joinToString("\n").lines()
             }
         val slot: Slot?
-            get() = (parent as? ContainerScreen<*>)?.`(rawFocusedSlot)`
+            get() = (parent as? AbstractContainerScreen<*>)?.`(rawFocusedSlot)`
         val slot2: Slot?
             get() = parent?.`(focusedSlot)`
         val itemType: ItemType
@@ -143,7 +143,7 @@ class DebugScreen: BaseDebugScreen() {
         val focusedSlot: String
             get() = "focusedSlot: ${parent?.`(focusedSlot)`?.javaClass?.name}"
         val screenContainer: String
-            get() = (parent as? ContainerScreen<*>)?.let {
+            get() = (parent as? AbstractContainerScreen<*>)?.let {
                 containerStringOf(it.`(container)`,
                                   "screenContainer")
             }
@@ -152,7 +152,7 @@ class DebugScreen: BaseDebugScreen() {
             get() = containerStringOf(Vanilla.container(),
                                       "container")
 
-        fun containerStringOf(container: Container,
+        fun containerStringOf(container: AbstractContainerMenu,
                               title: String): String {
             return "$title: ${container.javaClass.canonicalName}"
         }
@@ -179,7 +179,7 @@ class DebugScreen: BaseDebugScreen() {
 
     init {
         val parent = parent
-        if (parent is ContainerScreen<*>) {
+        if (parent is AbstractContainerScreen<*>) {
 
             val page0Plus = addContent(
                 {
@@ -212,7 +212,7 @@ class DebugScreen: BaseDebugScreen() {
         var storedPageIndex = 0
     }
 
-    override fun extractBackground(context: DrawContext,
+    override fun extractBackground(context: GuiGraphicsExtractor,
                                    mouseX: Int,
                                    mouseY: Int,
                                    deltaTicks: Float) {

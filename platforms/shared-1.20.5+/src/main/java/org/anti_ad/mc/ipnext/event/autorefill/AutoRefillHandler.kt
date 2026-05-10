@@ -21,23 +21,29 @@
 
 package org.anti_ad.mc.ipnext.event.autorefill
 
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.inventory.InventoryScreen
+
+import net.minecraft.world.entity.player.Inventory
+
+import net.minecraft.world.level.GameType
+import net.minecraft.tags.ItemTags
+
+import net.minecraft.core.registries.BuiltInRegistries
+
+import net.minecraft.world.item.ShovelItem
+import net.minecraft.world.item.HoeItem
+import net.minecraft.world.item.FishingRodItem
+import net.minecraft.world.item.AxeItem
+import net.minecraft.world.item.Items
+
 import net.minecraft.core.component.DataComponentGetter
 import net.minecraft.core.component.DataComponentType
-import org.anti_ad.mc.alias.client.gui.screen.ingame.ContainerScreen
-import org.anti_ad.mc.alias.client.gui.screen.ingame.InventoryScreen
-import org.anti_ad.mc.alias.component.ComponentType
-import org.anti_ad.mc.alias.component.DataComponentTypes
-import org.anti_ad.mc.alias.enchantment.Enchantments
-import org.anti_ad.mc.alias.inventory.PlayerInventory
-import org.anti_ad.mc.alias.item.AxeItem
-import org.anti_ad.mc.alias.item.FishingRodItem
-import org.anti_ad.mc.alias.item.HoeItem
-import org.anti_ad.mc.alias.item.Items
-import org.anti_ad.mc.alias.item.ShovelItem
-import org.anti_ad.mc.alias.registry.Registries //import org.anti_ad.mc.alias.item.SwordItem
-import org.anti_ad.mc.alias.registry.tag.ItemTags
+import net.minecraft.core.component.DataComponents
+
+import net.minecraft.world.item.enchantment.Enchantments
+
 import org.anti_ad.mc.alias.text.fromSerializedJson
-import org.anti_ad.mc.alias.world.GameType
 import org.anti_ad.mc.common.IInputHandler
 import org.anti_ad.mc.common.extensions.tryCatch
 import org.anti_ad.mc.common.gui.NativeContext
@@ -48,7 +54,6 @@ import org.anti_ad.mc.common.math2d.Size
 import org.anti_ad.mc.common.math2d.intersects
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.VanillaUtil
-import org.anti_ad.mc.common.vanilla.alias.RenderSystem
 import org.anti_ad.mc.common.vanilla.render.glue.Sprite
 import org.anti_ad.mc.common.vanilla.render.glue.rDrawCenteredSprite
 import org.anti_ad.mc.common.vanilla.render.rDisableDepth
@@ -153,7 +158,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                 container.`(slots)`.filter { slot ->
                     val playerSlot = vPlayerSlotOf(slot, screen)
                     val inv = playerSlot.`(inventoryOrNull)`
-                    inv != null && inv is PlayerInventory && slot.`(invSlot)` in range
+                    inv != null && inv is Inventory && slot.`(invSlot)` in range
                 }.map { it.`(id)` }
             }
         }
@@ -202,7 +207,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
         } else {
             skipTick = false
         }
-        val screen = Vanilla.screen() as? ContainerScreen<*> ?: run {
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: run {
             clicked = false
             return
         }
@@ -585,21 +590,21 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                             !isEmpty() && isDamageable && durability > threshold
                         }
                     }
-                    val regEntry = Registries.ITEM.getEntry(itemType.item) // getEntry(itemType.item)
+                    val regEntry = BuiltInRegistries.ITEM.getEntry(itemType.item) // getEntry(itemType.item)
                     when {
                         regEntry.isIn(ItemTags.LEG_ARMOR) -> {
                             filtered = filtered.filter {
-                                Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.LEG_ARMOR)
+                                BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.LEG_ARMOR)
                             }
                         }
                         regEntry.isIn(ItemTags.FOOT_ARMOR) -> {
                             filtered = filtered.filter {
-                                Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.FOOT_ARMOR)
+                                BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.FOOT_ARMOR)
                             }
                         }
                         regEntry.isIn(ItemTags.HEAD_ARMOR) -> {
                             filtered = filtered.filter {
-                                Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.HEAD_ARMOR)
+                                BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.HEAD_ARMOR)
                             }
                         }
                         regEntry.isIn(ItemTags.CHEST_ARMOR) -> {
@@ -607,38 +612,38 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                                 if (itemType.isEmpty()) {
                                     false
                                 } else {
-                                    Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.CHEST_ARMOR)
+                                    BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.CHEST_ARMOR)
                                 }
                             }
                         }
 
                         regEntry.isIn(ItemTags.SWORDS) -> {
                             filtered = filtered.filter {
-                                Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.SWORDS)
+                                BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.SWORDS)
                             }
                         }
 
                         regEntry.isIn(ItemTags.SHOVELS) -> {
                             filtered = filtered.filter {
-                                Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.SHOVELS)
+                                BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.SHOVELS)
                             }
                         }
 
                         regEntry.isIn(ItemTags.PICKAXES) -> {
                             filtered = filtered.filter {
-                                Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.PICKAXES)
+                                BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.PICKAXES)
                             }
                         }
 
                         regEntry.isIn(ItemTags.AXES) -> {
                             filtered = filtered.filter {
-                                Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.AXES)
+                                BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.AXES)
                             }
                         }
 
                         regEntry.isIn(ItemTags.HOES) -> {
                             filtered = filtered.filter {
-                                Registries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.HOES)
+                                BuiltInRegistries.ITEM.getEntry(it.value.itemType.item).isIn(ItemTags.HOES)
                             }
                         }
                         itemType.item is FishingRodItem -> {
@@ -744,8 +749,8 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
 
             private fun checkNBTIfNeeded(it: IndexedValue<ItemStack>, itemType: ItemType): Boolean {
                 return if (AutoRefillSettings.AUTO_REFILL_MATCH_NBT.booleanValue) {
-                    val removePredicate: Predicate<ComponentType<*>> = Predicate { type ->
-                        type == DataComponentTypes.DAMAGE
+                    val removePredicate: Predicate<DataComponentType<*>> = Predicate { type ->
+                        type == DataComponents.DAMAGE
                     }
 
                     if (!itemType.isBucket || (itemType.isBucket && !AutoRefillSettings.AUTO_REFILL_IGNORE_NBT_FOR_BUCKETS.booleanValue)) {
@@ -810,7 +815,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
 
     override val slotLocations: Map<Int, Point>
         get() {
-            val screen = Vanilla.screen() as? ContainerScreen<*> ?: return mapOf()
+            val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return mapOf()
 
             @Suppress("USELESS_ELVIS")
             val container = Vanilla.container() ?: return mapOf()
@@ -820,7 +825,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                 if (playerSlot.`(id)` in all) {
                     val topLeft = slot.`(topLeft)`
                     val inv = playerSlot.`(inventoryOrNull)` ?: return@mapNotNull null
-                    return@mapNotNull if (inv is PlayerInventory) playerSlot.`(invSlot)` to topLeft else null
+                    return@mapNotNull if (inv is Inventory) playerSlot.`(invSlot)` to topLeft else null
                 }
                 return@mapNotNull null
             }.toMap()
@@ -828,7 +833,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
 
     override fun drawForeground(context: NativeContext) {
         if (!enabledForeground) return
-        val screen = Vanilla.screen() as? ContainerScreen<*> ?: return
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*> ?: return
         val topLeft = screen.`(containerBounds)`.topLeft
         for ((invSlot, slotTopLeft) in slotLocations) {
             if (invSlot !in disabledSlots) {
@@ -884,7 +889,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
 
     override fun onInput(context: NativeInputContextBase<*>, lastKey: Int, lastAction: Int): Boolean {
         if (!enabledForeground) return false
-        val screen = Vanilla.screen() as? ContainerScreen<*>
+        val screen = Vanilla.screen() as? AbstractContainerScreen<*>
         if (VanillaUtil.inGame() && screen == null && Hotkeys.AUTO_REFILL_GAME_TOGGLE_FOR_SLOT.isActivated()) {
             val index = vMainhandIndex()
             toggleDisableRefillForSlot(index)
@@ -905,7 +910,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
     }
 
 
-    fun onCancellableInput(screen: ContainerScreen<*>): Boolean {
+    fun onCancellableInput(screen: AbstractContainerScreen<*>): Boolean {
         val currentClicked = Hotkeys.AUTO_REFILL_GUI_TOGGLE_FOR_SLOT.isPressing()
         if (currentClicked != clicked) {
             val topLeft = screen.`(containerBounds)`.topLeft - Size(1, 1)

@@ -20,11 +20,10 @@
 
 package org.anti_ad.mc.ipnext.item.rule.natives
 
-import org.anti_ad.mc.alias.component.DataComponentTypes
-import org.anti_ad.mc.alias.nbt.NbtCompound
-import org.anti_ad.mc.alias.nbt.NbtElement
-import org.anti_ad.mc.alias.registry.`(get)`
-import org.anti_ad.mc.alias.registry.Registries
+import net.minecraft.core.component.DataComponents
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.Tag
 import org.anti_ad.mc.ipnext.Log
 import org.anti_ad.mc.common.extensions.asComparable
 import org.anti_ad.mc.common.extensions.compareTo
@@ -167,14 +166,13 @@ class SimpleParameterBasedRule: BooleanBasedRule() {
     init {
         arguments.apply {
             defineParameter(component_id, "ipn:none".`(asIdentifier)`)
-            defineParameter(nbt,
-                            NbtCompound())
+            defineParameter(nbt, CompoundTag())
             defineParameter(allow_extra,
                             true)
         }
         valueOf = {
-            val type = Registries.DATA_COMPONENT_TYPE.`(get)`(arguments[component_id])
-            val nbtValue = type?.toFilteredNbtOrNull(Optional.ofNullable(it.tag?.get(type))) ?: NbtCompound()
+            val type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(arguments[component_id])
+            val nbtValue = type?.toFilteredNbtOrNull(Optional.ofNullable(it.tag?.get(type))) ?: CompoundTag()
             if (arguments[allow_extra]) {
                 NbtUtils.matchNbt(arguments[nbt],
                                   nbtValue)
@@ -192,12 +190,12 @@ class MatchNbtRule : BooleanBasedRule() {
         arguments.apply {
             defineParameter(component_id)
             defineParameter(nbt,
-                            NbtCompound())
+                            CompoundTag())
             defineParameter(allow_extra,
                             true)
         }
         valueOf = {
-            val type = Registries.DATA_COMPONENT_TYPE.`(get)`(arguments[component_id])
+            val type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(arguments[component_id])
             val nbtValue = type?.toFilteredNbtOrNull(Optional.ofNullable(it.tag?.get(type)))
             if (arguments[allow_extra]) {
                 NbtUtils.matchNbt(arguments[nbt],
@@ -303,7 +301,7 @@ class ByNbtRule : NativeRule() {
     inner class ByNbtPathComparator(val itemType1: ItemType,
                                     val itemType2: ItemType) {
         fun compare(): Int {
-            val type = Registries.DATA_COMPONENT_TYPE.`(get)`(arguments[component_id])
+            val type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(arguments[component_id])
             val tags1 = arguments[nbt_path].getTags(itemType1, type)
             val tags2 = arguments[nbt_path].getTags(itemType2, type)
             if (tags1.size > 1 || tags2.size > 1)
@@ -391,8 +389,8 @@ class EnchantmentsOrder : NativeRule(), SpecificEnchantmentOrder {
     }
 
     fun compareItems(a: ItemType, b: ItemType): Int {
-        val enchType = DataComponentTypes.ENCHANTMENTS
-        val storedEnchType = DataComponentTypes.STORED_ENCHANTMENTS
+        val enchType = DataComponents.ENCHANTMENTS
+        val storedEnchType = DataComponents.STORED_ENCHANTMENTS
 
         val tagA = a.tag
         val tagB = b.tag
@@ -428,10 +426,10 @@ class NbtComparatorRule : NativeRule() {
             defineParameter(component_id)
         }
         comparator = { a: ItemType, b: ItemType -> // compare a.tag and b.tag
-            val type = Registries.DATA_COMPONENT_TYPE.`(get)`(arguments[component_id])
+            val type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(arguments[component_id])
             val nbtValueA = type?.toFilteredNbtOrNull(Optional.ofNullable(a.tag?.get(type)))
             val nbtValueB = type?.toFilteredNbtOrNull(Optional.ofNullable(b.tag?.get(type)))
-            val cpr: Comparator<NbtElement?> =  nullsLast { e1, e2 ->
+            val cpr: Comparator<Tag?> =  nullsLast { e1, e2 ->
                 e1.compareTo(e2)
             }
             cpr.compare(nbtValueA, nbtValueB)
