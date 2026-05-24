@@ -21,13 +21,11 @@
 package org.anti_ad.mc.ipnext.inventory
 
 import net.minecraft.core.component.DataComponentType
+import net.minecraft.nbt.NbtUtils
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.BeaconMenu
 import net.minecraft.world.inventory.Slot
-
-import org.anti_ad.mc.alias.component.`(types)`
-import org.anti_ad.mc.alias.nbt.NbtHelper_toFormattedString
 
 import org.anti_ad.mc.common.LogBase
 import org.anti_ad.mc.ipnext.Log
@@ -303,29 +301,20 @@ object GeneralInventoryActions {
         if (stack != ItemStack.EMPTY) {
             var item = "${stack.itemType.itemId} => [\n"
             val tg = stack.itemType.tag
-            if (tg != null) {
-                tg.`(types)`.forEach { type: DataComponentType<*> ->
+            if (!tg.isEmpty) {
+                tg.keySet().forEach { type: DataComponentType<*> ->
                     val value = tg.get(type)
                     if (value != null) {
                         type.toFullNbtOrNull(Optional.of<Any>(value))?.let {
                             val tString = "$type ->\n"
                             item += "\t" + tString
                             val sep = "\t" + " ".repeat(tString.length) + "\t"
-                            val tx = NbtHelper_toFormattedString(it, true).lineSequence().joinToString(separator = "\n$sep", prefix = sep)
+                            val tx = NbtUtils.prettyPrint(it, true).lineSequence().joinToString(separator = "\n$sep", prefix = sep)
                             item += tx
                         }
                     }
                     item += "\n"
                 }
-
-/*
-                item += "]\nTAGS: [\n"
-                val itemReg = Registries.ITEM.getEntry(stack.itemType.item)
-                itemReg?.streamTags()?.forEach {
-                    item += "\t$it -> ${it.javaClass.canonicalName},\n"
-                }
-                item += "]"
-*/
                 Vanilla.setClipboard(item)
                 TellPlayer.chat("Copy Components.")
             }
