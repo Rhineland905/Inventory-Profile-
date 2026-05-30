@@ -130,7 +130,7 @@ object ProfilesLoader: Loader, Savable {
     }
 
     override fun reload(fromUserInput: Boolean) {
-        Log.error("ProfilesLoader.reload()", Exception(""))
+        //Log.error("ProfilesLoader.reload()", Exception(""))
         profiles.clear()
         savedProfiles.clear()
         val temp = mutableListOf<ProfileData>()
