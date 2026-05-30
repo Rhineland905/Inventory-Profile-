@@ -1,13 +1,17 @@
 <!-- latest begin -->
 
+### 2.3.3
+
+- fixed drop prevention for locked slots.
+- minimised the loader-specific code.
+ 
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.3.2
 
 - added support for Forge 26.1.x
 - added support for NeoForge 26.1.x
-
- 
-<!-- latest end -->
-<!-- rest begin -->
 
 ### 2.3.1
 

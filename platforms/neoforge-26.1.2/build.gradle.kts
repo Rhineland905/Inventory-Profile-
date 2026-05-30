@@ -119,11 +119,13 @@ plugins.withId("idea") {
     }
 }
 
+/*
 java {
     sourceSets.getByName("main") {
         java.srcDir(project.layout.buildDirectory.dir("generated/sources/antlr/main"))
     }
 }
+*/
 
 tasks.named("compileKotlin") {
     dependsOn(antlrTask)
@@ -153,6 +155,15 @@ publishing {
 
 
 afterEvaluate {
+
+
+    sourceSets {
+        val main by getting {
+            antlr {
+                setSrcDirs(listOf("src/shared/antlr"))
+            }
+        }
+    }
 
     project.gradle.taskGraph.whenReady {
 

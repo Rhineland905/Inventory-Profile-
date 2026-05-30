@@ -44,6 +44,7 @@ dependencies {
 
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor(0, "seconds")
+
 }
 
 modVersion {
@@ -62,4 +63,5 @@ project.allprojects {
     if (this.rootProject != this) {
         group = "org.anti_ad.mc"
     }
+
 }

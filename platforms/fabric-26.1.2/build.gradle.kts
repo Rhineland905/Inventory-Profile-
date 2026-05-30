@@ -73,7 +73,7 @@ dependencies {
     }
 
     yacl_version?.let {
-        "implementation"("dev.isxander:yet-another-config-lib:$it") {
+        "compileOnly"("dev.isxander:yet-another-config-lib:$it") {
             exclude("maven.modrinth")
             exclude(module = "reeses-sodium-options")
             exclude(group = "org.quiltmc.parsers")
@@ -84,7 +84,7 @@ dependencies {
         }
     }
     controlify_version?.let {
-        "implementation"("dev.isxander:controlify:$it") {
+        "compileOnly"("dev.isxander:controlify:$it") {
             exclude("maven.modrinth")
             exclude(module = "reeses-sodium-options")
             exclude(group = "org.jetbrains.kotlinx")
@@ -132,6 +132,16 @@ easyMod {
     }
 }
 
+
+afterEvaluate {
+    sourceSets {
+        val main by getting {
+            antlr {
+                setSrcDirs(listOf("src/shared/antlr"))
+            }
+        }
+    }
+}
 
 tasks.named<AntlrTask>("generateGrammarSource").configure {
     val pkg = "org.anti_ad.mc.ipnext.gen"

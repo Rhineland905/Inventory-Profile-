@@ -143,6 +143,14 @@ afterEvaluate {
         }
     }
 
+    sourceSets {
+        val main by getting {
+            antlr {
+                setSrcDirs(listOf("src/shared/antlr"))
+            }
+        }
+    }
+
 
     gradle.projectsEvaluated {
 
