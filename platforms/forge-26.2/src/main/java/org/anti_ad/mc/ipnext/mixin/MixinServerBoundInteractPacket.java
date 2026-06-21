@@ -35,7 +35,7 @@ public class MixinServerBoundInteractPacket {
 
     @Inject(method = "interactOn(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/InteractionResult;",
             at = @At("HEAD"))
-    private static void interactAt(Entity entity, InteractionHand hand, Vec3 location, CallbackInfoReturnable<InteractionResult> cir) {
+    private void interactAt(Entity entity, InteractionHand hand, Vec3 location, CallbackInfoReturnable<InteractionResult> cir) {
         VillagerTradeManager.INSTANCE.setCurrentVillager(entity);
     }
 }
