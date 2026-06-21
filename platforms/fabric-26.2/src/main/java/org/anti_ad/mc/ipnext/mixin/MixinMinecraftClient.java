@@ -35,6 +35,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -61,13 +62,13 @@ public abstract class MixinMinecraftClient {
     @Shadow
     public LocalPlayer player;
 
-    @Shadow @Final public Options options;
+    @Shadow @Final
+    public Options options;
 
-    @Shadow public abstract boolean isPaused();
-
-    @Shadow @Final private Window window;
-
-    @Shadow @Nullable public Screen screen;
+    @Shadow
+    @Final
+    @Nullable
+    public Gui gui;
 
     @Inject(at = @At("HEAD"), method = "tick()V")
     public void tick(CallbackInfo info) {
@@ -105,7 +106,7 @@ public abstract class MixinMinecraftClient {
             KeyMapping keySwapHands = options.keySwapOffhand;
             IMixinKeyBinding keySwapHandsAccessor = (IMixinKeyBinding) keySwapHands;
 
-            if (this.screen == null
+            if (this.gui.screen() == null
                     && InventoryMenu.isHotbarSlot(this.player.getInventory().getSelectedSlot())
                     && keySwapHandsAccessor.getTimesPressed() > 0) {
 

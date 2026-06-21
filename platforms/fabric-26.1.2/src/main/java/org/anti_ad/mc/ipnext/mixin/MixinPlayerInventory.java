@@ -37,6 +37,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Inventory.class)
@@ -79,14 +80,62 @@ public abstract class MixinPlayerInventory {
     }
 
     @Inject(at = @At(value = "HEAD"),
-            method = "addResource")
+            method = "addResource(Lnet/minecraft/world/item/ItemStack;)I")
     public void addStackPre(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+        addedStack = itemStack;
+        Log.INSTANCE.trace("1. Added stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
+    }
+
+    @Inject(at = @At(value = "TAIL"),
+            method = "addResource(Lnet/minecraft/world/item/ItemStack;)I")
+    public void addStackPost(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+        Log.INSTANCE.trace("1. Removed stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
+        addedStack = null;
+    }
+
+    @Inject(at = @At(value = "HEAD"),
+            method = "addResource(ILnet/minecraft/world/item/ItemStack;)I")
+    public void addStackPre(int slot, ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+        Log.INSTANCE.trace("2. Added stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
         addedStack = itemStack;
     }
 
     @Inject(at = @At(value = "TAIL"),
-            method = "addResource")
-    public void addStackPost(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+            method = "addResource(ILnet/minecraft/world/item/ItemStack;)I")
+    public void addStackPost(int slot, ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+        Log.INSTANCE.trace("2. Removed stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
         addedStack = null;
     }
+
+    @Inject(at = @At(value = "HEAD"),
+            method = "add(ILnet/minecraft/world/item/ItemStack;)Z")
+    public void addPre(int slot, ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+        Log.INSTANCE.trace("2. Added stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
+        addedStack = itemStack;
+    }
+
+    @Inject(at = @At(value = "TAIL"),
+            method = "add(ILnet/minecraft/world/item/ItemStack;)Z")
+    public void addPost(int slot, ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+        Log.INSTANCE.trace("2. Removed stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
+        addedStack = null;
+    }
+
+
+    @Inject(at = @At(value = "HEAD"),
+            method = "placeItemBackInInventory(Lnet/minecraft/world/item/ItemStack;Z)V")
+    public void placeItemBackInInventoryPre$IPN(ItemStack itemStack, boolean shouldSendSetSlotPacket, CallbackInfo ci) {
+        Log.INSTANCE.trace("3. Added stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
+        addedStack = itemStack;
+    }
+
+    @Inject(at = @At(value = "TAIL"),
+            method = "placeItemBackInInventory(Lnet/minecraft/world/item/ItemStack;Z)V")
+    public void placeItemBackInInventoryPost$IPN(ItemStack itemStack, boolean shouldSendSetSlotPacket, CallbackInfo ci) {
+        Log.INSTANCE.trace("3. Removed stack = %s".formatted(addedStack != null ? addedStack.getItem().toString() : "null"));
+        addedStack = null;
+    }
+
+
+
 }
