@@ -26,8 +26,12 @@ rootProject.name = "InventoryProfilesNext"
 
 
 include("platforms:forge-26.1.2")
+include("platforms:forge-26.2")
 include("platforms:neoforge-26.1.2")
+include("platforms:neoforge-26.2")
 include("platforms:fabric-26.1.2")
+include("platforms:fabric-26.2")
+
 
 
 

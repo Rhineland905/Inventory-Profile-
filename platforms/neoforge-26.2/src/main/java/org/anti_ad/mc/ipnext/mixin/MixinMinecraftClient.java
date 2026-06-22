@@ -23,7 +23,7 @@ package org.anti_ad.mc.ipnext.mixin;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import org.anti_ad.mc.ipnext.config.LockedSlotsSettings;
@@ -50,7 +50,8 @@ public abstract class MixinMinecraftClient {
     @Shadow @Final
     public Options options;
 
-    @Shadow @Nullable public Screen screen;
+    @Shadow @Nullable @Final
+    public Gui gui;
 
     @Inject(at = @At("HEAD"),
             method = "handleKeybinds()V")
@@ -71,7 +72,7 @@ public abstract class MixinMinecraftClient {
             KeyMapping keySwapHands = this.options.keySwapOffhand;
             IMixinKeyBinding keySwapHandsAccessor = (IMixinKeyBinding) keySwapHands;
 
-            if (this.screen == null
+            if (this.gui.screen() == null
                     && Inventory.isHotbarSlot(this.player.getInventory().getSelectedSlot())
                     && keySwapHandsAccessor.getTimesPressed() > 0) {
 

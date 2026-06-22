@@ -26,7 +26,6 @@ plugins {
     alias(libs.plugins.kotlinSer) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.shadow) apply false
-    //id("net.minecraftforge.gradle") version "6.0.43" apply false
     alias(libs.plugins.easymod)
 
     id("org.barfuin.gradle.taskinfo") version "2+"
