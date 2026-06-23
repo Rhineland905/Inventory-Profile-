@@ -46,7 +46,6 @@ object AnvilHandler {
     private var afterPre: Boolean = false
     private var container: AnvilMenu? = null
     private var stillProcessingLast: Boolean = false
-    private var skipNext: Boolean = false
 
     private val onTickRunnableList = mutableListOf<Runnable>()
 
@@ -60,7 +59,6 @@ object AnvilHandler {
                 Log.trace("still processing last")
                 return true
             }
-            skipNext = true
             this.container = container
             Vanilla.screen()?.let { screen ->
                 if (screen is AnvilScreen) {
@@ -220,7 +218,7 @@ object AnvilHandler {
             try {
                 it.run()
             } catch (e: Throwable) {
-                Log.error("Error while AnvilHandler#onTickInGame")
+                Log.error("Error while AnvilHandler#onTickInGame", e)
             }
         }
     }

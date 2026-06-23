@@ -125,12 +125,12 @@ inline val ItemType.vanillaStack: VanillaItemStack
     get() {
         val tag = this@vanillaStack.tag.copy()
         tag.applyPatch(this@vanillaStack.changes)
-        val stack = VanillaItemStack(item.builtInRegistryHolder(), 1, tag)
+        val stack = VanillaItemStack(BuiltInRegistries.ITEM.wrapAsHolder(item), 1, tag)
         return stack
     }
 
 fun ItemType.vanillaStackWithCount(count: Int): VanillaItemStack =
-    VanillaItemStack(this.item.builtInRegistryHolder(),
+    VanillaItemStack(BuiltInRegistries.ITEM.wrapAsHolder(this.item),
                      count,
                      this@vanillaStackWithCount.tag as PatchedDataComponentMap) // nbt was tag
 
