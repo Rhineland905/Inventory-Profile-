@@ -1,12 +1,18 @@
 <!-- latest begin -->
 
+### 2.3.4
+
+- support for Minecraft 26.2
+- NeoForge builds doesn't require Kotlin For Forge or any other Kotlin provider.
+
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.3.3
 
 - fixed drop prevention for locked slots.
 - minimised the loader-specific code.
- 
-<!-- latest end -->
-<!-- rest begin -->
+
 
 ### 2.3.2
 
