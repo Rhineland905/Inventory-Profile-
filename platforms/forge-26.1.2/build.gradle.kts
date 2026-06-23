@@ -80,7 +80,7 @@ easyMod {
     }
     this.jarPostProcessConfig = {
         advzipArguments = if (modVersion.release()) {
-            listOf("-4", "-z", "-i", "100")
+            listOf("-4", "-z", "-i", "20")
         } else {
             listOf("-3", "-z", "-i", "10")
         }
