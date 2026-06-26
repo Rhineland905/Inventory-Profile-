@@ -145,7 +145,7 @@ object ContainerClicker {
             val iterator = clicks.iterator()
             val highlight = Highlight(-1)
             highlights.add(highlight)
-            timer(period = interval.toLong()) {
+            timer(period = interval.toLong(), daemon = true) {
                 if (Vanilla.container() != currentContainer) {
                     cancel()
                     highlights.remove(highlight)
@@ -203,7 +203,7 @@ object ContainerClicker {
             val secondHighlight = Highlight(-1)
             highlights.add(firstHighlight)
             highlights.add(secondHighlight)
-            timer(period = interval.toLong()) {
+            timer(period = interval.toLong(), daemon = true) {
                 if (Vanilla.container() != currentContainer) {
                     cancel()
                     highlights.remove(firstHighlight)
@@ -266,7 +266,7 @@ object ContainerClicker {
             val iterator = clicks.iterator()
             val highlight = Highlight(-1)
             highlights.add(highlight)
-            timer(period = interval.toLong()) {
+            timer(period = interval.toLong(), daemon = true) {
                 if (Vanilla.container() != currentContainer) {
                     cancel()
                     highlights.remove(highlight)

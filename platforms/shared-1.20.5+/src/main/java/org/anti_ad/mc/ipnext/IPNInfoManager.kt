@@ -65,7 +65,7 @@ object IPNInfoManager: InfoManagerBase() {
                 this.cancel()
                 checkVersion(versionCheckUrl, "IPN", salt) { new, _, _ ->
                     if (ModSettings.ENABLE_UPDATES_CHECK.value) {
-                        timer(name = "versionMessage", initialDelay = 5000, period = 10000) {
+                        timer(name = "versionMessage", initialDelay = 5000, period = 10000, daemon = true) {
                             Vanilla.queueForMainThread {
                                 val clickableMsg = createChatMessage(new)
                                 TellPlayer.chat(clickableMsg)
@@ -92,7 +92,7 @@ object IPNInfoManager: InfoManagerBase() {
     }
 
     fun doSessionKeepAlive() {
-        timer("ipnPeriodicalTasks", initialDelay = 5 * 60 * 1000, period = 20 * 60 * 1000) {
+        timer("ipnPeriodicalTasks", initialDelay = 5 * 60 * 1000, period = 20 * 60 * 1000, daemon = true) {
             
             val player = Vanilla.playerNullable()
             if (player != null && version != "null") {
