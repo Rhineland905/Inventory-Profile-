@@ -133,8 +133,8 @@ object VillagerDataManager {
         this.configFile = this.path / "villager-trading-config-v2.json"
         if (configFile.exists()) {
             try {
-                with(configFile.inputStream()) {
-                    config.copyFrom(json.decodeFromStream(Config.serializer(), this))
+                configFile.inputStream().use {
+                    config.copyFrom(json.decodeFromStream(Config.serializer(), it))
                 }
             } catch (t: Throwable) {
                 val newName = "${System.currentTimeMillis()}-BAD-villager-trading-config-v2.json"
@@ -222,7 +222,7 @@ object VillagerDataManager {
         synchronized(timerSync) {
             if (config.isDirty && saveTimer == null) {
                 val timer = timer("IPN VillagerDataManager",
-                                  daemon = false,
+                                  daemon = true,
                                   initialDelay = 100,
                                   period = 250,
                                   task)

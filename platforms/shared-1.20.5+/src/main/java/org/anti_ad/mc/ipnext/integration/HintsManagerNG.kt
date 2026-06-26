@@ -129,8 +129,7 @@ object HintsManagerNG {
 
     private fun readInternalConfig(input: InputStream, fromUserInput: Boolean) {
         tryLog("", fromUserInput, ::logError) {
-            val data: MutableMap<String, Map<String, HintClassData>> = json.decodeFromStream<MutableMap<String, Map<String, HintClassData>>>(
-                input).also {
+            val data: MutableMap<String, Map<String, HintClassData>> = json.decodeFromStream<MutableMap<String, Map<String, HintClassData>>>(input).also {
                 trySwallow { input.close() }
             }
             data.forEach { ids ->
@@ -146,9 +145,8 @@ object HintsManagerNG {
         val d1 = data.toSortedMap()
         val file = configRoot / hintsExport
         file.deleteIfExists()
-        with(file.outputStream()) {
-            json.encodeToStream(MapSerializer(String.serializer(), MapSerializer(String.serializer(), HintClassData.serializer())), d1, this)
-            this.close()
+        file.outputStream().use {
+            json.encodeToStream(MapSerializer(String.serializer(), MapSerializer(String.serializer(), HintClassData.serializer())), d1, it)
         }
     }
 
@@ -176,9 +174,11 @@ object HintsManagerNG {
         data.forEach { (id, hints) ->
             val file = externalHintsPath / "$id.json"
             file.deleteIfExists()
-            with(file.outputStream()) {
-                TellPlayer.chat("Generating ${file.name}")
-                json.encodeToStream(hints, this)
+            trySwallow {
+                file.outputStream().use {
+                    TellPlayer.chat("Generating ${file.name}")
+                    json.encodeToStream(hints, it)
+                }
             }
         }
     }
@@ -319,7 +319,13 @@ object HintsManagerNG {
         }
         val file = externalHintsPath / fileName
         file.deleteIfExists()
-        if (allById.isNotEmpty()) json.encodeToStream(allById, file.outputStream())
+        if (allById.isNotEmpty()) {
+            trySwallow {
+                file.outputStream().use {
+                    json.encodeToStream(allById, it)
+                }
+            }
+        }
     }
 }
 

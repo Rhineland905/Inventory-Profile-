@@ -58,7 +58,7 @@ object IPNInfoManager: InfoManagerBase() {
     private val playerId = { Vanilla.playerNullable()?.gameProfile?.id?.toString()?.sha256() ?: "InvalidPlayer" }
 
     fun doCheckVersion() {
-        timer("versionCheck", initialDelay = 5000, period = 10000) {
+        timer("versionCheck", initialDelay = 5000, period = 10000, daemon = true) {
             val player = Vanilla.playerNullable()
             if (player != null && version != "null") {
                 val salt = "${playerId()}; $session"
