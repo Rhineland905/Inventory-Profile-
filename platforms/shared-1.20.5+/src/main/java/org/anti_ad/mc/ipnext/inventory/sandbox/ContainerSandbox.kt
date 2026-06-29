@@ -28,13 +28,13 @@ import org.anti_ad.mc.ipnext.item.MutableItemStack
 import org.anti_ad.mc.ipnext.item.empty
 import org.anti_ad.mc.ipnext.item.identifier
 import org.anti_ad.mc.ipnext.item.isEmpty
+import org.anti_ad.mc.ipnext.item.isShulker
 import org.anti_ad.mc.ipnext.item.setEmpty
 import org.anti_ad.mc.ipnext.item.splitHalfTo
 import org.anti_ad.mc.ipnext.item.stackableWith
 import org.anti_ad.mc.ipnext.item.swapWith
 import org.anti_ad.mc.ipnext.item.transferOneTo
 import org.anti_ad.mc.ipnext.item.transferTo
-
 
 private const val METAL_BUNDLES_ID = "metalbundles"
 
@@ -53,11 +53,12 @@ class ContainerSandbox(items: MutableItemTracker,
             cursor.transferTo(target)
         }
         val action = when {
-            Integrations.isEasyShulkerBoxesLoaded -> 0
             target.itemType.identifier.namespace == METAL_BUNDLES_ID -> 0
             cursor.itemType.identifier.namespace == METAL_BUNDLES_ID -> 0
             !cursor.isEmpty() && target.itemType.`(isBundle)` -> 1
             cursor.itemType.`(isBundle)` && !target.isEmpty() -> 1
+            Integrations.isEasyShulkerBoxesLoaded && (!cursor.isEmpty() && target.itemType.isShulker
+                                                      || cursor.itemType.isShulker && !target.isEmpty()) -> 1
             else -> 0
         }
 
