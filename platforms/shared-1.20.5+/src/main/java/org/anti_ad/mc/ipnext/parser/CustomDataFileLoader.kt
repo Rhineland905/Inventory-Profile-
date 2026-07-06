@@ -278,8 +278,8 @@ object RuleLoader : Loader {
     private val internalRulesTxtContent
         get() = VanillaUtil.getResourceAsString("inventoryprofilesnext:config/rules.txt") ?: ""
             .also { Log.error("Failed to load in-jar file inventoryprofilesnext:config/rules.txt") }
-    private const val regex = "^rules-v2\\.(?:.*\\.)?txt\$"
-    private const val regexOld = "^rules\\.(?:.*\\.)?txt\$"
+    private const val regex = "^.*rules-v2\\.(?:.*\\.)?txt\$"
+    private const val regexOld = "^.*rules\\.(?:.*\\.)?txt\$"
 
     override fun doSanityCheck(): Boolean {
         return false
