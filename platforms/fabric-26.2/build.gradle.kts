@@ -179,20 +179,22 @@ publishing {
     }
 }
 
+afterEvaluate {
 
-modrinth {
-    failSilently.set(true)
-    if (modVersion.release()) {
-        token.set(System.getenv("MODRINTH_TOKEN"))
+    modrinth {
+        failSilently.set(true)
+        if (modVersion.release()) {
+            token.set(System.getenv("MODRINTH_TOKEN"))
+        }
+        versionType.set(VersionType.RELEASE.name)
     }
-    versionType.set(VersionType.RELEASE.name)
-}
-project.tasks.withType(TaskPublishCurseForge::class.java) {
-    if (modVersion.release()) {
-        this.apiToken = System.getenv("CURSEFORGE_DEPOY_TOKEN")
-    }
-    this.uploadArtifacts.forEach {
-        it.releaseType = Constants.RELEASE_TYPE_RELEASE
-        it.addEnvironment("Client")
+    project.tasks.withType(TaskPublishCurseForge::class.java) {
+        if (modVersion.release()) {
+            this.apiToken = System.getenv("CURSEFORGE_DEPOY_TOKEN")
+        }
+        this.uploadArtifacts.forEach {
+            it.releaseType = Constants.RELEASE_TYPE_RELEASE
+            it.addEnvironment("Client")
+        }
     }
 }
