@@ -69,7 +69,7 @@ import org.anti_ad.mc.ipnext.inventory.ContainerTypes
 
 class GUIDEEditorScreen(private val target: Screen,
                         private val container: AbstractContainerMenu,
-                        targets: MutableList<InsertableWidget>): BaseOverlay() {
+                        private val targets: MutableList<InsertableWidget>): BaseOverlay() {
 
     companion object {
 
@@ -438,6 +438,22 @@ class GUIDEEditorScreen(private val target: Screen,
         }
         activeHintable?.underManagement = true
     }
+	
+	override fun renderParentPost(
+		context: NativeContext,
+		mouseX: Int,
+		mouseY: Int,
+		partialTicks: Float
+	) {
+		targets.forEach {
+			it.postForegroundRender(
+				context,
+				mouseX,
+				mouseY,
+				partialTicks
+			)
+		}
+	}
 
     override fun render(context: NativeContext,
                         mouseX: Int,

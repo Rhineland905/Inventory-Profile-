@@ -22,26 +22,42 @@ package org.anti_ad.mc.ipnext.gui.inject
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.gui.screens.Screen
-
 import net.minecraft.client.gui.components.AbstractButton
 
 import org.anti_ad.mc.common.extensions.detectable
 import org.anti_ad.mc.common.gui.NativeContext
+import org.anti_ad.mc.common.gui.screen.BaseScreen
 import org.anti_ad.mc.common.input.GlobalScreenEventListener
 import org.anti_ad.mc.common.math2d.Size
+import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.common.vanilla.render.rScreenSize
 
 object ScreenEventHandler {
-    fun onScreenInit(target: Screen,
-                     addWidget: (AbstractButton) -> Unit) {
+
+    fun onScreenInit(
+        target: Screen,
+        addWidget: (AbstractButton) -> Unit
+    ) {
         if (target is AbstractContainerScreen<*>) {
-            ContainerScreenEventHandler.onScreenInit(target,
-                                                     addWidget)
+            ContainerScreenEventHandler.onScreenInit(
+                target,
+                addWidget
+            )
         }
     }
 
     fun onScreenRemoved(target: Screen) {
         if (target is AbstractContainerScreen<*>) {
+            val currentScreen = Vanilla.screen()
+
+            /*
+             * Keep the original container widgets alive when IPN opens
+             * one of its own BaseScreen children, such as GUIDEEditorScreen.
+             */
+            if (currentScreen is BaseScreen && currentScreen.hasParent(target)) {
+                return
+            }
+
             ContainerScreenEventHandler.onScreenRemoved(target)
         }
     }

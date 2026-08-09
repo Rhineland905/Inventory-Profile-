@@ -86,13 +86,14 @@ dependencies {
 
 easyMod {
     this.enableShadow = true
-    this.enableProGuard = true
+    this.enableProGuard = false
 
     this.shadowJarConfig = {
         relocate("org.antlr", "org.anti_ad.embedded.org.antlr")
         relocate("com.yevdo", "org.anti_ad.embedded.com.yevdo")
         minimize()
     }
+	/*
     this.jarPostProcessConfig = {
         advzipArguments = if (modVersion.release()) {
             listOf("-4", "-z", "-i", "20")
@@ -100,6 +101,11 @@ easyMod {
             listOf("-3", "-z", "-i", "10")
         }
     }
+	*/
+}
+
+tasks.matching { it.name == "easyMod-JarPostProcess" }.configureEach {
+    enabled = false
 }
 
 val antlrTask = tasks.named<AntlrTask>("generateGrammarSource")

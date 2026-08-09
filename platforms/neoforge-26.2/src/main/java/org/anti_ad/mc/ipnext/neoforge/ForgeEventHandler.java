@@ -25,7 +25,7 @@ import kotlin.Unit;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ContainerScreenEvent;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent.Render;
 import net.neoforged.neoforge.client.event.ScreenEvent.Init;
@@ -33,7 +33,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import org.anti_ad.mc.common.gui.NativeContext;
-import org.anti_ad.mc.common.math2d.Rectangle;
+import org.anti_ad.mc.common.gui.screen.BaseScreen;
 import org.anti_ad.mc.common.vanilla.Vanilla;
 import org.anti_ad.mc.common.vanilla.VanillaUtil;
 import org.anti_ad.mc.ipnext.config.Tweaks;
@@ -108,17 +108,27 @@ public class ForgeEventHandler {
         ContainerScreenEventHandler.INSTANCE.onBackgroundRender(context, e.getMouseX(), e.getMouseY(), 0);
     }
 
-    @SubscribeEvent
-    public void onForegroundRender(ContainerScreenEvent.Render.Foreground e) {
-        var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
-        context.setOverlay(true);
-        var screen = e.getContainerScreen();
-        var matrix = context.getNative().pose().pushMatrix();
-        var topLeft = new Rectangle(screen.getLeftPos(), screen.getTopPos(), screen.getImageWidth(), screen.getImageHeight()).getTopLeft();
-        context.getNative().pose().translate(-topLeft.getX(), -topLeft.getY(), matrix);
-        ContainerScreenEventHandler.INSTANCE.onForegroundRender(context, e.getMouseX(), e.getMouseY(), 0);
-        context.getNative().pose().popMatrix();
-    }
+	@SubscribeEvent
+	public void onForegroundRender(ScreenEvent.Render.Foreground e) {
+		if (!(e.getScreen() instanceof AbstractContainerScreen<?>)
+				&& !(e.getScreen() instanceof BaseScreen)) {
+			return;
+		}
+
+		var context = new NativeContext(
+				e.getGuiGraphics(),
+				RenderPipelines.GUI_TEXTURED
+		);
+
+		context.setOverlay(true);
+
+		ContainerScreenEventHandler.INSTANCE.onForegroundRender(
+				context,
+				e.getMouseX(),
+				e.getMouseY(),
+				0
+		);
+	}
 
     // ============
     // old event

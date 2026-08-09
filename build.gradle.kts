@@ -63,4 +63,15 @@ project.allprojects {
         group = "org.anti_ad.mc"
     }
 
+    repositories {
+        maven {
+            name = "Xander Maven"
+            url = uri("https://maven.isxander.dev/releases")
+        }
+
+        maven {
+            name = "QuiltMC"
+            url = uri("https://maven.quiltmc.org/repository/release/")
+        }
+    }
 }
