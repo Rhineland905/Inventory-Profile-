@@ -47,7 +47,7 @@ configurations.all {
 }
 
 modVersion {
-    semanticVersion = "2.3.5"
+    semanticVersion = "2.3.6"
     release = {
         System.getenv("IPNEXT_RELEASE") != null
     }
@@ -64,3 +64,5 @@ project.allprojects {
     }
 
 }
+
+

@@ -33,6 +33,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import org.anti_ad.mc.common.gui.NativeContext;
+import org.anti_ad.mc.common.gui.screen.BaseOverlay;
 import org.anti_ad.mc.common.math2d.Rectangle;
 import org.anti_ad.mc.common.vanilla.Vanilla;
 import org.anti_ad.mc.common.vanilla.VanillaUtil;
@@ -135,11 +136,27 @@ public class ForgeEventHandler {
         }
     }
 
+    private boolean ignoreNextClose = false;
+
     @SubscribeEvent
     public void onScreenClose(ScreenEvent.Closing event) { // Tweaks.PREVENT_CLOSE_GUI_DROP_ITEM
 
         if (!VanillaUtil.INSTANCE.inGame()) return;
-        ScreenEventHandler.INSTANCE.onScreenRemoved(event.getScreen());
+        if (ignoreNextClose) {
+            ignoreNextClose = false;
+        } else {
+            ScreenEventHandler.INSTANCE.onScreenRemoved(event.getScreen());
+        }
+    }
+
+    @SubscribeEvent
+    public void onScreenOpen(ScreenEvent.Opening event) { // Tweaks.PREVENT_CLOSE_GUI_DROP_ITEM
+
+        if (!VanillaUtil.INSTANCE.inGame()) return;
+        var scr = event.getScreen();
+        if (scr instanceof BaseOverlay) {
+            ignoreNextClose = true;
+        }
     }
 
 /*

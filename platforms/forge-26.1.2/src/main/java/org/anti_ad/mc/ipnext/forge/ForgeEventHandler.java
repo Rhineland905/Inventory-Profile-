@@ -29,6 +29,7 @@ import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent.Render;
 import net.minecraftforge.client.event.ScreenEvent.Init;
+import org.anti_ad.mc.common.gui.screen.BaseOverlay;
 import org.anti_ad.mc.common.math2d.Rectangle;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -143,12 +144,31 @@ public class ForgeEventHandler {
         }
     }
 
+    private boolean ignoreNextClose = false;
+
     @SubscribeEvent
     public void onScreenClose(ScreenEvent.Closing event) { // Tweaks.PREVENT_CLOSE_GUI_DROP_ITEM
 
         if (!VanillaUtil.INSTANCE.inGame()) return;
-        ScreenEventHandler.INSTANCE.onScreenRemoved(event.getScreen());
+        if (ignoreNextClose) {
+            ignoreNextClose = false;
+        } else {
+            ScreenEventHandler.INSTANCE.onScreenRemoved(event.getScreen());
+        }
     }
+
+    @SubscribeEvent
+    public void onScreenOpen(ScreenEvent.Opening event) { // Tweaks.PREVENT_CLOSE_GUI_DROP_ITEM
+
+        if (!VanillaUtil.INSTANCE.inGame()) return;
+        var scr = event.getScreen();
+        if (scr instanceof BaseOverlay) {
+            ignoreNextClose = true;
+        }
+    }
+
+
+
 
 /*
     // this event is disabled.

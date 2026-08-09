@@ -43,6 +43,14 @@ configurations.all {
     }
 }
 
+configurations.runtimeClasspath {
+    exclude("org.jetbrains.kotlin")
+    exclude("org.jetbrains")
+    this.excludeRules.forEach {
+        project.logger.lifecycle("excludeRule: ${it.group}:${it.module}")
+    }
+}
+
 dependencies {
     shadedApi("com.yevdo:jwildcard:1.4")
     shadedApi("org.antlr:antlr4-runtime:$antlrVersion") {
@@ -158,7 +166,7 @@ afterEvaluate {
 
 
     sourceSets {
-        val main by getting {
+        getByName("main") {
             antlr {
                 setSrcDirs(listOf("src/shared/antlr"))
             }

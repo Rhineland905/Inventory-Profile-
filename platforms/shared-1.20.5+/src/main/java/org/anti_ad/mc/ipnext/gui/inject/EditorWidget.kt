@@ -148,7 +148,7 @@ class EditorWidget(override val screen: AbstractContainerScreen<*>,
         GUIDEEditorScreen(this.screen,
                           this.container,
                           targets).let {
-            VanillaScreenUtil.openDistinctScreenQuiet(it)
+            VanillaScreenUtil.openDistinctScreen(it)
         }
     }
 

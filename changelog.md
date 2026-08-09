@@ -1,12 +1,19 @@
 <!-- latest begin -->
 
+### 2.3.6
+
+- compatible with NeoForge 26.2.0.53-beta +
+- fixed the overlay editor not showing the movable elements on forge and neoforge
+
+<!-- latest end -->
+<!-- rest begin -->
+
+
 ### 2.3.4
 
 - support for Minecraft 26.2
 - NeoForge builds doesn't require Kotlin For Forge or any other Kotlin provider.
 
-<!-- latest end -->
-<!-- rest begin -->
 
 ### 2.3.3
 

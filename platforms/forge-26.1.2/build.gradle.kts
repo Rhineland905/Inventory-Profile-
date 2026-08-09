@@ -144,7 +144,7 @@ afterEvaluate {
     }
 
     sourceSets {
-        val main by getting {
+        getByName("main") {
             antlr {
                 setSrcDirs(listOf("src/shared/antlr"))
             }
