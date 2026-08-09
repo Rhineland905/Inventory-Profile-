@@ -191,5 +191,6 @@ project.tasks.withType(TaskPublishCurseForge::class.java) {
     }
     this.uploadArtifacts.forEach {
         it.releaseType = Constants.RELEASE_TYPE_RELEASE
+        it.addGameVersion("client")
     }
 }
