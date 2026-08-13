@@ -37,18 +37,20 @@ object ConfigScreenSettings: BaseConfigScreenSettings() {
 
     private const val FILE_NAME = "inventoryprofiles.json"
 
-    val configs = listOf(Features,
-                         ModSettings,
-                         GuiSettings,
-                         SortSettings,
-                         LockedSlotsSettings,
-                         AutoRefillSettings,
-                         EditProfiles,
-                         ScrollSettings,
-                         Hotkeys,
-                         Tweaks,
-                         Debugs,
-                         Modpacks)
+    val configs by lazy {
+        listOf(Features,
+               ModSettings,
+               GuiSettings,
+               SortSettings,
+               LockedSlotsSettings,
+               AutoRefillSettings,
+               EditProfiles,
+               ScrollSettings,
+               Hotkeys,
+               Tweaks,
+               Debugs,
+               Modpacks)
+    }
 
     val saveLoadManager: ConfigSaveLoadManager = ConfigSaveLoadManager(ModInfo.MOD_ID, FILE_NAME) {
         configs.toMultiConfig()
