@@ -1,12 +1,16 @@
 <!-- latest begin -->
 
+### 2.3.7
+
+- fixes a crash when the config screen is shown on neoforge. 
+
+<!-- latest end -->
+<!-- rest begin -->
+
 ### 2.3.6
 
 - compatible with NeoForge 26.2.0.53-beta +
 - fixed the overlay editor not showing the movable elements on forge and neoforge
-
-<!-- latest end -->
-<!-- rest begin -->
 
 
 ### 2.3.4
