@@ -305,11 +305,11 @@ object GeneralInventoryActions {
                 tg.keySet().forEach { type: DataComponentType<*> ->
                     val value = tg.get(type)
                     if (value != null) {
-                        type.toFullNbtOrNull(Optional.of<Any>(value))?.let {
+                        type.toFullNbtOrNull(value)?.let {
                             val tString = "$type ->\n"
                             item += "\t" + tString
                             val sep = "\t" + " ".repeat(tString.length) + "\t"
-                            val tx = NbtUtils.prettyPrint(it, true).lineSequence().joinToString(separator = "\n$sep", prefix = sep)
+                            val tx = NbtUtils.toPrettyComponent(it).string.lineSequence().joinToString(separator = "\n$sep", prefix = sep)
                             item += tx
                         }
                     }

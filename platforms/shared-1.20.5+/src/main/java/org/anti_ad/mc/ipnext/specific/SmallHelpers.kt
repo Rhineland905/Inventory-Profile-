@@ -23,7 +23,6 @@
 package org.anti_ad.mc.ipnext.specific
 
 import net.minecraft.SharedConstants
-import net.minecraft.client.renderer.RenderPipelines
 
 import org.anti_ad.mc.common.gui.NativeContext
 import org.anti_ad.mc.common.vanilla.Vanilla.mc
@@ -55,7 +54,7 @@ inline fun initInfoManager() {
 
 val NativeContext.asOverlayContext: NativeContext
     get() {
-        return NativeContext(this.native, RenderPipelines.GUI_TEXTURED).apply {
+        return NativeContext(this.native).apply {
             isOverlay = true
         }
     }

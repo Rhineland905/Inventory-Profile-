@@ -45,13 +45,13 @@ public class MixinGameRenderer {
     )
     public void preScreenRender(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci,
                                 @Local GuiGraphicsExtractor drawContext) {
-        ScreenEventHandler.INSTANCE.preRender(new NativeContext(drawContext, RenderPipelines.GUI_TEXTURED));
+        ScreenEventHandler.INSTANCE.preRender(new NativeContext(drawContext));
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderStateWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
             shift = At.Shift.AFTER), method = "extractRenderState")
     public void postScreenRender(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci,
                                  @Local GuiGraphicsExtractor drawContext) {
-        ScreenEventHandler.INSTANCE.postRender(new NativeContext(drawContext, RenderPipelines.GUI_TEXTURED));
+        ScreenEventHandler.INSTANCE.postRender(new NativeContext(drawContext));
     }
 }

@@ -218,13 +218,14 @@ object SortSettings : ConfigDeclaration {
 
 
         .CATEGORY("$category.accumulated_count")
-
     val TREAT_NON_STACKABLE_AS_FULL_STACKS        /**/ by bool(false)
 
-        .CATEGORY("$category.creative_menu_order_source")
+        .CATEGORY("$category.bundles_and_shulker_boxes")
+        val INVERT_BUNDLES_CLICKS                 /**/ by keyToggleBool(ConfigScreenSettings, false)
+        val INVERT_SHULKER_CLICKS                 /**/ by keyToggleBool(ConfigScreenSettings, false)
 
-    val CREATIVE_SORT_ORDER_TYPE                  /**/ by enum(CreativeMenuSortOrder.SEARCH_TAB)
-
+        //.CATEGORY("§§hide - category.creative_menu_order_source")
+        .CATEGORY("§§hide")
     val CATEGORY_PRIORITY_LIST                    /**/ by handledStringForMinMCVersion(1193,
                                                                                        1193,
                                                                                        "itemGroup.tools, itemGroup.combat, itemGroup.redstone, itemGroup.coloredBlocks, itemGroup.functional, itemGroup.natural, itemGroup.buildingBlocks, itemGroup.foodAndDrink, itemGroup.ingredients, itemGroup.spawnEggs",
@@ -233,6 +234,9 @@ object SortSettings : ConfigDeclaration {
                                                                                        1193,
                                                                                        ItemTypeExtensionsObject.makeDefaultList(),
                                                                                        ItemTypeExtensionsObject::defaultOrderListChanged)
+    val CREATIVE_SORT_ORDER_TYPE    /**/ by enum(CreativeMenuSortOrder.SEARCH_TAB)
+
+
 
 
 }

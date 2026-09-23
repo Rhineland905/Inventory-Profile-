@@ -20,6 +20,7 @@
 
 package org.anti_ad.mc.ipnext.gui.inject
 
+import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
 
@@ -181,7 +182,7 @@ class SortingButtonCollectionWidget(override val screen: AbstractContainerScreen
                         if (Vanilla.screen() == this@SortingButtonCollectionWidget.screen) {
                             if (GuiSettings.CHANGE_SORT_ORDER_WITH_SCROLL_WHEEL.booleanValue) {
                                 when (button) {
-                                    0                          -> {
+                                    InputConstants.MOUSE_BUTTON_LEFT -> {
                                         GeneralInventoryActions.doSort(container, true, forcePlayer = playerSide)
                                     }
 
@@ -201,7 +202,7 @@ class SortingButtonCollectionWidget(override val screen: AbstractContainerScreen
                                 }
                             } else {
                                 when (button) {
-                                    0                          -> {
+                                    InputConstants.MOUSE_BUTTON_LEFT -> {
                                         GeneralInventoryActions.doSort(container, true, forcePlayer = playerSide)
                                     }
                                 }
@@ -216,7 +217,7 @@ class SortingButtonCollectionWidget(override val screen: AbstractContainerScreen
             init {
                 this@SortingButtonCollectionWidget.snapableList.add(this)
                 clickEvent = { button ->
-                    if (button == 0) {
+                    if (button == InputConstants.MOUSE_BUTTON_LEFT) {
                         GeneralInventoryActions.doSortInColumns(container, true, forcePlayer = playerSide)
                     }
                 }
@@ -227,7 +228,7 @@ class SortingButtonCollectionWidget(override val screen: AbstractContainerScreen
             init {
                 this@SortingButtonCollectionWidget.snapableList.add(this)
                 clickEvent = { button ->
-                    if (button == 0) {
+                    if (button == InputConstants.MOUSE_BUTTON_LEFT) {
                         GeneralInventoryActions.doSortInRows(container, true, forcePlayer = playerSide)
                     }
                 }

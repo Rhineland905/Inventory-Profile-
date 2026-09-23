@@ -106,7 +106,7 @@ object ProfileSwitchHandler: IInputHandler {
 
 
 
-    private fun toProfileComponentDataOrNull(type: DataComponentType<*>, value: Optional<*>): ProfileComponentData? {
+    private fun toProfileComponentDataOrNull(type: DataComponentType<*>, value: Any?): ProfileComponentData? {
         return type.toFilteredNbtOrNull(value).transformOrNull {
             ProfileComponentData(type.toString(), it)
         }
@@ -122,8 +122,8 @@ object ProfileSwitchHandler: IInputHandler {
                     if (!stack.isEmpty()) {
                         add(ProfileSlot(ProfileSlotId.valueOf(slot), null, mutableListOf<ProfileItemData>().apply {
                             val customName = if (EditProfiles.INCLUDE_CUSTOM_NAME.booleanValue) stack.itemType.customName else ""
-                            add(ProfileItemData(ProfileItemId.Id(stack.itemType.identifier), customName, vStack.componentsPatch.entrySet().mapNotNull { (type, value) ->
-                                toProfileComponentDataOrNull(type, value)
+                            add(ProfileItemData(ProfileItemId.Id(stack.itemType.identifier), customName, vStack.componentsPatch.split().added().mapNotNull {
+                                toProfileComponentDataOrNull(it.type(), it.value())
                             } ))
                         }))
                     }
@@ -394,7 +394,7 @@ private fun List<ProfileComponentData>?.match(stack: ItemStack): Boolean {
 
         val condNBT = ct.componentNbt
         val component = tag.get(type)
-        val itemNBT = type.toFullNbtOrNull(Optional.ofNullable(component)) ?: CompoundTag()
+        val itemNBT = type.toFullNbtOrNull(component) ?: CompoundTag()
 
         if (condNBT == null) {
             Log.trace("existence check")

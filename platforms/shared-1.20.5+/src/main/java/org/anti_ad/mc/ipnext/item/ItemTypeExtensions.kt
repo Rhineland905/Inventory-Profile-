@@ -337,9 +337,9 @@ fun VanillaItemStack.`(componentsToCodecList)`(): MutableList<Codec<*>> {
     //PairCodec<ComponentType<*>, Optional<*>>
     val res = mutableListOf<Codec<*>>()
     if (!this.componentsPatch.isEmpty) {
-        this.componentsPatch.entrySet().forEach {
-            res.add(it.key.codecOrThrow())
-        }
+        val split = this.componentsPatch.split()
+        split.added().forEach { res.add(it.type().codecOrThrow()) }
+        split.removed().forEach { res.add(it.codecOrThrow()) }
     }
     return res
 }

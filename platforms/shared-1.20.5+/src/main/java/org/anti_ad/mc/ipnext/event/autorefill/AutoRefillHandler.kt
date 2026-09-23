@@ -31,10 +31,7 @@ import net.minecraft.tags.ItemTags
 
 import net.minecraft.core.registries.BuiltInRegistries
 
-import net.minecraft.world.item.ShovelItem
-import net.minecraft.world.item.HoeItem
 import net.minecraft.world.item.FishingRodItem
-import net.minecraft.world.item.AxeItem
 import net.minecraft.world.item.Items
 
 import net.minecraft.core.component.DataComponentGetter
@@ -99,7 +96,6 @@ import org.anti_ad.mc.ipnext.item.`(isFood)`
 import org.anti_ad.mc.ipnext.item.`(isHarmful)`
 import org.anti_ad.mc.ipnext.item.`(saturationModifier)`
 import org.anti_ad.mc.ipnext.item.ComponentUtils.`(withRemovedIf)`
-import org.anti_ad.mc.ipnext.item.ComponentUtils.get
 import org.anti_ad.mc.ipnext.item.EMPTY
 import org.anti_ad.mc.ipnext.item.ItemStack
 import org.anti_ad.mc.ipnext.item.ItemType
@@ -764,8 +760,16 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
                                 run earlyFinish@{
                                     if (!tagsIn.isEmpty && !tagsOut.isEmpty) {
                                         res = true
-                                        tagsIn.entrySet().forEach { (type, value) ->
-                                            if (value != tagsOut.get(type)) {
+                                        val inSplit = tagsIn.split()
+                                        val outSplit = tagsOut.split()
+                                        inSplit.added().forEach { component ->
+                                            if (outSplit.added().get(component.type()) != component.value()) {
+                                                res = false
+                                                return@earlyFinish
+                                            }
+                                        }
+                                        inSplit.removed().forEach { type ->
+                                            if (!outSplit.removed().contains(type)) {
                                                 res = false
                                                 return@earlyFinish
                                             }

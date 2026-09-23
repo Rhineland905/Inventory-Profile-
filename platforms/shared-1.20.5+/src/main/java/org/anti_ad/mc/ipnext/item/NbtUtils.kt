@@ -187,7 +187,7 @@ object NbtUtils {
         fun getTags(itemType: ItemType, componentType: DataComponentType<*>?): List<WrappedTag> {
             val tag = itemType.tag
             tag ?: return listOf()
-            val nbt = componentType?.toFilteredNbtOrNull(Optional.ofNullable(tag.get(componentType)))
+            val nbt = componentType?.toFilteredNbtOrNull(tag.get(componentType))
             nbt ?: return listOf()
             return getTagsForPath(value, nbt).map { WrappedTag(it) }
         }

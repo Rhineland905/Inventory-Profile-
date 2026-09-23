@@ -172,7 +172,7 @@ class SimpleParameterBasedRule: BooleanBasedRule() {
         }
         valueOf = {
             val type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(arguments[component_id])
-            val nbtValue = type?.toFilteredNbtOrNull(Optional.ofNullable(it.tag?.get(type))) ?: CompoundTag()
+            val nbtValue = type?.toFilteredNbtOrNull(it.tag?.get(type)) ?: CompoundTag()
             if (arguments[allow_extra]) {
                 NbtUtils.matchNbt(arguments[nbt],
                                   nbtValue)
@@ -196,7 +196,7 @@ class MatchNbtRule : BooleanBasedRule() {
         }
         valueOf = {
             val type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(arguments[component_id])
-            val nbtValue = type?.toFilteredNbtOrNull(Optional.ofNullable(it.tag?.get(type)))
+            val nbtValue = type?.toFilteredNbtOrNull(it.tag?.get(type))
             if (arguments[allow_extra]) {
                 NbtUtils.matchNbt(arguments[nbt],
                                   nbtValue)
@@ -427,8 +427,8 @@ class NbtComparatorRule : NativeRule() {
         }
         comparator = { a: ItemType, b: ItemType -> // compare a.tag and b.tag
             val type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(arguments[component_id])
-            val nbtValueA = type?.toFilteredNbtOrNull(Optional.ofNullable(a.tag?.get(type)))
-            val nbtValueB = type?.toFilteredNbtOrNull(Optional.ofNullable(b.tag?.get(type)))
+            val nbtValueA = type?.toFilteredNbtOrNull(a.tag?.get(type))
+            val nbtValueB = type?.toFilteredNbtOrNull(b.tag?.get(type))
             val cpr: Comparator<Tag?> =  nullsLast { e1, e2 ->
                 e1.compareTo(e2)
             }

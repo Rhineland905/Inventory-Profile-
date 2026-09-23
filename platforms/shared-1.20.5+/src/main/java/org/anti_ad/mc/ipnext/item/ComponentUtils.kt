@@ -35,7 +35,6 @@ import net.minecraft.world.item.alchemy.PotionContents
 import net.minecraft.world.item.component.ChargedProjectiles
 import net.minecraft.world.item.component.CustomData
 import net.minecraft.world.item.component.DyedItemColor
-import net.minecraft.world.item.component.MapItemColor
 import net.minecraft.world.item.component.MapPostProcessing
 import net.minecraft.world.item.component.TypedEntityData
 import net.minecraft.world.item.enchantment.ItemEnchantments
@@ -126,11 +125,6 @@ object ComponentUtils {
     }
     private fun getTextComparator(): Comparator<Component?> = textComparator
 
-
-    private val mapColorComponentComparator = nullsLast( compareBy<MapItemColor> { it.rgb }).apply {
-        registry[DataComponents.MAP_COLOR.toString()] = this as Comparator<Any?>
-    }
-
     private val dyedComponentComparator = nullsLast( compareBy<DyedItemColor> { it.rgb }).apply {
         registry[DataComponents.DYED_COLOR.toString()] = this as Comparator<Any?>
     }
@@ -155,8 +149,8 @@ object ComponentUtils {
     private val chargedProjectilesComponentComparator = nullsLast(
             compareBy<ChargedProjectiles> { it.items.size.inv() }.thenComparator { o1, o2 ->
 
-                val l1: List<ItemType> = o1.itemCopies().map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
-                val l2: List<ItemType> = o2.itemCopies().map { item -> item.`(itemType)` }.sortedWith(itemTypeComparator)
+                val l1: List<ItemType> = o1.items.map { it.create().`(itemType)` }.sortedWith(itemTypeComparator)
+                val l2: List<ItemType> = o2.items.map { it.create().`(itemType)` }.sortedWith(itemTypeComparator)
                 l1.forEachIndexed { index, itemType ->
                     val v = itemTypeComparator.compare(itemType, l2[index])
                     if (v != 0) return@thenComparator v
@@ -219,13 +213,12 @@ object ComponentUtils {
         return tag.size().compareTo(tag1.size())
     }
 
-    fun DataComponentType<*>.toFilteredNbtOrNull(value: Optional<*>): Tag? {
-        if (value.isEmpty) return null
+    fun DataComponentType<*>.toFilteredNbtOrNull(value: Any?): Tag? {
+        if (value == null) return null
         val codecAny: Codec<Any> = this.codecOrThrow() as Codec<Any>
-        val realValue: Any? = value.get()
-        if (realValue != null && realValue is Tag) return realValue.copy()
+        if (value is Tag) return value.copy()
         val opt = codecAny.encodeStart(Vanilla.world().registryAccess().createSerializationContext(NbtOps.INSTANCE),
-                                       value.get()).resultOrPartial()
+                                       value).resultOrPartial()
         return if (opt.isPresent) {
             when (this) {
                 DataComponents.ENCHANTMENTS -> {
@@ -247,13 +240,12 @@ object ComponentUtils {
         } else null
     }
 
-    fun DataComponentType<*>.toFullNbtOrNull(value: Optional<*>): Tag? {
-        if (value.isEmpty) return null
+    fun DataComponentType<*>.toFullNbtOrNull(value: Any?): Tag? {
+        if (value == null) return null
         val codecAny: Codec<Any> = this.codecOrThrow() as Codec<Any>
-        val realValue: Any? = value.get()
-        if (realValue != null && realValue is Tag) return realValue.copy()
+        if (value is Tag) return value.copy()
         val opt = codecAny.encodeStart(Vanilla.world().registryAccess().createSerializationContext(NbtOps.INSTANCE),
-                                       value.get()).resultOrPartial()
+                                       value).resultOrPartial()
         return if (opt.isPresent) {
             opt.get()
         } else null
@@ -272,9 +264,5 @@ object ComponentUtils {
     }
 
     fun DataComponentPatch.`(withRemovedIf)`(predicate: Predicate<DataComponentType<*>>): DataComponentPatch = this.forget(predicate)
-
-    fun DataComponentPatch.get(prototype: DataComponentType<*>): Optional<*>? {
-        return this.map[prototype]
-    }
 
 }

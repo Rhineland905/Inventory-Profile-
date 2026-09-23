@@ -102,9 +102,11 @@ dependencies {
 
     api("maven.modrinth:metal-bundles:a88KETrE")
 */
+/*
     api("maven.modrinth:easy-shulker-boxes:4RYPu1vM")
     api("maven.modrinth:ohNO6lps:rSd3GiG8")
     api("maven.modrinth:QAGBst4M:7NdidvUq")
+*/
 /*
     runtimeOnly("maven.modrinth:villager-pickup:bf8Q2X39")
 */

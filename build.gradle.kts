@@ -18,7 +18,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-val antlrVersion: String by project
+val antlrVersion: String = project.property("antlrVersion") as String
 
 plugins {
     idea
