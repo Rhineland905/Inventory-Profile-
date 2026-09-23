@@ -35,6 +35,7 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import org.anti_ad.mc.common.gui.NativeContext;
 import org.anti_ad.mc.common.gui.screen.BaseOverlay;
 import org.anti_ad.mc.common.gui.screen.BaseScreen;
+import org.anti_ad.mc.common.input.KeyCodes;
 import org.anti_ad.mc.common.math2d.Rectangle;
 import org.anti_ad.mc.common.vanilla.Vanilla;
 import org.anti_ad.mc.common.vanilla.VanillaUtil;
@@ -94,19 +95,19 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void preScreenRender(ScreenEvent.Render.Pre event) {
-        ScreenEventHandler.INSTANCE.preRender(new NativeContext(event.getGuiGraphics(), RenderPipelines.GUI_TEXTURED));
+        ScreenEventHandler.INSTANCE.preRender(new NativeContext(event.getGuiGraphics()));
     }
 
     // fabric GameRenderer.render() = forge updateCameraAndRender()
     // forge line 554
     @SubscribeEvent
     public void postScreenRender(Render.Post e) {
-        ScreenEventHandler.INSTANCE.postRender(new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED));
+        ScreenEventHandler.INSTANCE.postRender(new NativeContext(e.getGuiGraphics()));
     }
 
     @SubscribeEvent
     public void onBackgroundRender(ScreenEvent.Render.Background e) {
-        var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
+        var context = new NativeContext(e.getGuiGraphics());
         ContainerScreenEventHandler.INSTANCE.onBackgroundRender(context, e.getMouseX(), e.getMouseY(), 0);
     }
 
@@ -118,7 +119,7 @@ public class ForgeEventHandler {
         }
         //noinspection rawtypes
         if (scr instanceof AbstractContainerScreen screen) {
-            var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
+            var context = new NativeContext(e.getGuiGraphics());
             context.setOverlay(true);
             var matrix = context.getNative().pose().pushMatrix();
             var topLeft = new Rectangle(screen.getLeftPos(),
@@ -138,10 +139,9 @@ public class ForgeEventHandler {
     @SubscribeEvent
     public void onGuiKeyPressedPre(ScreenEvent.KeyPressed.Pre e) { // Tweaks.PREVENT_CLOSE_GUI_DROP_ITEM
         if (!VanillaUtil.INSTANCE.inGame()) return;
-        InputConstants.Key mouseKey = InputConstants.getKey(e.getKeyEvent()); //getInputByCode(e.getKeyCode(), e.getScanCode()); // getKey(e.getKeyCode(), e.getScanCode());
+        InputConstants.Key mouseKey = InputConstants.getKey(e.getKeyEvent());
         if (Tweaks.INSTANCE.getPREVENT_CLOSE_GUI_DROP_ITEM().getBooleanValue()
-                && (e.getKeyCode() == 256 || Vanilla.INSTANCE.mc().options.keyInventory //gameSettings.keyBindInventory // options.keyInventory
-                .isActiveAndMatches(mouseKey))) {
+                && (e.getKey() == KeyCodes.KEY_ESCAPE || Vanilla.INSTANCE.mc().options.keyInventory.isActiveAndMatches(mouseKey))) {
             GeneralInventoryActions.INSTANCE.handleCloseContainer();
         }
     }
