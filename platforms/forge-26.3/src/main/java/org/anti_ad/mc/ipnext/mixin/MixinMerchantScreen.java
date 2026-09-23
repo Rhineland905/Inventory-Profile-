@@ -44,7 +44,7 @@ public class MixinMerchantScreen {
                 @Local(ordinal = 5) int sellItem1X,
                 @Local(ordinal = 6) int currentOfferIndex,
                 @Local MerchantOffer offer) {
-        VillagerTradeManager.INSTANCE.drawingButton((MerchantScreen)((Object)this), new NativeContext(drawContext, RenderPipelines.GUI_TEXTURED), mouseX, mouseY,
+        VillagerTradeManager.INSTANCE.drawingButton((MerchantScreen)((Object)this), new NativeContext(drawContext), mouseX, mouseY,
                                                     offer,
                                                     xo,
                                                     yo,
