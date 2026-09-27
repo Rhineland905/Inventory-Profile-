@@ -47,7 +47,7 @@ configurations.all {
 }
 
 modVersion {
-    semanticVersion = "2.3.7"
+    semanticVersion = "2.3.8"
     release = {
         System.getenv("IPNEXT_RELEASE") != null
     }
@@ -63,6 +63,41 @@ project.allprojects {
         group = "org.anti_ad.mc"
     }
 
+}
+
+/**
+ * After publishing a module, drop that module from this machine's Gradle cache so the next
+ * consumer build re-resolves it instead of reusing the stale copy. Both stores matter: files-2.1
+ * holds the jar, and metadata-* /descriptors records which timestamped SNAPSHOT a version
+ * resolved to, which changes on every republish.
+ *
+ * Unlike easy-mod, this evicts only the module being published rather than the whole
+ * org.anti_ad.mc group, so the sibling mods keep their cached artifacts.
+ *
+ * Note this only helps when republishing the same version. A newly published version still hides
+ * behind the 24h dynamic-version cache in dynamic-revisions.bin, which is left alone here.
+ */
+project.subprojects {
+    val modulesCache = File(System.getProperty("user.home"), ".gradle/caches/modules-2")
+    val artifact = "${rootProject.name}-$name"
+
+    val evictFromLocalCache = tasks.register("evictFromLocalCache") {
+        group = "publishing"
+        description = "Removes $artifact from the local Gradle artifact cache."
+        doLast {
+            val descriptorDirs = modulesCache.listFiles { f -> f.isDirectory && f.name.startsWith("metadata-") }?.map { File(it, "descriptors/org.anti_ad.mc/$artifact") } ?: emptyList()
+            (listOf(File(modulesCache, "files-2.1/org.anti_ad.mc/$artifact")) + descriptorDirs).forEach { dir ->
+                if (dir.exists()) {
+                    logger.lifecycle("Evicting $dir")
+                    dir.deleteRecursively()
+                }
+            }
+        }
+    }
+
+    tasks.matching { it.name == "publishAllPublicationsToIpnOfficialRepoRepository" }.configureEach {
+        finalizedBy(evictFromLocalCache)
+    }
 }
 
 

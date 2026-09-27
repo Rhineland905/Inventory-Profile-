@@ -1,11 +1,17 @@
 <!-- latest begin -->
 
-### 2.3.7
+### 2.3.8
 
-- fixes a crash when the config screen is shown on neoforge. 
+- support for Minecraft 26.3
+- added options to swap click when moving shulkers and bundles. This can be when you have a mod that changes the default for bundles and adds bundle like actions to the shulkers.
 
 <!-- latest end -->
 <!-- rest begin -->
+
+### 2.3.7
+
+- fixes a crash when the config screen is shown on neoforge.
+
 
 ### 2.3.6
 
