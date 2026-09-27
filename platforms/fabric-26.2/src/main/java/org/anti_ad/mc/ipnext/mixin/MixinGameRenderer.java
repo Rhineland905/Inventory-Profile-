@@ -24,8 +24,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderPipelines;
 import org.anti_ad.mc.common.gui.NativeContext;
 import org.anti_ad.mc.ipnext.gui.inject.ScreenEventHandler;
 import org.spongepowered.asm.mixin.Mixin;
@@ -44,14 +42,14 @@ public class MixinGameRenderer {
             method = "extractRenderState"
     )
     public void preScreenRender(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci,
-                                @Local GuiGraphicsExtractor drawContext) {
-        ScreenEventHandler.INSTANCE.preRender(new NativeContext(drawContext, RenderPipelines.GUI_TEXTURED));
+                                @Local(name = "graphics") GuiGraphicsExtractor graphics) {
+        ScreenEventHandler.INSTANCE.preRender(new NativeContext(graphics));
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderStateWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
             shift = At.Shift.AFTER), method = "extractRenderState")
     public void postScreenRender(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci,
-                                 @Local GuiGraphicsExtractor drawContext) {
-        ScreenEventHandler.INSTANCE.postRender(new NativeContext(drawContext, RenderPipelines.GUI_TEXTURED));
+                                 @Local(name = "graphics") GuiGraphicsExtractor graphics) {
+        ScreenEventHandler.INSTANCE.postRender(new NativeContext(graphics));
     }
 }

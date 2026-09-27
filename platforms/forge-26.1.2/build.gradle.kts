@@ -153,21 +153,5 @@ afterEvaluate {
     }
 
 
-    gradle.projectsEvaluated {
-
-        tasks.create("copyClientClasses", Copy::class) {
-
-            group = "forgegradle runs"
-            from(layout.buildDirectory.dir("classes/java/main/"))
-            into(layout.buildDirectory.dir("resources/main/"))
-            dependsOn("classes")
-            dependsOn("processResources")
-            project.tasks["runClient"].dependsOn(this)
-            doLast {
-                delete(layout.buildDirectory.dir("classes/java/main"))
-            }
-            outputs.upToDateWhen { false }
-        }
-    }
 
 }

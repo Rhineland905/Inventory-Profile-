@@ -111,12 +111,19 @@ object ModSettings : ConfigDeclaration {
 
         .CATEGORY("§§vgap:3")
         .CATEGORY("$category.highlight_focused_items")
-    val HIGHLIGHT_FOUSED_ITEMS_ANIMATED           /**/ by keyToggleBool(ConfigScreenSettings, false, KeybindSettings.GUI_DEFAULT)
-    val HIGHLIGHT_FOUSED_ITEMS_FOREGROUND         /**/ by bool(true)
-    val HIGHLIGHT_FOUSED_ITEMS_COLOR              /**/ by color(0x70.asAlpha().red(1).green(0xB6).blue(0x0b))
-    val HIGHLIGHT_FOUSED_ITEMS_BG_COLOR           /**/ by color(0xAA.asAlpha().red(1).green(0xB6).blue(0x0b))
+    val HIGHLIGHT_FOCUSED_ITEMS_ANIMATED           /**/ by keyToggleBool(ConfigScreenSettings, false, KeybindSettings.GUI_DEFAULT)
+    val HIGHLIGHT_FOCUSED_ITEMS_FOREGROUND         /**/ by bool(true)
+    val HIGHLIGHT_FOCUSED_ITEMS_COLOR              /**/ by color(0x70.asAlpha().red(1).green(0xB6).blue(0x0b))
+    val HIGHLIGHT_FOCUSED_ITEMS_BG_COLOR           /**/ by color(0xAA.asAlpha().red(1).green(0xB6).blue(0x0b))
         .CATEGORY("§§hide")
-    val HIGHLIGHT_FOUSED_WAIT_TICKS               /**/ by int(5, 3, 15)
+    val HIGHLIGHT_FOCUSED_WAIT_TICKS               /**/ by int(5, 3, 15)
+        .CATEGORY("§§hide")
+    val HIGHLIGHT_FOUSED_ITEMS_ANIMATED           /**/ by sameAs(HIGHLIGHT_FOCUSED_ITEMS_ANIMATED)
+    val HIGHLIGHT_FOUSED_ITEMS_FOREGROUND         /**/ by sameAs(HIGHLIGHT_FOCUSED_ITEMS_FOREGROUND)
+    val HIGHLIGHT_FOUSED_ITEMS_COLOR              /**/ by sameAs(HIGHLIGHT_FOCUSED_ITEMS_COLOR)
+    val HIGHLIGHT_FOUSED_ITEMS_BG_COLOR           /**/ by sameAs(HIGHLIGHT_FOCUSED_ITEMS_BG_COLOR)
+        .CATEGORY("§§hide")
+    val HIGHLIGHT_FOUSED_WAIT_TICKS               /**/ by sameAs(HIGHLIGHT_FOCUSED_WAIT_TICKS)
 
 /*
         .CATEGORY("$category.randomizer")
@@ -221,9 +228,8 @@ object SortSettings : ConfigDeclaration {
     val TREAT_NON_STACKABLE_AS_FULL_STACKS        /**/ by bool(false)
 
         .CATEGORY("$category.bundles_and_shulker_boxes")
-        val INVERT_BUNDLES_CLICKS                 /**/ by keyToggleBool(ConfigScreenSettings, false)
-        val INVERT_SHULKER_CLICKS                 /**/ by keyToggleBool(ConfigScreenSettings, false)
-
+    val INVERT_BUNDLES_CLICKS                     /**/ by keyToggleBool(ConfigScreenSettings, false)
+    val INVERT_SHULKER_CLICKS                     /**/ by keyToggleBool(ConfigScreenSettings, false)
         //.CATEGORY("§§hide - category.creative_menu_order_source")
         .CATEGORY("§§hide")
     val CATEGORY_PRIORITY_LIST                    /**/ by handledStringForMinMCVersion(1193,
@@ -234,7 +240,7 @@ object SortSettings : ConfigDeclaration {
                                                                                        1193,
                                                                                        ItemTypeExtensionsObject.makeDefaultList(),
                                                                                        ItemTypeExtensionsObject::defaultOrderListChanged)
-    val CREATIVE_SORT_ORDER_TYPE    /**/ by enum(CreativeMenuSortOrder.SEARCH_TAB)
+    val CREATIVE_SORT_ORDER_TYPE                  /**/ by enum(CreativeMenuSortOrder.SEARCH_TAB)
 
 
 

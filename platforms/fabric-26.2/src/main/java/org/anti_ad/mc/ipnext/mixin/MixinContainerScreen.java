@@ -26,7 +26,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
@@ -45,6 +44,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * MixinAbstractContainerScreen
  */
+@SuppressWarnings("unused")
 @Mixin(AbstractContainerScreen.class)
 public abstract class MixinContainerScreen<T extends AbstractContainerMenu> extends Screen implements MenuAccess<T> {
 
@@ -63,7 +63,7 @@ public abstract class MixinContainerScreen<T extends AbstractContainerMenu> exte
         graphics.pose().pushMatrix();
         var topLeft = new Rectangle(screen.getContainerX(), screen.getContainerY(), screen.getContainerHeight(), screen.getContainerWidth()).getTopLeft();
         graphics.pose().translate(-topLeft.getX(), -topLeft.getY());
-        ContainerScreenEventHandler.INSTANCE.onBackgroundRender(new NativeContext(graphics, RenderPipelines.GUI_TEXTURED), mouseX,
+        ContainerScreenEventHandler.INSTANCE.onBackgroundRender(new NativeContext(graphics), mouseX,
                                                                 mouseY, a);
         graphics.pose().popMatrix();
     }
@@ -74,7 +74,7 @@ public abstract class MixinContainerScreen<T extends AbstractContainerMenu> exte
             shift = At.Shift.AFTER), method = "extractContents")
     public void onForegroundRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         IMixinContainerScreen screen = (IMixinContainerScreen) this;
-        var context = new NativeContext(graphics, RenderPipelines.GUI_TEXTURED);
+        var context = new NativeContext(graphics);
         context.setOverlay(true);
         graphics.pose().pushMatrix();
         var topLeft = new Rectangle(screen.getContainerX(), screen.getContainerY(), screen.getContainerHeight(), screen.getContainerWidth()).getTopLeft();

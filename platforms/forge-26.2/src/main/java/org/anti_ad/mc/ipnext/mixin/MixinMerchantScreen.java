@@ -22,7 +22,6 @@ package org.anti_ad.mc.ipnext.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.world.item.trading.MerchantOffer;
 import org.anti_ad.mc.common.gui.NativeContext;
 import org.anti_ad.mc.ipnext.event.villagers.VillagerTradeManager;
@@ -44,7 +43,7 @@ public class MixinMerchantScreen {
                 @Local(ordinal = 5) int sellItem1X,
                 @Local(ordinal = 6) int currentOfferIndex,
                 @Local MerchantOffer offer) {
-        VillagerTradeManager.INSTANCE.drawingButton((MerchantScreen)((Object)this), new NativeContext(drawContext, RenderPipelines.GUI_TEXTURED), mouseX, mouseY,
+        VillagerTradeManager.INSTANCE.drawingButton((MerchantScreen)((Object)this), new NativeContext(drawContext), mouseX, mouseY,
                                                     offer,
                                                     xo,
                                                     yo,

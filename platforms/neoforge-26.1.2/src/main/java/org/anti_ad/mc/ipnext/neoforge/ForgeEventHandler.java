@@ -93,25 +93,25 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void preScreenRender(ScreenEvent.Render.Pre event) {
-        ScreenEventHandler.INSTANCE.preRender(new NativeContext(event.getGuiGraphics(), RenderPipelines.GUI_TEXTURED));
+        ScreenEventHandler.INSTANCE.preRender(new NativeContext(event.getGuiGraphics()));
     }
 
     // fabric GameRenderer.render() = forge updateCameraAndRender()
     // forge line 554
     @SubscribeEvent
     public void postScreenRender(Render.Post e) {
-        ScreenEventHandler.INSTANCE.postRender(new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED));
+        ScreenEventHandler.INSTANCE.postRender(new NativeContext(e.getGuiGraphics()));
     }
 
     @SubscribeEvent
     public void onBackgroundRender(ScreenEvent.Render.Background e) {
-        var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
+        var context = new NativeContext(e.getGuiGraphics());
         ContainerScreenEventHandler.INSTANCE.onBackgroundRender(context, e.getMouseX(), e.getMouseY(), 0);
     }
 
     @SubscribeEvent
     public void onForegroundRender(ContainerScreenEvent.Render.Foreground e) {
-        var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
+        var context = new NativeContext(e.getGuiGraphics());
         context.setOverlay(true);
         var screen = e.getContainerScreen();
         var matrix = context.getNative().pose().pushMatrix();

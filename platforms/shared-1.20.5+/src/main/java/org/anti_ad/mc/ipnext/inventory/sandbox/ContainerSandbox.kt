@@ -21,6 +21,7 @@
 package org.anti_ad.mc.ipnext.inventory.sandbox
 
 import org.anti_ad.mc.ipnext.compat.integrations.Integrations
+import org.anti_ad.mc.ipnext.config.SortSettings
 import org.anti_ad.mc.ipnext.inventory.data.ItemTracker
 import org.anti_ad.mc.ipnext.inventory.data.MutableItemTracker
 import org.anti_ad.mc.ipnext.item.`(isBundle)`
@@ -54,11 +55,11 @@ class ContainerSandbox(items: MutableItemTracker,
         }
         val action = when {
             target.itemType.identifier.namespace == METAL_BUNDLES_ID -> 0
-            cursor.itemType.identifier.namespace == METAL_BUNDLES_ID -> 0
-            !cursor.isEmpty() && target.itemType.`(isBundle)` -> 1
-            cursor.itemType.`(isBundle)` && !target.isEmpty() -> 1
-            Integrations.isEasyShulkerBoxesLoaded && (!cursor.isEmpty() && target.itemType.isShulker
-                                                      || cursor.itemType.isShulker && !target.isEmpty()) -> 1
+            cursor.itemType.identifier.namespace == METAL_BUNDLES_ID           -> 0
+            !cursor.isEmpty() && target.itemType.`(isBundle)` && !SortSettings.INVERT_BUNDLES_CLICKS.value -> 1
+            cursor.itemType.`(isBundle)` && !target.isEmpty() && !SortSettings.INVERT_BUNDLES_CLICKS.value -> 1
+            !cursor.isEmpty() && target.itemType.isShulker && SortSettings.INVERT_SHULKER_CLICKS.value     -> 1
+            cursor.itemType.isShulker && !target.isEmpty() && SortSettings.INVERT_SHULKER_CLICKS.value     -> 1
             else -> 0
         }
 

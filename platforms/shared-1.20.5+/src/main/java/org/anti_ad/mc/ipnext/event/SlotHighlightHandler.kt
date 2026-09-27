@@ -62,14 +62,14 @@ object SlotHighlightHandler: InventoryOverlay {
         }
 
     override val enabledBackground: Boolean
-        get() = Features.HIGHLIGHT_FOUSED_ITEMS.value && !ModSettings.HIGHLIGHT_FOUSED_ITEMS_FOREGROUND.value
+        get() = Features.HIGHLIGHT_FOUSED_ITEMS.value && !ModSettings.HIGHLIGHT_FOCUSED_ITEMS_FOREGROUND.value
 
     override fun drawBackground(context: NativeContext) {
         drawSprite(context)
     }
 
     override val enabledForeground: Boolean
-        get() = Features.HIGHLIGHT_FOUSED_ITEMS.value && ModSettings.HIGHLIGHT_FOUSED_ITEMS_FOREGROUND.value
+        get() = Features.HIGHLIGHT_FOUSED_ITEMS.value && ModSettings.HIGHLIGHT_FOCUSED_ITEMS_FOREGROUND.value
 
     override fun drawForeground(context: NativeContext) {
         drawSprite(context)
@@ -84,18 +84,18 @@ object SlotHighlightHandler: InventoryOverlay {
 
     val defaultAlpha: Int
         get() {
-            return if (ModSettings.HIGHLIGHT_FOUSED_ITEMS_FOREGROUND.value) {
-                ModSettings.HIGHLIGHT_FOUSED_ITEMS_COLOR.value.alpha
+            return if (ModSettings.HIGHLIGHT_FOCUSED_ITEMS_FOREGROUND.value) {
+                ModSettings.HIGHLIGHT_FOCUSED_ITEMS_COLOR.value.alpha
             } else {
-                ModSettings.HIGHLIGHT_FOUSED_ITEMS_BG_COLOR.value.alpha
+                ModSettings.HIGHLIGHT_FOCUSED_ITEMS_BG_COLOR.value.alpha
             }
         }
     val color: Int
         get() {
-            return if (ModSettings.HIGHLIGHT_FOUSED_ITEMS_FOREGROUND.booleanValue) {
-                ModSettings.HIGHLIGHT_FOUSED_ITEMS_COLOR.value
+            return if (ModSettings.HIGHLIGHT_FOCUSED_ITEMS_FOREGROUND.booleanValue) {
+                ModSettings.HIGHLIGHT_FOCUSED_ITEMS_COLOR.value
             } else {
-                ModSettings.HIGHLIGHT_FOUSED_ITEMS_BG_COLOR.value
+                ModSettings.HIGHLIGHT_FOCUSED_ITEMS_BG_COLOR.value
             }
         }
 
@@ -110,7 +110,7 @@ object SlotHighlightHandler: InventoryOverlay {
         val localSlotLocations: MutableMap<Int, Point> = mutableMapOf()
         localSlotLocations.putAll(slotLocations)
         if (localSlotLocations.isNotEmpty()) {
-            if (ModSettings.HIGHLIGHT_FOUSED_ITEMS_ANIMATED.booleanValue) {
+            if (ModSettings.HIGHLIGHT_FOCUSED_ITEMS_ANIMATED.booleanValue) {
                 tick++
                 if (tick >= 1) {
                     tick = 0
@@ -150,10 +150,10 @@ object SlotHighlightHandler: InventoryOverlay {
                     ticksSinceLastFocusChange--
                     if (ticksSinceLastFocusChange < 0) {
                         toHighlight = slot.`(itemStack)`.itemType.copy(ignoreDurability = true)
-                        ticksSinceLastFocusChange = ModSettings.HIGHLIGHT_FOUSED_WAIT_TICKS.integerValue
+                        ticksSinceLastFocusChange = ModSettings.HIGHLIGHT_FOCUSED_WAIT_TICKS.integerValue
                     }
                 } else {
-                    ticksSinceLastFocusChange = ModSettings.HIGHLIGHT_FOUSED_WAIT_TICKS.integerValue
+                    ticksSinceLastFocusChange = ModSettings.HIGHLIGHT_FOCUSED_WAIT_TICKS.integerValue
                 }
                 return
             }

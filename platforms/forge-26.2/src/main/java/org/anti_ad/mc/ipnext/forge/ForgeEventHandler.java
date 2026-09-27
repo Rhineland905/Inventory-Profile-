@@ -47,6 +47,7 @@ import org.anti_ad.mc.ipnext.inventory.GeneralInventoryActions;
 /**
  * ForgeEventHandler
  */
+@SuppressWarnings("unused")
 public class ForgeEventHandler {
 
     @SubscribeEvent
@@ -100,25 +101,25 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void preScreenRender(ScreenEvent.Render.Pre event) {
-        ScreenEventHandler.INSTANCE.preRender(new NativeContext(event.getGuiGraphics(), RenderPipelines.GUI_TEXTURED));
+        ScreenEventHandler.INSTANCE.preRender(new NativeContext(event.getGuiGraphics()));
     }
 
     // fabric GameRenderer.render() = forge updateCameraAndRender()
     // forge line 554
     @SubscribeEvent
     public void postScreenRender(Render.Post e) {
-        ScreenEventHandler.INSTANCE.postRender(new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED));
+        ScreenEventHandler.INSTANCE.postRender(new NativeContext(e.getGuiGraphics()));
     }
 
     @SubscribeEvent
     public void onBackgroundRender(ContainerScreenEvent.Render.Background e) {
-        var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
+        var context = new NativeContext(e.getGuiGraphics());
         ContainerScreenEventHandler.INSTANCE.onBackgroundRender(context, e.getMouseX(), e.getMouseY(), 0);
     }
 
     @SubscribeEvent
     public void onForegroundRender(ContainerScreenEvent.Render.Foreground e) {
-        var context = new NativeContext(e.getGuiGraphics(), RenderPipelines.GUI_TEXTURED);
+        var context = new NativeContext(e.getGuiGraphics());
         context.setOverlay(true);
         context.setOverlay(true);
         var screen = e.getContainerScreen();
@@ -137,6 +138,7 @@ public class ForgeEventHandler {
     public void onGuiKeyPressedPre(ScreenEvent.KeyPressed.Pre e) { // Tweaks.PREVENT_CLOSE_GUI_DROP_ITEM
         if (!VanillaUtil.INSTANCE.inGame()) return;
         InputConstants.Key mouseKey = InputConstants.getKey(e.getInfo()); //getInputByCode(e.getKeyCode(), e.getScanCode()); // getKey(e.getKeyCode(), e.getScanCode());
+        //noinspection resource
         if (Tweaks.INSTANCE.getPREVENT_CLOSE_GUI_DROP_ITEM().getBooleanValue()
                 && (e.getKeyCode() == 256 || Vanilla.INSTANCE.mc().options.keyInventory //gameSettings.keyBindInventory // options.keyInventory
                 .isActiveAndMatches(mouseKey))) {
