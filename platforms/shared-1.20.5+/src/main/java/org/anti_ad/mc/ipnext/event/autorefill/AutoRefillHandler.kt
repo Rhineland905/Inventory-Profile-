@@ -356,6 +356,7 @@ object AutoRefillHandler: InventoryOverlay, IInputHandler {
 
             checkingItem = storedItem
             if (storedItem.isBlackListed()) return false
+            if (storedItem.itemType.item == Items.TOTEM_OF_UNDYING) return false // auto totem removed in this fork
             if (storedItem.isEmpty()) return false // nothing become anything
             if (currentItem.isEmpty()) {
                 return !(AutoRefillSettings.DISABLE_FOR_LOYALTY_ITEMS.value && storedItem.itemType.`(enchantments)`[Enchantments.LOYALTY] != null)
