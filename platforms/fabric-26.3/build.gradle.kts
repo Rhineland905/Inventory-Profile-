@@ -34,6 +34,7 @@ plugins {
 }
 
 repositories {
+    maven { url = URI("https://masa.dy.fi/maven") } // fabric-carpet
     exclusiveContent {
         forRepository {
             maven {
