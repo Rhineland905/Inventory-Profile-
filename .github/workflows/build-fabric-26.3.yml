@@ -2,6 +2,8 @@ name: Build Fabric 26.3
 on:
   push:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,7 +21,20 @@ jobs:
         run: sed -i '/include("platforms:/{/fabric-26.3/!d}' settings.gradle.kts
       - name: Build
         run: ./gradlew :platforms:fabric-26.3:shadowJar --stacktrace # ProGuard step skipped: JDK 25 has no jmods
+      - name: Show built jars
+        run: |
+          ls -la platforms/fabric-26.3/build/libs/
+          for j in platforms/fabric-26.3/build/libs/*.jar; do echo "== $j"; unzip -l "$j" | tail -1; unzip -p "$j" fabric.mod.json | head -c 1500; echo; done
       - uses: actions/upload-artifact@v4
         with:
           name: ipn-fabric-26.3-no-auto-totem
           path: platforms/fabric-26.3/build/libs/
+      - name: Publish to GitHub Releases
+        if: github.ref == 'refs/heads/no-auto-totem'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: fabric-26.3-no-auto-totem
+          name: IPN for Fabric 26.3 without auto totem
+          body: Inventory Profiles Next (AGPL-3.0, https://codeberg.org/Inventory-Profiles-Next-Mod/IPN) for Minecraft 26.3 with auto-refill of Totem of Undying removed. Requires Fabric API, Fabric Language Kotlin and libIPN.
+          target_commitish: ${{ github.sha }}
+          files: platforms/fabric-26.3/build/libs/*.jar
