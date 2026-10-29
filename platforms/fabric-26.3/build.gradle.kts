@@ -121,7 +121,7 @@ dependencies {
 
 easyMod {
     this.enableShadow = true
-    this.enableProGuard = false // JDK 25 has no jmods, ProGuard only shrinks the jar
+    this.enableProGuard = true
 
     this.shadowJarConfig = {
         relocate("org.antlr", "org.anti_ad.embedded.org.antlr")
