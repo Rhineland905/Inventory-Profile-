@@ -85,6 +85,7 @@ dependencyResolutionManagement {
         mavenCentral()
         maven { url = uri("https://plugins.gradle.org/m2/") }
         maven { url = uri("https://repo.spongepowered.org/repository/maven-public/") }
+        maven { url = uri("https://masa.dy.fi/maven") } // fabric-carpet
 
         maven {
             name = "Forge"
