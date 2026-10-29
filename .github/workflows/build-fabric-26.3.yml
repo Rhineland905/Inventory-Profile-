@@ -14,6 +14,7 @@ jobs:
             21
             25
       - uses: gradle/actions/setup-gradle@v4
+      - run: sudo apt-get update -q && sudo apt-get install -yq advancecomp
       - name: Build only the Fabric 26.3 module
         run: sed -i '/include("platforms:/{/fabric-26.3/!d}' settings.gradle.kts
       - name: Build
