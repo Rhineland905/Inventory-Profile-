@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import org.anti_ad.mc.ipnext.config.DurabilityHudCorner
 import org.anti_ad.mc.ipnext.config.DurabilityHudSettings
 import org.anti_ad.mc.ipnext.config.DurabilityHudText
@@ -33,9 +34,9 @@ object DurabilityHud {
 
     // Japanese traditional colors
     private const val URUSHI_BG = 0xD0120C0A.toInt()   // black lacquer
-    private const val KIN_GOLD = 0xFFC9A646.toInt()     // gold leaf
-    private const val SHU_RED = 0xFFC0272D.toInt()      // vermilion (torii)
-    private const val WASHI_TEXT = 0xFFF3E9D2.toInt()   // washi paper
+    const val KIN_GOLD = 0xFFC9A646.toInt()            // gold leaf
+    const val SHU_RED = 0xFFC0272D.toInt()             // vermilion (torii)
+    const val WASHI_TEXT = 0xFFF3E9D2.toInt()          // washi paper
     private const val MATCHA = 0xFF7BA23F.toInt()       // matcha green
     private const val YAMABUKI = 0xFFF8B500.toInt()     // yamabuki yellow
     private const val BAR_BG = 0xFF2B211D.toInt()
@@ -43,24 +44,55 @@ object DurabilityHud {
     private const val ICON = 16
     private const val GAP = 3
     private const val PAD = 4
+    private const val STEP = 2
 
-    private class Entry(val stack: ItemStack, val text: String, val fraction: Float?)
+    const val MIN_SCALE = 50
+    const val MAX_SCALE = 300
+
+    private class Entry(val stack: ItemStack, val text: String, val fraction: Float?, val percent: Int = 100)
+
+    /** Where the HUD is on screen, in screen pixels, plus its unscaled size. */
+    class Layout(val x: Int, val y: Int, val width: Int, val height: Int, val boxW: Int, val boxH: Int, val scale: Float)
 
     private val handSlots = listOf(EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND)
     private val armorSlots = listOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
 
+    /** Normal in-game rendering, called after the hotbar. */
     fun render(graphics: GuiGraphicsExtractor) {
-        val s = DurabilityHudSettings
-        val mc = Minecraft.getInstance()
-        val player = mc.player
-        if (s.DURABILITY_HUD_ENABLED.booleanValue && player != null) {
-            val slots = (if (s.DURABILITY_HUD_SHOW_HANDS.booleanValue) handSlots else emptyList()) +
-                    (if (s.DURABILITY_HUD_SHOW_ARMOR.booleanValue) armorSlots else emptyList())
-            val entries = slots.mapNotNull { slot -> toEntry(player.getItemBySlot(slot), s.DURABILITY_HUD_ONLY_DAMAGEABLE.booleanValue) }
+        if (DurabilityHudSettings.DURABILITY_HUD_ENABLED.booleanValue && org.anti_ad.mc.common.vanilla.Vanilla.screen() !is DurabilityHudEditorScreen) {
+            val entries = currentEntries()
             if (entries.isNotEmpty()) {
-                draw(graphics, mc, entries)
+                draw(graphics, entries)
             }
         }
+    }
+
+    /** Rendering inside the editor: always shows something, even with empty hands. */
+    fun renderForEditor(graphics: GuiGraphicsExtractor): Layout {
+        val entries = currentEntries().ifEmpty { demoEntries() }
+        return draw(graphics, entries)
+    }
+
+    fun layout(sw: Int, sh: Int): Layout {
+        val entries = currentEntries().ifEmpty { demoEntries() }
+        return computeLayout(entries, sw, sh)
+    }
+
+    private fun currentEntries(): List<Entry> {
+        val s = DurabilityHudSettings
+        val player = Minecraft.getInstance().player ?: return emptyList()
+        val slots = (if (s.DURABILITY_HUD_SHOW_HANDS.booleanValue) handSlots else emptyList()) +
+                (if (s.DURABILITY_HUD_SHOW_ARMOR.booleanValue) armorSlots else emptyList())
+        return slots.mapNotNull { slot -> toEntry(player.getItemBySlot(slot), s.DURABILITY_HUD_ONLY_DAMAGEABLE.booleanValue) }
+    }
+
+    private fun demoEntries(): List<Entry> {
+        fun demo(item: net.minecraft.world.item.Item, used: Float): Entry? {
+            val stack = ItemStack(item)
+            stack.damageValue = (stack.maxDamage * used).toInt()
+            return toEntry(stack, true)
+        }
+        return listOfNotNull(demo(Items.DIAMOND_PICKAXE, 0.3f), demo(Items.SHIELD, 0.85f), demo(Items.IRON_HELMET, 0.1f), demo(Items.DIAMOND_CHESTPLATE, 0.6f))
     }
 
     private fun toEntry(stack: ItemStack, onlyDamageable: Boolean): Entry? {
@@ -75,33 +107,27 @@ object DurabilityHud {
                 DurabilityHudText.BOTH    -> "$left/$max $percent%"
                 else                      -> ""
             }
-            return Entry(stack, text, left.toFloat() / max)
+            return Entry(stack, text, left.toFloat() / max, percent)
         }
         return if (onlyDamageable) null else Entry(stack, if (stack.count > 1) "x${stack.count}" else "", null)
     }
 
-    private fun draw(graphics: GuiGraphicsExtractor, mc: Minecraft, entries: List<Entry>) {
-        val s = DurabilityHudSettings
-        val font = mc.font
-        val horizontal = s.DURABILITY_HUD_HORIZONTAL.booleanValue
-        val showBar = s.DURABILITY_HUD_SHOW_BAR.booleanValue
-        val showBg = s.DURABILITY_HUD_SHOW_BACKGROUND.booleanValue
-        val warn = s.DURABILITY_HUD_WARN_PERCENT.integerValue / 100f
-        val blinkOff = s.DURABILITY_HUD_WARN_BLINK.booleanValue && (System.currentTimeMillis() / 400) % 2 == 0L
-        val scale = s.DURABILITY_HUD_SCALE.integerValue / 100f
-
+    private fun entryWidth(entries: List<Entry>): Int {
+        val font = Minecraft.getInstance().font
         val textWidth = entries.maxOf { font.width(it.text) }
-        val hasText = textWidth > 0 || (showBar && entries.any { it.fraction != null })
-        val entryW = ICON + if (hasText) GAP + maxOf(textWidth, 24) else 0
-        val entryH = ICON
-        val step = 2
-        val contentW = if (horizontal) entries.size * entryW + (entries.size - 1) * (step + 2) else entryW
-        val contentH = if (horizontal) entryH else entries.size * entryH + (entries.size - 1) * step
+        val hasText = textWidth > 0 || (DurabilityHudSettings.DURABILITY_HUD_SHOW_BAR.booleanValue && entries.any { it.fraction != null })
+        return ICON + if (hasText) GAP + maxOf(textWidth, 24) else 0
+    }
+
+    private fun computeLayout(entries: List<Entry>, sw: Int, sh: Int): Layout {
+        val s = DurabilityHudSettings
+        val horizontal = s.DURABILITY_HUD_HORIZONTAL.booleanValue
+        val entryW = entryWidth(entries)
+        val contentW = if (horizontal) entries.size * entryW + (entries.size - 1) * (STEP + 2) else entryW
+        val contentH = if (horizontal) ICON else entries.size * ICON + (entries.size - 1) * STEP
         val boxW = contentW + PAD * 2
         val boxH = contentH + PAD * 2 + 2 // +2 for the vermilion stripe
-
-        val sw = graphics.guiWidth()
-        val sh = graphics.guiHeight()
+        val scale = s.DURABILITY_HUD_SCALE.integerValue.coerceIn(MIN_SCALE, MAX_SCALE) / 100f
         val realW = (boxW * scale).toInt()
         val realH = (boxH * scale).toInt()
         val ox = s.DURABILITY_HUD_OFFSET_X.integerValue
@@ -113,23 +139,47 @@ object DurabilityHud {
             DurabilityHudCorner.NEXT_TO_HOTBAR -> (sw / 2 + 91 + 6 + ox) to (sh - realH - oy)
             else                               -> (sw - realW - ox) to (sh - realH - oy)
         }
+        return Layout(x, y, realW, realH, boxW, boxH, scale)
+    }
+
+    /** Turns a wanted top-left position into offsets for the chosen corner. */
+    fun offsetsFor(x: Int, y: Int, width: Int, height: Int, sw: Int, sh: Int): Pair<Int, Int> {
+        return when (DurabilityHudSettings.DURABILITY_HUD_POSITION.value) {
+            DurabilityHudCorner.TOP_LEFT       -> x to y
+            DurabilityHudCorner.TOP_RIGHT      -> (sw - width - x) to y
+            DurabilityHudCorner.BOTTOM_LEFT    -> x to (sh - height - y)
+            DurabilityHudCorner.NEXT_TO_HOTBAR -> (x - (sw / 2 + 91 + 6)) to (sh - height - y)
+            else                               -> (sw - width - x) to (sh - height - y)
+        }
+    }
+
+    private fun draw(graphics: GuiGraphicsExtractor, entries: List<Entry>): Layout {
+        val s = DurabilityHudSettings
+        val font = Minecraft.getInstance().font
+        val horizontal = s.DURABILITY_HUD_HORIZONTAL.booleanValue
+        val showBar = s.DURABILITY_HUD_SHOW_BAR.booleanValue
+        val showBg = s.DURABILITY_HUD_SHOW_BACKGROUND.booleanValue
+        val warn = s.DURABILITY_HUD_WARN_PERCENT.integerValue
+        val blinkOff = s.DURABILITY_HUD_WARN_BLINK.booleanValue && (System.currentTimeMillis() / 400) % 2 == 0L
+        val layout = computeLayout(entries, graphics.guiWidth(), graphics.guiHeight())
+        val entryW = entryWidth(entries)
 
         val pose = graphics.pose()
         pose.pushMatrix()
-        pose.translate(x.toFloat(), y.toFloat())
-        pose.scale(scale, scale)
+        pose.translate(layout.x.toFloat(), layout.y.toFloat())
+        pose.scale(layout.scale, layout.scale)
 
         if (showBg) {
-            graphics.fill(0, 0, boxW, boxH, URUSHI_BG)
-            graphics.outline(0, 0, boxW, boxH, KIN_GOLD)
-            graphics.fill(1, 1, boxW - 1, 3, SHU_RED)
+            graphics.fill(0, 0, layout.boxW, layout.boxH, URUSHI_BG)
+            graphics.outline(0, 0, layout.boxW, layout.boxH, KIN_GOLD)
+            graphics.fill(1, 1, layout.boxW - 1, 3, SHU_RED)
         }
 
         var cx = PAD
         var cy = PAD + 2
         for (e in entries) {
             graphics.item(e.stack, cx, cy)
-            val low = e.fraction != null && e.fraction <= warn
+            val low = e.fraction != null && e.percent <= warn
             val textX = cx + ICON + GAP
             if (e.text.isNotEmpty() && !(low && blinkOff)) {
                 graphics.text(font, e.text, textX, cy + if (showBar && e.fraction != null) 1 else 4, if (low) SHU_RED else WASHI_TEXT, true)
@@ -139,15 +189,16 @@ object DurabilityHud {
                 val barY = cy + 12
                 graphics.fill(textX, barY, textX + barW, barY + 2, BAR_BG)
                 val color = when {
-                    low             -> SHU_RED
+                    low               -> SHU_RED
                     e.fraction > 0.5f -> MATCHA
-                    else            -> YAMABUKI
+                    else              -> YAMABUKI
                 }
                 graphics.fill(textX, barY, textX + (barW * e.fraction).toInt().coerceAtLeast(1), barY + 2, color)
             }
-            if (horizontal) cx += entryW + step + 2 else cy += entryH + step
+            if (horizontal) cx += entryW + STEP + 2 else cy += ICON + STEP
         }
 
         pose.popMatrix()
+        return layout
     }
 }

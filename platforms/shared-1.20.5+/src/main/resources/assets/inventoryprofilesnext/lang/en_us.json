@@ -1,4 +1,9 @@
 {
+    "inventoryprofiles.config.name.durability_hud_edit": "Edit on Screen",
+    "inventoryprofiles.config.description.durability_hud_edit": "Open an editor where you drag the HUD with the mouse and resize it with the mouse wheel.",
+    "inventoryprofiles.gui.config.button.edit_durability_hud": "Move and resize on screen...",
+    "inventoryprofiles.gui.durability_hud_editor.help": "Drag to move  |  Mouse wheel or gold corner to resize  |  R to reset  |  Esc to finish",
+    "inventoryprofiles.gui.durability_hud_editor.title": "Durability HUD editor",
     "inventoryprofiles.gui.config.DurabilityHudSettings": "Durability HUD",
     "inventoryprofiles.config.category.durability_hud.general": "General",
     "inventoryprofiles.config.category.durability_hud.look": "Look & Position",

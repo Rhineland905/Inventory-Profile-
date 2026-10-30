@@ -1,4 +1,7 @@
 {
+    "inventoryprofiles.gui.config.button.edit_durability_hud": "画面上で移動・サイズ変更...",
+    "inventoryprofiles.gui.durability_hud_editor.help": "ドラッグで移動  |  ホイールか金の角でサイズ変更  |  Rでリセット  |  Escで終了",
+    "inventoryprofiles.gui.durability_hud_editor.title": "耐久値HUDエディター",
     "inventoryprofiles.gui.config.DurabilityHudSettings": "耐久値HUD",
     "inventoryprofiles.config.category.durability_hud.general": "一般",
     "inventoryprofiles.config.category.durability_hud.look": "表示と位置",
