@@ -212,3 +212,18 @@ fabricApi {
         eula = true
     }
 }
+
+// The game test run gets --username twice; keep only the last one.
+afterEvaluate {
+    extensions.getByType<net.fabricmc.loom.api.LoomGradleExtensionAPI>().runs.findByName("clientGameTest")?.let { rc ->
+        val args = rc.programArgs
+        for (opt in listOf("--username", "--uuid", "--accessToken")) {
+            while (args.count { it == opt } > 1) {
+                val i = args.indexOf(opt)
+                args.removeAt(i)
+                if (i < args.size) args.removeAt(i)
+            }
+        }
+        println("clientGameTest args: $args")
+    }
+}
