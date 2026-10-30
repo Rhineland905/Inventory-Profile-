@@ -59,8 +59,16 @@ public abstract class MixinContainerScreen<T extends AbstractContainerMenu> exte
     @Inject(at = @At("HEAD"), method = "extractContents")
     public void onJapaneseFrame(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         IMixinContainerScreen screen = (IMixinContainerScreen) this;
-        org.anti_ad.mc.ipnext.hud.JpContainerFrame.INSTANCE.draw(graphics, screen.getContainerX(), screen.getContainerY(),
-                                                                 screen.getContainerWidth(), screen.getContainerHeight());
+        int x = screen.getContainerX();
+        int y = screen.getContainerY();
+        int w = screen.getContainerWidth();
+        int h = screen.getContainerHeight();
+        if ((Object) this instanceof net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen) {
+            // creative tabs stick out 28px above and below the panel: frame them too
+            y -= 28;
+            h += 56;
+        }
+        org.anti_ad.mc.ipnext.hud.JpContainerFrame.INSTANCE.draw(graphics, x, y, w, h);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;extractSlotHighlightBack(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
