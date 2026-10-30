@@ -140,7 +140,7 @@ object JpPanel {
             graphics.fill(0, 0, layout.boxW, layout.boxH, Jp.URUSHI_BG)
             graphics.outline(0, 0, layout.boxW, layout.boxH, Jp.KIN_GOLD)
             graphics.fill(1, 1, layout.boxW - 1, 3, Jp.SHU_RED)
-            Sakura.cornerSprig(graphics, 0, 0, layout.boxW)
+            Sakura.cornerSprig(graphics, 0, 0, layout.boxW, layout.boxH)
         }
 
         var cx = PAD
