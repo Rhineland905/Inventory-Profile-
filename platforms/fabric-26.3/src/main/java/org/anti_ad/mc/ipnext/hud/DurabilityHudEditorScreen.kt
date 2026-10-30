@@ -24,6 +24,7 @@ import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import org.anti_ad.mc.common.vanilla.Vanilla
 import org.anti_ad.mc.ipnext.config.ConfigScreenSettings
+import org.anti_ad.mc.ipnext.config.DurabilityHudCorner
 import kotlin.math.roundToInt
 
 /** Drag any info panel with the mouse; resize it with the wheel or its gold corner handle. */
@@ -118,6 +119,7 @@ class DurabilityHudEditorScreen(private val parent: Screen?) :
     override fun mouseReleased(event: MouseButtonEvent): Boolean {
         if (mode != Mode.NONE) {
             mode = Mode.NONE
+            selected?.let { snapToNearestCorner(it) }
             return true
         }
         return super.mouseReleased(event)
@@ -145,6 +147,21 @@ class DurabilityHudEditorScreen(private val parent: Screen?) :
             return true
         }
         return super.keyPressed(event)
+    }
+
+    /** Anchor the panel to the screen corner it is closest to, so it stays put when the window size changes. */
+    private fun snapToNearestCorner(panel: HudPanel) {
+        val l = layoutOf(panel)
+        val left = l.x + l.width / 2 < width / 2
+        val top = l.y + l.height / 2 < height / 2
+        val corner = when {
+            top && left  -> DurabilityHudCorner.TOP_LEFT
+            top          -> DurabilityHudCorner.TOP_RIGHT
+            left         -> DurabilityHudCorner.BOTTOM_LEFT
+            else         -> DurabilityHudCorner.BOTTOM_RIGHT
+        }
+        panel.placement.setCorner(corner)
+        moveTo(panel, l.x, l.y, l.width, l.height)
     }
 
     private fun resizeKeepingTopLeft(panel: HudPanel, l: Layout, wantedScale: Int) {

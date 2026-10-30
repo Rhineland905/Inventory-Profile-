@@ -1,4 +1,6 @@
 {
+    "inventoryprofiles.config.name.open_hud_editor": "HUDパネル編集を開く",
+    "inventoryprofiles.config.description.open_hud_editor": "情報パネルをドラッグして移動・拡大縮小できる編集画面を開きます。位置は保存されます。",
     "inventoryprofiles.config.name.sakura_flowers": "パネルに桜",
     "inventoryprofiles.config.description.sakura_flowers": "情報パネルとコンテナの枠に桜の花を描きます。見た目だけです。",
     "inventoryprofiles.config.name.sakura_petals": "桜吹雪",

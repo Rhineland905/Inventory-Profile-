@@ -55,7 +55,8 @@ class Placement(val corner: () -> DurabilityHudCorner,
                 val getScale: () -> Int, val setScale: (Int) -> Unit,
                 val horizontal: () -> Boolean = { false },
                 val background: () -> Boolean = { true },
-                val bars: () -> Boolean = { true })
+                val bars: () -> Boolean = { true },
+                val setCorner: (DurabilityHudCorner) -> Unit = {})
 
 class Layout(val x: Int, val y: Int, val width: Int, val height: Int, val boxW: Int, val boxH: Int, val scale: Float)
 

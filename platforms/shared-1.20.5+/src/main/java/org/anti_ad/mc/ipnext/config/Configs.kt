@@ -530,6 +530,8 @@ object Hotkeys : ConfigDeclaration {
                                                                  KeybindSettings.INGAME_DEFAULT)
     val RELOAD_CUSTOM_CONFIGS                     /**/ by hotkey("R,Y",
                                                                  KeybindSettings.ANY_DEFAULT)
+    val OPEN_HUD_EDITOR                           /**/ by hotkey("R,H",
+                                                                 KeybindSettings.INGAME_DEFAULT)
         .CATEGORY("$category.inventory")
     val SORT_INVENTORY                            /**/ by hotkey("R",
                                                                  KeybindSettings.GUI_DEFAULT)
