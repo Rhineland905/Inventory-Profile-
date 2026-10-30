@@ -44,7 +44,7 @@ object DurabilityHud {
     private const val GAP = 3
     private const val PAD = 4
 
-    private class Entry(val stack: ItemStack, val text: String, val fraction: Float?)
+    private class Entry(val stack: ItemStack, val text: String, val fraction: Float?, val percent: Int = 100)
 
     private val handSlots = listOf(EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND)
     private val armorSlots = listOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
@@ -75,7 +75,7 @@ object DurabilityHud {
                 DurabilityHudText.BOTH    -> "$left/$max $percent%"
                 else                      -> ""
             }
-            return Entry(stack, text, left.toFloat() / max)
+            return Entry(stack, text, left.toFloat() / max, percent)
         }
         return if (onlyDamageable) null else Entry(stack, if (stack.count > 1) "x${stack.count}" else "", null)
     }
@@ -86,7 +86,7 @@ object DurabilityHud {
         val horizontal = s.DURABILITY_HUD_HORIZONTAL.booleanValue
         val showBar = s.DURABILITY_HUD_SHOW_BAR.booleanValue
         val showBg = s.DURABILITY_HUD_SHOW_BACKGROUND.booleanValue
-        val warn = s.DURABILITY_HUD_WARN_PERCENT.integerValue / 100f
+        val warn = s.DURABILITY_HUD_WARN_PERCENT.integerValue
         val blinkOff = s.DURABILITY_HUD_WARN_BLINK.booleanValue && (System.currentTimeMillis() / 400) % 2 == 0L
         val scale = s.DURABILITY_HUD_SCALE.integerValue / 100f
 
@@ -129,7 +129,7 @@ object DurabilityHud {
         var cy = PAD + 2
         for (e in entries) {
             graphics.item(e.stack, cx, cy)
-            val low = e.fraction != null && e.fraction <= warn
+            val low = e.fraction != null && e.percent <= warn
             val textX = cx + ICON + GAP
             if (e.text.isNotEmpty() && !(low && blinkOff)) {
                 graphics.text(font, e.text, textX, cy + if (showBar && e.fraction != null) 1 else 4, if (low) SHU_RED else WASHI_TEXT, true)
