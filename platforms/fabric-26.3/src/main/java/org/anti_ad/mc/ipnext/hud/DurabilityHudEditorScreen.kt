@@ -145,7 +145,7 @@ class DurabilityHudEditorScreen(private val parent: Screen?) :
 
     override fun onClose() {
         ConfigScreenSettings.saveLoadManager.save()
-        Minecraft.getInstance().setScreenAndShow(parent)
+        if (parent != null) Minecraft.getInstance().setScreenAndShow(parent) else super.onClose()
     }
 
     companion object {
