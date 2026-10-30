@@ -30,7 +30,8 @@ jobs:
           find . -path ./out -prune -o -name '*.png' -path '*screenshot*' -print -exec cp {} out/ \;
           find . -path ./out -prune -o -name 'latest.log' -print -exec cp {} out/latest.log \;
           find . -path ./out -prune -o -path '*crash-reports*' -name '*.txt' -print -exec cp {} out/ \;
-          tail -300 gametest.log > out/gradle-tail.log || true
+          cp gametest.log out/gradle-full.log || true
+          find . -path ./out -prune -o -name 'launch.cfg' -print -exec cp {} out/launch.cfg.txt \;
           ls -la out
       - uses: softprops/action-gh-release@v2
         if: always()
