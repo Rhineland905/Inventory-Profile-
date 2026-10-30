@@ -53,6 +53,14 @@ public class IpnScreenshotTest implements FabricClientGameTest {
             });
             context.waitTicks(20);
             context.takeScreenshot("ipn_chest");
+            sp.getServer().runCommand("gamemode creative @a");
+            context.waitTicks(10);
+            context.setScreen(() -> new net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen(
+                    Minecraft.getInstance().player, Minecraft.getInstance().player.connection.enabledFeatures(),
+                    Minecraft.getInstance().options.operatorItemsTab().get()));
+            context.waitTicks(20);
+            context.takeScreenshot("ipn_creative");
+            sp.getServer().runCommand("gamemode survival @a");
             context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
             context.waitTicks(20);
             context.takeScreenshot("ipn_inventory");
