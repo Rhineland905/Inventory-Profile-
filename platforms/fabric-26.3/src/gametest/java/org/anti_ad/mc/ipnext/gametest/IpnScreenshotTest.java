@@ -38,11 +38,12 @@ public class IpnScreenshotTest implements FabricClientGameTest {
             context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
             context.waitTicks(20);
             context.takeScreenshot("ipn_inventory");
-            DurabilityHudEditorScreen editor = new DurabilityHudEditorScreen(null);
-            context.setScreen(() -> editor);
+            DurabilityHudEditorScreen[] holder = new DurabilityHudEditorScreen[1];
+            context.setScreen(() -> holder[0] = new DurabilityHudEditorScreen(null));
             context.waitTicks(10);
             context.takeScreenshot("ipn_editor");
             context.runOnClient(mc -> {
+                DurabilityHudEditorScreen editor = holder[0];
                 editor.mouseScrolled(0, 0, 0, 1);
                 editor.mouseScrolled(0, 0, 0, 1);
                 editor.mouseScrolled(0, 0, 0, 1);
