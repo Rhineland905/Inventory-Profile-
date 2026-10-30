@@ -3,6 +3,7 @@ package org.anti_ad.mc.ipnext.gametest;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 
 /** Starts a world, equips damaged gear and takes screenshots of the HUD and the inventory. */
@@ -30,10 +31,10 @@ public class IpnScreenshotTest implements FabricClientGameTest {
             }
             context.waitTicks(40);
             context.takeScreenshot("ipn_hud");
-            context.runOnClient(mc -> mc.setScreen(new InventoryScreen(mc.player)));
+            context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
             context.waitTicks(20);
             context.takeScreenshot("ipn_inventory");
-            context.runOnClient(mc -> mc.setScreen(null));
+            context.setScreen(() -> null);
             context.waitTicks(5);
         }
     }
