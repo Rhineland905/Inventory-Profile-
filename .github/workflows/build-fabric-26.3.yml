@@ -19,6 +19,18 @@ jobs:
         run: |
           set +e
           MC=$(find ~/.gradle .gradle -name '*.jar' 2>/dev/null | grep -iE 'minecraft-(clientOnly|merged|client)' | grep -v sources | head -1)
-          javap -cp "$MC" net.minecraft.client.Minecraft | grep -iE 'screen|font|public .* gui|player;' 
-          javap -cp "$MC" -p net.minecraft.client.Minecraft | grep -iE ' screen;|setScreen|Screen\)'
-          javap -cp "$MC" net.minecraft.client.gui.Hud | grep -i screen
+          for c in net.minecraft.world.level.Level net.minecraft.client.multiplayer.ClientLevel net.minecraft.world.level.LevelReader net.minecraft.world.level.LevelTimeAccess; do echo "== $c"; javap -cp "$MC" $c | grep -iE 'time|day|clock'; done
+          echo "== clockish classes"; unzip -l "$MC" | grep -iE 'clock|daytime|WorldTime' | head -40
+          javap -cp "$MC" net.minecraft.world.effect.MobEffectInstance | grep -iE 'duration|amplifier|effect'
+          javap -cp "$MC" net.minecraft.world.entity.LivingEntity | grep -iE 'activeeffects|getActiveEffects'
+          javap -cp "$MC" net.minecraft.client.gui.Hud | grep -iE 'sprite'
+          javap -cp "$MC" net.minecraft.client.resources.sounds.SimpleSoundInstance | grep -i forUI
+          javap -cp "$MC" net.minecraft.sounds.SoundEvents | grep -i NOTE_BLOCK_BELL
+          javap -cp "$MC" net.minecraft.core.component.DataComponents | grep -E ' FOOD'
+          javap -cp "$MC" net.minecraft.client.renderer.RenderPipelines | grep -i GUI_TEXTURED
+          javap -cp "$MC" net.minecraft.world.inventory.ChestMenu | grep -i threeRows
+          javap -cp "$MC" net.minecraft.client.gui.screens.inventory.ContainerScreen | grep -i 'ContainerScreen('
+          javap -cp "$MC" net.minecraft.world.item.ItemStack | grep -iE 'getHoverName|copyWithCount|isDamageableItem'
+          javap -cp "$MC" net.minecraft.resources.Identifier | grep -iE 'tryParse'
+          javap -cp "$MC" net.minecraft.world.entity.EquipmentSlot | grep -iE 'isArmor|values'
+          javap -cp "$MC" net.minecraft.client.gui.GuiGraphicsExtractor | grep -iE 'guiWidth|blitSprite'
