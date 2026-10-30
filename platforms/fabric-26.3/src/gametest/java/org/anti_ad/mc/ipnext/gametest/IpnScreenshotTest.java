@@ -42,7 +42,7 @@ public class IpnScreenshotTest implements FabricClientGameTest {
             for (String c : cmds) {
                 sp.getServer().runCommand(c);
             }
-            context.waitTicks(40);
+            context.waitTicks(160); // let advancement toasts fade
             context.takeScreenshot("ipn_hud");
             sp.getServer().runCommand("item replace entity @a weapon.mainhand with diamond_pickaxe[damage=1480]");
             context.waitTicks(10);
