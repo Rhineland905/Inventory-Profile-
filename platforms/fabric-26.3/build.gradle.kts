@@ -213,18 +213,12 @@ fabricApi {
     }
 }
 
-// The game test run gets --username twice; keep only the last one.
-afterEvaluate {
-    extensions.getByType<net.fabricmc.loom.api.LoomGradleExtensionAPI>().runs.findByName("clientGameTest")?.let { rc ->
-        val args = rc.programArgs
-        for (opt in listOf("--username", "--uuid", "--accessToken")) {
-            if (args.contains(opt)) args.removeAll { it.startsWith("$opt=") }
-            while (args.count { it == opt } > 1) {
-                val i = args.indexOf(opt)
-                args.removeAt(i)
-                if (i < args.size) args.removeAt(i)
-            }
-        }
-        println("clientGameTest args: $args")
+// The game test run gets --username twice; drop the "--username=DEV" form.
+tasks.matching { it.name == "runClientGameTest" }.configureEach {
+    val exec = this as JavaExec
+    exec.doFirst {
+        val cleaned = (exec.args ?: emptyList()).filterNot { it.startsWith("--username=") }
+        exec.setArgs(cleaned)
+        println("clientGameTest args: ${exec.args}")
     }
 }
