@@ -1,8 +1,10 @@
-name: Probe APIs
+name: Publish dependency jars
 on:
   push:
+permissions:
+  contents: write
 jobs:
-  probe:
+  deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,22 +17,17 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: sed -i '/include("platforms:/{/fabric-26.3/!d}' settings.gradle.kts
       - run: ./gradlew :platforms:fabric-26.3:compileJava -q || true
-      - name: Probe
+      - name: Find and upload jars
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          set +e
-          MC=$(find ~/.gradle .gradle -name '*.jar' 2>/dev/null | grep -iE 'minecraft-(clientOnly|merged|client)' | grep -v sources | head -1)
-          for c in net.minecraft.world.level.Level net.minecraft.client.multiplayer.ClientLevel net.minecraft.world.level.LevelReader net.minecraft.world.level.LevelTimeAccess; do echo "== $c"; javap -cp "$MC" $c | grep -iE 'time|day|clock'; done
-          echo "== clockish classes"; unzip -l "$MC" | grep -iE 'clock|daytime|WorldTime' | head -40
-          javap -cp "$MC" net.minecraft.world.effect.MobEffectInstance | grep -iE 'duration|amplifier|effect'
-          javap -cp "$MC" net.minecraft.world.entity.LivingEntity | grep -iE 'activeeffects|getActiveEffects'
-          javap -cp "$MC" net.minecraft.client.gui.Hud | grep -iE 'sprite'
-          javap -cp "$MC" net.minecraft.client.resources.sounds.SimpleSoundInstance | grep -i forUI
-          javap -cp "$MC" net.minecraft.sounds.SoundEvents | grep -i NOTE_BLOCK_BELL
-          javap -cp "$MC" net.minecraft.core.component.DataComponents | grep -E ' FOOD'
-          javap -cp "$MC" net.minecraft.client.renderer.RenderPipelines | grep -i GUI_TEXTURED
-          javap -cp "$MC" net.minecraft.world.inventory.ChestMenu | grep -i threeRows
-          javap -cp "$MC" net.minecraft.client.gui.screens.inventory.ContainerScreen | grep -i 'ContainerScreen('
-          javap -cp "$MC" net.minecraft.world.item.ItemStack | grep -iE 'getHoverName|copyWithCount|isDamageableItem'
-          javap -cp "$MC" net.minecraft.resources.Identifier | grep -iE 'tryParse'
-          javap -cp "$MC" net.minecraft.world.entity.EquipmentSlot | grep -iE 'isArmor|values'
-          javap -cp "$MC" net.minecraft.client.gui.GuiGraphicsExtractor | grep -iE 'guiWidth|blitSprite'
+          find ~/.gradle -name '*.jar' | grep -iE 'libipn|fabric-language-kotlin' | grep -v sources | sort
+          mkdir out
+          LIB=$(find ~/.gradle -name '*.jar' | grep -i libipn | grep -i fabric | grep -i '26.3' | grep -viE 'sources|dev' | head -1)
+          [ -z "$LIB" ] && LIB=$(find ~/.gradle -name '*.jar' | grep -i libipn | grep -viE 'sources' | head -1)
+          FLK=$(find ~/.gradle -name 'fabric-language-kotlin-*.jar' | grep -v sources | head -1)
+          echo "LIB=$LIB FLK=$FLK"
+          cp "$LIB" "out/$(basename "$LIB")"; cp "$FLK" "out/$(basename "$FLK")"
+          unzip -p "$LIB" fabric.mod.json | head -40
+          ls -la out
+          gh release upload fabric-26.3-no-auto-totem out/*.jar --clobber -R ${{ github.repository }}
