@@ -286,7 +286,7 @@ object ExtraHudSettings : ConfigDeclaration {
     val ITEM_COUNTER_HIDE_ZERO                    /**/ by bool(true)
     val ITEM_COUNTER_POSITION                     /**/ by enum(DurabilityHudCorner.TOP_RIGHT)
     val ITEM_COUNTER_OFFSET_X                     /**/ by int(4, -2000, 2000)
-    val ITEM_COUNTER_OFFSET_Y                     /**/ by int(4, -2000, 2000)
+    val ITEM_COUNTER_OFFSET_Y                     /**/ by int(30, -2000, 2000)
     val ITEM_COUNTER_SCALE                        /**/ by int(100, 50, 300)
     val ITEM_COUNTER_HORIZONTAL                   /**/ by bool(false)
         .CATEGORY("§§vgap:3")

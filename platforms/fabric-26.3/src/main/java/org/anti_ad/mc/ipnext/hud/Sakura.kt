@@ -62,15 +62,26 @@ object Sakura {
 
     fun flowersOn(): Boolean = ExtraHudSettings.SAKURA_FLOWERS.booleanValue
 
-    /** A small branch with blossoms hanging over the top-right corner of a box of size w x h at (x, y). */
-    fun cornerSprig(g: GuiGraphicsExtractor, x: Int, y: Int, w: Int) {
+    private fun big(g: GuiGraphicsExtractor, x: Int, y: Int, scale: Float) {
+        val pose = g.pose()
+        pose.pushMatrix()
+        pose.translate(x.toFloat(), y.toFloat())
+        pose.scale(scale, scale)
+        pattern(g, BLOSSOM, 0, 0)
+        pose.popMatrix()
+    }
+
+    /** A branch with blossoms over the top-right corner and a flower on the bottom-left corner of a panel. */
+    fun cornerSprig(g: GuiGraphicsExtractor, x: Int, y: Int, w: Int, h: Int) {
         if (!flowersOn()) return
         val r = x + w
-        g.fill(r - 22, y - 1, r - 4, y, BRANCH)
-        g.fill(r - 14, y - 2, r - 9, y - 1, BRANCH)
-        pattern(g, BLOSSOM, r - 7, y - 5)
-        pattern(g, BUD, r - 18, y - 4)
-        pattern(g, BUD, r - 25, y)
+        g.fill(r - 30, y + 1, r - 6, y + 2, BRANCH)
+        g.fill(r - 20, y + 2, r - 12, y + 3, BRANCH)
+        pattern(g, BUD, r - 24, y + 2)
+        pattern(g, BUD, r - 33, y)
+        pattern(g, BLOSSOM, r - 21, y - 2)
+        big(g, r - 11, y - 3, 1.6f)
+        pattern(g, BLOSSOM, x - 4, y + h - 5)
     }
 
     /** Blossoms on the corners of the container frame and a branch along its top edge. */
@@ -80,10 +91,12 @@ object Sakura {
         g.fill(bx, t - 6, bx + 46, t - 5, BRANCH)
         g.fill(bx + 20, t - 8, bx + 30, t - 7, BRANCH)
         pattern(g, BUD, bx + 14, t - 9)
-        pattern(g, BLOSSOM, bx + 28, t - 13)
+        big(g, bx + 26, t - 16, 1.8f)
+        pattern(g, BLOSSOM, bx + 52, t - 12)
+        g.fill(bx + 46, t - 6, bx + 60, t - 5, BRANCH)
         pattern(g, BUD, bx + 42, t - 8)
-        pattern(g, BLOSSOM, l - 5, t - 5)
-        pattern(g, BLOSSOM, r - 4, t - 5)
+        big(g, l - 7, t - 7, 1.6f)
+        big(g, r - 7, t - 7, 1.6f)
         pattern(g, BLOSSOM, l - 5, b - 4)
         pattern(g, BLOSSOM, r - 4, b - 4)
     }
@@ -94,7 +107,7 @@ object Sakura {
         val w = g.guiWidth()
         val h = g.guiHeight()
         val t = System.currentTimeMillis() / 1000.0
-        for (i in 0 until 28) {
+        for (i in 0 until 40) {
             val seed = (i * 7919 + 13) % 1000 / 1000.0
             val speed = 14 + (i * 37 % 19)
             val baseX = ((i * 0.618034) % 1.0) * w
