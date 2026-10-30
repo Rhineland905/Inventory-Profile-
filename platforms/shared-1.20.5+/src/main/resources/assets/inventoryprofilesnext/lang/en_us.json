@@ -1,4 +1,6 @@
 {
+    "inventoryprofiles.config.name.open_hud_editor": "Open HUD Panel Editor",
+    "inventoryprofiles.config.description.open_hud_editor": "Opens the editor where you drag and resize the info panels. Positions are saved.",
     "inventoryprofiles.config.name.sakura_flowers": "Sakura Flowers on Panels",
     "inventoryprofiles.config.description.sakura_flowers": "Draws cherry blossoms on the info panels and the container frame. Purely visual.",
     "inventoryprofiles.config.name.sakura_petals": "Falling Sakura Petals",

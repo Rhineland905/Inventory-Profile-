@@ -43,7 +43,8 @@ object DurabilityPanel : HudPanel(
                   { DurabilityHudSettings.DURABILITY_HUD_SCALE.integerValue }, { DurabilityHudSettings.DURABILITY_HUD_SCALE.value = it },
                   { DurabilityHudSettings.DURABILITY_HUD_HORIZONTAL.booleanValue },
                   { DurabilityHudSettings.DURABILITY_HUD_SHOW_BACKGROUND.booleanValue },
-                  { DurabilityHudSettings.DURABILITY_HUD_SHOW_BAR.booleanValue }),
+                  { DurabilityHudSettings.DURABILITY_HUD_SHOW_BAR.booleanValue },
+                  setCorner = { DurabilityHudSettings.DURABILITY_HUD_POSITION.value = it }),
         "inventoryprofiles.gui.config.DurabilityHudSettings") {
 
     private val handSlots = listOf(EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND)
@@ -100,7 +101,8 @@ object ItemCounterPanel : HudPanel(
                   { ExtraHudSettings.ITEM_COUNTER_OFFSET_X.integerValue }, { ExtraHudSettings.ITEM_COUNTER_OFFSET_X.value = it },
                   { ExtraHudSettings.ITEM_COUNTER_OFFSET_Y.integerValue }, { ExtraHudSettings.ITEM_COUNTER_OFFSET_Y.value = it },
                   { ExtraHudSettings.ITEM_COUNTER_SCALE.integerValue }, { ExtraHudSettings.ITEM_COUNTER_SCALE.value = it },
-                  { ExtraHudSettings.ITEM_COUNTER_HORIZONTAL.booleanValue }),
+                  { ExtraHudSettings.ITEM_COUNTER_HORIZONTAL.booleanValue },
+                  setCorner = { ExtraHudSettings.ITEM_COUNTER_POSITION.value = it }),
         "inventoryprofiles.config.category.extra_hud.item_counter") {
 
     override fun enabled() = ExtraHudSettings.ITEM_COUNTER_ENABLED.booleanValue
@@ -167,7 +169,8 @@ object EffectsPanel : HudPanel(
                   { ExtraHudSettings.EFFECTS_HUD_OFFSET_X.integerValue }, { ExtraHudSettings.EFFECTS_HUD_OFFSET_X.value = it },
                   { ExtraHudSettings.EFFECTS_HUD_OFFSET_Y.integerValue }, { ExtraHudSettings.EFFECTS_HUD_OFFSET_Y.value = it },
                   { ExtraHudSettings.EFFECTS_HUD_SCALE.integerValue }, { ExtraHudSettings.EFFECTS_HUD_SCALE.value = it },
-                  { ExtraHudSettings.EFFECTS_HUD_HORIZONTAL.booleanValue }),
+                  { ExtraHudSettings.EFFECTS_HUD_HORIZONTAL.booleanValue },
+                  setCorner = { ExtraHudSettings.EFFECTS_HUD_POSITION.value = it }),
         "inventoryprofiles.config.category.extra_hud.effects") {
 
     override fun enabled() = ExtraHudSettings.EFFECTS_HUD_ENABLED.booleanValue
@@ -202,7 +205,8 @@ object ClockPanel : HudPanel(
         Placement({ ExtraHudSettings.CLOCK_HUD_POSITION.value },
                   { ExtraHudSettings.CLOCK_HUD_OFFSET_X.integerValue }, { ExtraHudSettings.CLOCK_HUD_OFFSET_X.value = it },
                   { ExtraHudSettings.CLOCK_HUD_OFFSET_Y.integerValue }, { ExtraHudSettings.CLOCK_HUD_OFFSET_Y.value = it },
-                  { ExtraHudSettings.CLOCK_HUD_SCALE.integerValue }, { ExtraHudSettings.CLOCK_HUD_SCALE.value = it }),
+                  { ExtraHudSettings.CLOCK_HUD_SCALE.integerValue }, { ExtraHudSettings.CLOCK_HUD_SCALE.value = it },
+                  setCorner = { ExtraHudSettings.CLOCK_HUD_POSITION.value = it }),
         "inventoryprofiles.config.category.extra_hud.clock") {
 
     override fun enabled() = ExtraHudSettings.CLOCK_HUD_ENABLED.booleanValue

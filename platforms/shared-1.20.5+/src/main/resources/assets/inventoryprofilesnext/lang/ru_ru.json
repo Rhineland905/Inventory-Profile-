@@ -1,4 +1,6 @@
 {
+    "inventoryprofiles.config.name.open_hud_editor": "Открыть редактор панелей",
+    "inventoryprofiles.config.description.open_hud_editor": "Открывает редактор, где панели можно двигать и менять их размер. Положение сохраняется.",
     "inventoryprofiles.config.name.sakura_flowers": "Цветы сакуры на панелях",
     "inventoryprofiles.config.description.sakura_flowers": "Рисует цветы сакуры на панелях и рамке сундуков. Только внешний вид.",
     "inventoryprofiles.config.name.sakura_petals": "Падающие лепестки сакуры",

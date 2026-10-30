@@ -60,6 +60,10 @@ object InputHandler : IInputHandler {
                     CustomDataFileLoader.reload(true)
                 }
             }
+            if (Hotkeys.OPEN_HUD_EDITOR.isActivated() && VanillaUtil.inGame()) {
+                org.anti_ad.mc.ipnext.config.EditDurabilityHudButtonInfo.open?.invoke()
+                return true
+            }
             if (Hotkeys.OPEN_GUI_EDITOR.isActivated()) {
                 ContainerScreenEventHandler.showEditor()
                 return true
