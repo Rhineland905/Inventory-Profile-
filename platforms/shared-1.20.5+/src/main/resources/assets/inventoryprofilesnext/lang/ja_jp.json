@@ -1,4 +1,8 @@
 {
+    "inventoryprofiles.config.name.sakura_flowers": "パネルに桜",
+    "inventoryprofiles.config.description.sakura_flowers": "情報パネルとコンテナの枠に桜の花を描きます。見た目だけです。",
+    "inventoryprofiles.config.name.sakura_petals": "桜吹雪",
+    "inventoryprofiles.config.description.sakura_petals": "開いたチェストやインベントリの周りに桜の花びらが舞います。見た目だけです。",
     "inventoryprofiles.gui.config.ExtraHudSettings": "情報パネル",
     "inventoryprofiles.config.category.extra_hud.editor": "Editor",
     "inventoryprofiles.config.category.extra_hud.item_counter": "Item Counter",

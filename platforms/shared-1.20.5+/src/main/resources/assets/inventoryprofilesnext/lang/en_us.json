@@ -1,4 +1,8 @@
 {
+    "inventoryprofiles.config.name.sakura_flowers": "Sakura Flowers on Panels",
+    "inventoryprofiles.config.description.sakura_flowers": "Draws cherry blossoms on the info panels and the container frame. Purely visual.",
+    "inventoryprofiles.config.name.sakura_petals": "Falling Sakura Petals",
+    "inventoryprofiles.config.description.sakura_petals": "Cherry petals drift around open chests and inventories. Purely visual.",
     "inventoryprofiles.gui.config.ExtraHudSettings": "Info Panels",
     "inventoryprofiles.config.category.extra_hud.editor": "Editor",
     "inventoryprofiles.config.category.extra_hud.item_counter": "Item Counter",

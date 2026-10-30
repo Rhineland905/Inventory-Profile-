@@ -48,6 +48,7 @@ class DurabilityHudEditorScreen(private val parent: Screen?) :
 
     override fun extractBackground(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         graphics.fill(0, 0, width, height, 0x40000000)
+        Sakura.petals(graphics, 0, 0, -1, -1)
     }
 
     override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
