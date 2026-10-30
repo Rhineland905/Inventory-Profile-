@@ -272,7 +272,7 @@ object LowDurabilityAlert {
         val font = Minecraft.getInstance().font
         val w = font.width(text) + 16
         val x = (graphics.guiWidth() - w) / 2
-        val y = graphics.guiHeight() / 4
+        val y = graphics.guiHeight() - 92 // above the hotbar, clear of toasts
         graphics.fill(x, y, x + w, y + 18, Jp.URUSHI_BG)
         graphics.outline(x, y, w, 18, Jp.SHU_RED)
         graphics.fill(x + 1, y + 1, x + w - 1, y + 3, Jp.KIN_GOLD)
