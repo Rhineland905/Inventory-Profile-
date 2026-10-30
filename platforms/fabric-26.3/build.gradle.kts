@@ -208,17 +208,14 @@ fabricApi {
         createSourceSet = true
         modId = "ipn-gametest"
         enableGameTests = false
-        enableClientGameTests = true
+        enableClientGameTests = false
         eula = true
     }
 }
 
-// The game test run gets --username twice; drop the "--username=DEV" form.
-tasks.matching { it.name == "runClientGameTest" }.configureEach {
-    val exec = this as JavaExec
-    exec.doFirst {
-        val cleaned = (exec.args ?: emptyList()).filterNot { it.startsWith("--username=") }
-        exec.setArgs(cleaned)
-        println("clientGameTest args: ${exec.args}")
-    }
+extensions.getByType<net.fabricmc.loom.api.LoomGradleExtensionAPI>().runs.create("ipnShots") {
+    client()
+    source(sourceSets.getByName("gametest"))
+    property("fabric.client.gametest")
+    runDir("build/run/ipnShots")
 }

@@ -22,7 +22,7 @@ jobs:
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
           SDL_VIDEODRIVER: x11
-        run: timeout 1500 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew :platforms:fabric-26.3:runClientGameTest --stacktrace 2>&1 | tee gametest.log; echo "exit ${PIPESTATUS[0]}"
+        run: timeout 1500 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew :platforms:fabric-26.3:runIpnShots --stacktrace 2>&1 | tee gametest.log; echo "exit ${PIPESTATUS[0]}"
       - name: Collect
         if: always()
         run: |
