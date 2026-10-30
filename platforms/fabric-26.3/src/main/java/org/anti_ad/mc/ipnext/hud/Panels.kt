@@ -283,6 +283,7 @@ object LowDurabilityAlert {
 /** Gold frame with a vermilion stripe around chests and other containers. Decoration only. */
 object JpContainerFrame {
     fun draw(graphics: net.minecraft.client.gui.GuiGraphicsExtractor, x: Int, y: Int, w: Int, h: Int) {
+        Sakura.petals(graphics, x - 8, y - 14, x + w + 8, y + h + 8)
         if (!ExtraHudSettings.CONTAINER_JAPANESE_FRAME.booleanValue) return
         val l = x - 3
         val t = y - 3
@@ -292,9 +293,13 @@ object JpContainerFrame {
         graphics.outline(l + 1, t + 1, r - l - 2, b - t - 2, 0xFF3A2A12.toInt())
         graphics.fill(l + 6, t - 3, r - 6, t, Jp.SHU_RED)
         graphics.fill(l + 6, t - 4, r - 6, t - 3, Jp.KIN_GOLD)
-        for ((cx, cy) in listOf(l to t, r to t, l to b, r to b)) {
-            graphics.fill(cx - 3, cy - 3, cx + 3, cy + 3, Jp.KIN_GOLD)
-            graphics.fill(cx - 1, cy - 1, cx + 1, cy + 1, Jp.SHU_RED)
+        if (Sakura.flowersOn()) {
+            Sakura.frame(graphics, l, t, r, b)
+        } else {
+            for ((cx, cy) in listOf(l to t, r to t, l to b, r to b)) {
+                graphics.fill(cx - 3, cy - 3, cx + 3, cy + 3, Jp.KIN_GOLD)
+                graphics.fill(cx - 1, cy - 1, cx + 1, cy + 1, Jp.SHU_RED)
+            }
         }
     }
 }

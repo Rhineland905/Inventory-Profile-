@@ -1,4 +1,8 @@
 {
+    "inventoryprofiles.config.name.sakura_flowers": "Цветы сакуры на панелях",
+    "inventoryprofiles.config.description.sakura_flowers": "Рисует цветы сакуры на панелях и рамке сундуков. Только внешний вид.",
+    "inventoryprofiles.config.name.sakura_petals": "Падающие лепестки сакуры",
+    "inventoryprofiles.config.description.sakura_petals": "Лепестки сакуры летят вокруг открытого сундука или инвентаря. Только внешний вид.",
     "inventoryprofiles.gui.config.ExtraHudSettings": "Инфо-панели",
     "inventoryprofiles.config.category.extra_hud.editor": "Редактор",
     "inventoryprofiles.config.category.extra_hud.item_counter": "Счётчик предметов",

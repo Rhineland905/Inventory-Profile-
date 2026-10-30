@@ -314,6 +314,8 @@ object ExtraHudSettings : ConfigDeclaration {
         .CATEGORY("§§vgap:3")
         .CATEGORY("$category.extra_hud.theme")
     val CONTAINER_JAPANESE_FRAME                  /**/ by bool(true)
+    val SAKURA_FLOWERS                            /**/ by bool(true)
+    val SAKURA_PETALS                             /**/ by bool(true)
 }
 
 object AutoRefillSettings : ConfigDeclaration {
