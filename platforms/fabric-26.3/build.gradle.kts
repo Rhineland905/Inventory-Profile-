@@ -218,6 +218,7 @@ afterEvaluate {
     extensions.getByType<net.fabricmc.loom.api.LoomGradleExtensionAPI>().runs.findByName("clientGameTest")?.let { rc ->
         val args = rc.programArgs
         for (opt in listOf("--username", "--uuid", "--accessToken")) {
+            if (args.contains(opt)) args.removeAll { it.startsWith("$opt=") }
             while (args.count { it == opt } > 1) {
                 val i = args.indexOf(opt)
                 args.removeAt(i)
