@@ -56,6 +56,13 @@ public abstract class MixinContainerScreen<T extends AbstractContainerMenu> exte
         super(minecraft, font, title);
     }
 
+    @Inject(at = @At("HEAD"), method = "extractContents")
+    public void onJapaneseFrame(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+        IMixinContainerScreen screen = (IMixinContainerScreen) this;
+        org.anti_ad.mc.ipnext.hud.JpContainerFrame.INSTANCE.draw(graphics, screen.getContainerX(), screen.getContainerY(),
+                                                                 screen.getContainerWidth(), screen.getContainerHeight());
+    }
+
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;extractSlotHighlightBack(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
             shift = At.Shift.AFTER), method = "extractContents")
     public void onBackgroundRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
