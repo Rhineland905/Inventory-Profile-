@@ -258,6 +258,7 @@ object DurabilityHudSettings : ConfigDeclaration {
     val DURABILITY_HUD_ONLY_DAMAGEABLE            /**/ by bool(true)
         .CATEGORY("§§vgap:3")
         .CATEGORY("$category.durability_hud.look")
+    val DURABILITY_HUD_EDIT                       /**/ by button(EditDurabilityHudButtonInfo)
     val DURABILITY_HUD_POSITION                   /**/ by enum(DurabilityHudCorner.BOTTOM_RIGHT)
     val DURABILITY_HUD_OFFSET_X                   /**/ by int(4, -2000, 2000)
     val DURABILITY_HUD_OFFSET_Y                   /**/ by int(4, -2000, 2000)

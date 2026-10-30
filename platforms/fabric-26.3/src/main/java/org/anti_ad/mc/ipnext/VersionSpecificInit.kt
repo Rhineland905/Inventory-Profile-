@@ -21,5 +21,6 @@ package org.anti_ad.mc.ipnext
 
 
 fun specificInit() {
+    org.anti_ad.mc.ipnext.config.EditDurabilityHudButtonInfo.open = { org.anti_ad.mc.ipnext.hud.DurabilityHudEditorScreen.open() }
 
 }

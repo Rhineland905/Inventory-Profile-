@@ -1,4 +1,9 @@
 {
+    "inventoryprofiles.config.name.durability_hud_edit": "Настроить на экране",
+    "inventoryprofiles.config.description.durability_hud_edit": "Открывает редактор: HUD можно тащить мышкой и менять размер колёсиком.",
+    "inventoryprofiles.gui.config.button.edit_durability_hud": "Двигать и менять размер на экране...",
+    "inventoryprofiles.gui.durability_hud_editor.help": "Тяни мышкой, чтобы двигать  |  Колёсико или золотой уголок меняют размер  |  R: сброс  |  Esc: готово",
+    "inventoryprofiles.gui.durability_hud_editor.title": "Редактор HUD прочности",
     "inventoryprofiles.gui.config.DurabilityHudSettings": "HUD прочности",
     "inventoryprofiles.config.category.durability_hud.general": "Основное",
     "inventoryprofiles.config.category.durability_hud.look": "Вид и положение",

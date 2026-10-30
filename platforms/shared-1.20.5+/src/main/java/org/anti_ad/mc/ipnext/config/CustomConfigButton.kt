@@ -122,3 +122,15 @@ object OpenProfilesConfigButtonInfo : ConfigButtonInfo() {
         }
     }
 }
+
+/** Opens the on-screen editor for the durability HUD. The platform module sets [open]. */
+object EditDurabilityHudButtonInfo : ConfigButtonInfo() {
+    var open: (() -> Unit)? = null
+
+    override val buttonText: String
+        get() = I18n.translate("inventoryprofiles.gui.config.button.edit_durability_hud")
+
+    override fun onClick(widget: CustomButtonWidget) {
+        open?.invoke()
+    }
+}
