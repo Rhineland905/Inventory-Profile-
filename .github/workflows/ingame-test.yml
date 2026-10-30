@@ -1,0 +1,40 @@
+name: In-game test
+on:
+  push:
+    branches: [ingame-test]
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: sudo apt-get update -q && sudo apt-get install -yq xvfb advancecomp mesa-utils libgl1-mesa-dri
+      - run: sed -i '/include("platforms:/{/fabric-26.3/!d}' settings.gradle.kts
+      - name: Run client game test
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: timeout 1500 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew :platforms:fabric-26.3:runClientGameTest --stacktrace 2>&1 | tee gametest.log; echo "exit ${PIPESTATUS[0]}"
+      - name: Collect
+        if: always()
+        run: |
+          mkdir -p out
+          find . -path ./out -prune -o -name '*.png' -path '*screenshot*' -print -exec cp {} out/ \;
+          find . -path ./out -prune -o -name 'latest.log' -print -exec cp {} out/latest.log \;
+          tail -300 gametest.log > out/gradle-tail.log || true
+          ls -la out
+      - uses: softprops/action-gh-release@v2
+        if: always()
+        with:
+          tag_name: ingame-test-shots
+          name: In-game test screenshots
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          files: out/*

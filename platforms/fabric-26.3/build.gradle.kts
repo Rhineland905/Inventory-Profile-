@@ -201,3 +201,14 @@ afterEvaluate {
         }
     }
 }
+
+// In-game screenshot test (branch ingame-test only)
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "ipn-gametest"
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
+}
