@@ -247,6 +247,29 @@ object SortSettings : ConfigDeclaration {
 
 }
 
+object DurabilityHudSettings : ConfigDeclaration {
+
+    override val builder = createBuilder()
+        .CATEGORY("§§vgap:3")
+        .CATEGORY("$category.durability_hud.general")
+    val DURABILITY_HUD_ENABLED                    /**/ by keyToggleBool(ConfigScreenSettings, true)
+    val DURABILITY_HUD_SHOW_HANDS                 /**/ by bool(true)
+    val DURABILITY_HUD_SHOW_ARMOR                 /**/ by bool(true)
+    val DURABILITY_HUD_ONLY_DAMAGEABLE            /**/ by bool(true)
+        .CATEGORY("§§vgap:3")
+        .CATEGORY("$category.durability_hud.look")
+    val DURABILITY_HUD_POSITION                   /**/ by enum(DurabilityHudCorner.BOTTOM_RIGHT)
+    val DURABILITY_HUD_OFFSET_X                   /**/ by int(4, -2000, 2000)
+    val DURABILITY_HUD_OFFSET_Y                   /**/ by int(4, -2000, 2000)
+    val DURABILITY_HUD_SCALE                      /**/ by int(100, 50, 300)
+    val DURABILITY_HUD_HORIZONTAL                 /**/ by bool(false)
+    val DURABILITY_HUD_TEXT                       /**/ by enum(DurabilityHudText.PERCENT)
+    val DURABILITY_HUD_SHOW_BAR                   /**/ by bool(true)
+    val DURABILITY_HUD_SHOW_BACKGROUND            /**/ by bool(true)
+    val DURABILITY_HUD_WARN_PERCENT               /**/ by int(20, 0, 100)
+    val DURABILITY_HUD_WARN_BLINK                 /**/ by bool(true)
+}
+
 object AutoRefillSettings : ConfigDeclaration {
 
     override val builder = createBuilder()

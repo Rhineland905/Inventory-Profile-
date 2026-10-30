@@ -44,6 +44,7 @@ object ConfigScreenSettings: BaseConfigScreenSettings() {
                SortSettings,
                LockedSlotsSettings,
                AutoRefillSettings,
+               DurabilityHudSettings,
                EditProfiles,
                ScrollSettings,
                Hotkeys,

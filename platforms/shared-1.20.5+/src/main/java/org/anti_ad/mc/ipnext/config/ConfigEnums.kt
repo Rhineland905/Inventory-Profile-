@@ -129,3 +129,22 @@ enum class CreativeMenuSortOrder {
     override fun toString(): String =
             I18n.translate("$ENUM.creative_menu_sort_order.${name.lowercase()}")
 }
+
+enum class DurabilityHudCorner {
+    TOP_LEFT,
+    TOP_RIGHT,
+    BOTTOM_LEFT,
+    BOTTOM_RIGHT,
+    NEXT_TO_HOTBAR;
+    override fun toString(): String =
+            I18n.translate("$ENUM.durability_hud_corner.${name.lowercase()}")
+}
+
+enum class DurabilityHudText {
+    PERCENT,
+    NUMBERS,
+    BOTH,
+    NONE;
+    override fun toString(): String =
+            I18n.translate("$ENUM.durability_hud_text.${name.lowercase()}")
+}

@@ -27,6 +27,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import org.anti_ad.mc.common.gui.NativeContext;
 import org.anti_ad.mc.ipnext.event.autorefill.AutoRefillHandler;
 import org.anti_ad.mc.ipnext.event.LockSlotsHandler;
+import org.anti_ad.mc.ipnext.hud.DurabilityHud;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -55,6 +56,7 @@ public class MixinInGameHud {
         var context = new NativeContext(graphics);
         LockSlotsHandler.INSTANCE.postRenderHud(context);
         AutoRefillHandler.INSTANCE.postRenderHud(context);
+        DurabilityHud.INSTANCE.render(graphics);
 
     }
 }
