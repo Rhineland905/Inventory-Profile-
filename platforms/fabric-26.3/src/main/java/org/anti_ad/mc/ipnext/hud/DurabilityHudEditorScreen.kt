@@ -68,7 +68,7 @@ class DurabilityHudEditorScreen(private val parent: Screen?) :
             x >= l.x + l.width - 5 && x <= l.x + l.width + 5 && y >= l.y + l.height - 5 && y <= l.y + l.height + 5
 
     override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
-        val l = last ?: DurabilityHud.layout(width, height)
+        val l = DurabilityHud.layout(width, height)
         if (event.button() == 0) {
             if (onHandle(l, event.x(), event.y())) {
                 mode = Mode.RESIZE
@@ -84,7 +84,7 @@ class DurabilityHudEditorScreen(private val parent: Screen?) :
     }
 
     override fun mouseDragged(event: MouseButtonEvent, dx: Double, dy: Double): Boolean {
-        val l = last ?: DurabilityHud.layout(width, height)
+        val l = DurabilityHud.layout(width, height)
         when (mode) {
             Mode.MOVE   -> {
                 val nx = (event.x() - grabDx).roundToInt().coerceIn(0, maxOf(0, width - l.width))
@@ -110,7 +110,7 @@ class DurabilityHudEditorScreen(private val parent: Screen?) :
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontal: Double, vertical: Double): Boolean {
-        val l = last ?: DurabilityHud.layout(width, height)
+        val l = DurabilityHud.layout(width, height)
         if (vertical != 0.0) {
             val step = if (vertical > 0) 10 else -10
             resizeKeepingTopLeft(l, DurabilityHudSettings.DURABILITY_HUD_SCALE.integerValue + step)
