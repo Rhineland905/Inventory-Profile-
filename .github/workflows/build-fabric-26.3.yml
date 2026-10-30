@@ -19,5 +19,6 @@ jobs:
         run: |
           set +e
           MC=$(find ~/.gradle .gradle -name '*.jar' 2>/dev/null | grep -iE 'minecraft-(clientOnly|merged|client)' | grep -v sources | head -1)
-          for c in net.minecraft.client.gui.screens.Screen net.minecraft.client.gui.components.events.GuiEventListener net.minecraft.client.input.MouseButtonEvent net.minecraft.client.input.KeyEvent net.minecraft.client.input.MouseButtonInfo; do echo "#### $c"; javap -cp "$MC" $c | grep -v 'lambda\$'; done
-          unzip -l "$MC" | grep -E 'client/input/' | head -30
+          javap -cp "$MC" net.minecraft.client.Minecraft | grep -iE 'screen|font|public .* gui|player;' 
+          javap -cp "$MC" -p net.minecraft.client.Minecraft | grep -iE ' screen;|setScreen|Screen\)'
+          javap -cp "$MC" net.minecraft.client.gui.Hud | grep -i screen
