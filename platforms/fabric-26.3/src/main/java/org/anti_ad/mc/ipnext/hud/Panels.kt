@@ -221,7 +221,7 @@ object ClockPanel : HudPanel(
 
     override fun rows(): List<Row> {
         val level = Minecraft.getInstance().level ?: return emptyList()
-        return rowsFor(level.dayTime)
+        return rowsFor(level.overworldClockTime)
     }
 
     override fun demoRows(): List<Row> = rowsFor(30000)
