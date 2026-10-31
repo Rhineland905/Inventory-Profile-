@@ -3,7 +3,7 @@
   "id": "portalbreaker",
   "version": "${version}",
   "name": "Portal Breaker",
-  "description": "Lets you break the reinforced deepslate frame of the Ancient City portal. Hit one block with a pickaxe and the whole connected frame breaks; you get the blocks. Sneak to break only one block. Works in singleplayer, or on a server that has the mod installed.",
+  "description": "Break the chosen block (default: reinforced deepslate of the Ancient City portal) by hitting it with a pickaxe. /pb block <block> picks the block, /pb area <radius> or /pb area connected picks the area. Sneak to break one block. Singleplayer, or servers with the mod.",
   "authors": ["Rhineland905"],
   "license": "MIT",
   "environment": "*",

@@ -27,4 +27,4 @@ jobs:
           name: Portal Breaker for Fabric 26.3
           draft: true
           target_commitish: ${{ github.sha }}
-          files: portal-breaker/build/libs/portal-breaker-1.0.0.jar
+          files: portal-breaker/build/libs/portal-breaker-*.jar
