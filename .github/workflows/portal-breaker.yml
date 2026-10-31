@@ -1,0 +1,30 @@
+name: Build Portal Breaker
+on:
+  push:
+    paths: ['portal-breaker/**', '.github/workflows/portal-breaker.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: portal-breaker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew && ./gradlew build --stacktrace
+      - run: ls -la build/libs/
+      # Draft release: not public, only used to hand the jar over.
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: portal-breaker-26.3
+          name: Portal Breaker for Fabric 26.3
+          draft: true
+          target_commitish: ${{ github.sha }}
+          files: portal-breaker/build/libs/portal-breaker-1.0.0.jar

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "portalbreaker",
+  "version": "${version}",
+  "name": "Portal Breaker",
+  "description": "Lets you break the reinforced deepslate frame of the Ancient City portal. Hit one block with a pickaxe and the whole connected frame breaks; you get the blocks. Sneak to break only one block. Works in singleplayer, or on a server that has the mod installed.",
+  "authors": ["Rhineland905"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.portalbreaker.PortalBreaker"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~26.3",
+    "java": ">=25"
+  }
+}
