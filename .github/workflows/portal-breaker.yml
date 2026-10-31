@@ -22,11 +22,9 @@ jobs:
       - name: API hints on failure
         if: failure()
         run: |
-          for j in $(find ~/.gradle/caches -name '*.jar' | grep -iE 'key-?binding|minecraft-(client|merged)' | head -20); do
-            echo "== $j"; unzip -l "$j" | grep -iE 'keybinding|KeyMapping|gui/components/(Button|EditBox)\.class|GuiGraphicsExtractor' | head -20
+          for j in $(find ~/.gradle/caches -name 'fabric-*key*.jar' | grep -v sources | head -5); do
+            echo "== $j"; unzip -l "$j" | grep -E 'api/.*\.class' | head -20
           done
-          J=$(find ~/.gradle/caches -name 'minecraft-*.jar' | grep -iE 'client|merged' | grep -v sources | head -1)
-          [ -n "$J" ] && for c in net.minecraft.client.KeyMapping 'net.minecraft.client.KeyMapping$Category' net.minecraft.client.gui.GuiGraphicsExtractor net.minecraft.client.gui.components.EditBox; do javap -cp "$J" -public "$c" | head -60; done || true
       - run: ls -la build/libs/
       # Draft release: not public, only used to hand the jar over.
       - uses: softprops/action-gh-release@v2
