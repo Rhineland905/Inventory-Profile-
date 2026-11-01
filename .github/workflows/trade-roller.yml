@@ -1,0 +1,45 @@
+name: Build Trade Roller
+on:
+  push:
+    paths: ['trade-roller/**', '.github/workflows/trade-roller.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: trade-roller
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew && ./gradlew build --stacktrace
+      - name: API hints on failure
+        if: failure()
+        run: |
+          JAR=""
+          for j in $(find ~/.gradle/caches .gradle -name '*.jar' 2>/dev/null | grep -i minecraft | grep -v sources); do
+            if unzip -l "$j" | grep -q 'net/minecraft/client/multiplayer/MultiPlayerGameMode.class'; then JAR="$j"; break; fi
+          done
+          echo "JAR=$JAR"
+          for c in net.minecraft.client.multiplayer.MultiPlayerGameMode net.minecraft.client.gui.Gui \
+                   net.minecraft.client.gui.components.ChatComponent net.minecraft.world.entity.player.Inventory \
+                   net.minecraft.world.entity.npc.villager.VillagerData net.minecraft.world.entity.npc.villager.VillagerProfession \
+                   net.minecraft.world.item.trading.MerchantOffer net.minecraft.world.item.enchantment.ItemEnchantments \
+                   net.minecraft.client.player.LocalPlayer net.minecraft.client.gui.screens.Screen; do
+            javap -cp "$JAR" -public "$c" || true
+          done
+      - run: ls -la build/libs/
+      # Draft release: not public, only used to hand the jar over.
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: trade-roller-26.3
+          name: Trade Roller for Fabric 26.3
+          draft: true
+          target_commitish: ${{ github.sha }}
+          files: trade-roller/build/libs/trade-roller-*.jar

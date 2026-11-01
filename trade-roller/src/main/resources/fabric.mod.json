@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "traderoller",
+  "version": "${version}",
+  "name": "Trade Roller",
+  "description": "Rerolls a villager's trades: breaks and puts back the workstation until the chosen trade (for example a Mending book) appears. U = settings, J = start/stop while looking at the workstation.",
+  "authors": [
+    "Rhineland905"
+  ],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.traderoller.TradeRollerClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~26.3",
+    "java": ">=25"
+  }
+}
