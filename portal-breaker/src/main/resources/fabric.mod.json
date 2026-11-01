@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "portalbreaker",
+  "version": "${version}",
+  "name": "Portal Breaker",
+  "description": "Break the chosen block (default: reinforced deepslate of the Ancient City portal) by hitting it with a pickaxe. Press K to pick the block and the area. Sneak to break one block. Singleplayer, or servers with the mod.",
+  "authors": [
+    "Rhineland905"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.portalbreaker.PortalBreaker"
+    ],
+    "client": [
+      "dev.portalbreaker.PortalBreakerClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~26.3",
+    "java": ">=25"
+  }
+}
