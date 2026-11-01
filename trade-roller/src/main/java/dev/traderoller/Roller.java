@@ -28,6 +28,7 @@ import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -121,7 +122,7 @@ public final class Roller {
             return;
         }
         // Pause while another screen (menu, inventory, chat) is open.
-        if (mc.screen != null && !(state == State.READ && mc.screen instanceof MerchantScreen)) return;
+        if (mc.gui.screen() != null && !(state == State.READ && mc.gui.screen() instanceof MerchantScreen)) return;
 
         if (player.position().distanceTo(Vec3.atCenterOf(station)) > 6) {
             stop(mc, Component.literal("Ты отошёл слишком далеко: перебор остановлен.").withStyle(ChatFormatting.RED));
@@ -144,7 +145,6 @@ public final class Roller {
                 }
                 if (timer == 1) selectBestTool(player, bs);
                 mc.gameMode.continueDestroyBlock(station, Direction.UP);
-                player.swing(InteractionHand.MAIN_HAND);
                 if (timer > 400) stop(mc, Component.literal("Не получается сломать блок.").withStyle(ChatFormatting.RED));
             }
             case WAIT_LOSE -> {
@@ -178,7 +178,6 @@ public final class Roller {
                 BlockPos below = station.below();
                 BlockHitResult place = new BlockHitResult(Vec3.atCenterOf(below).add(0, 0.5, 0), Direction.UP, below, false);
                 mc.gameMode.useItemOn(player, InteractionHand.MAIN_HAND, place);
-                player.swing(InteractionHand.MAIN_HAND);
             }
             case WAIT_JOB -> {
                 if (mc.level.getBlockState(station).isAir()) {
@@ -200,11 +199,11 @@ public final class Roller {
                     overlay(mc, "Подойди ближе к жителю");
                     return;
                 }
-                mc.gameMode.interact(player, villager, InteractionHand.MAIN_HAND);
+                mc.gameMode.interact(player, villager, new EntityHitResult(villager, villager.getBoundingBox().getCenter()), InteractionHand.MAIN_HAND);
                 go(State.READ);
             }
             case READ -> {
-                if (mc.screen instanceof MerchantScreen screen) {
+                if (mc.gui.screen() instanceof MerchantScreen screen) {
                     MerchantOffers offers = screen.getMenu().getOffers();
                     if (offers.isEmpty()) {
                         if (timer > 60) retryOpen();
@@ -232,7 +231,7 @@ public final class Roller {
     }
 
     private static void retryOpen() {
-        if (Minecraft.getInstance().player != null && Minecraft.getInstance().screen != null) {
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().gui.screen() != null) {
             Minecraft.getInstance().player.closeContainer();
         }
         go(State.OPEN);
@@ -322,10 +321,10 @@ public final class Roller {
     }
 
     private static void say(Minecraft mc, Component text) {
-        mc.gui.getChat().addMessage(Component.literal("[Trade Roller] ").withStyle(ChatFormatting.AQUA).append(text));
+        if (mc.player != null) mc.player.sendSystemMessage(Component.literal("[Trade Roller] ").withStyle(ChatFormatting.AQUA).append(text));
     }
 
     private static void overlay(Minecraft mc, String text) {
-        mc.gui.setOverlayMessage(Component.literal(text), false);
+        if (mc.player != null) mc.player.sendOverlayMessage(Component.literal(text));
     }
 }
