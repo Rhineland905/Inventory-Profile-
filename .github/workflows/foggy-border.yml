@@ -31,7 +31,7 @@ jobs:
           javap -cp "$JAR" -p -c net.minecraft.client.renderer.fog.FogRenderer || true
           for c in net.minecraft.client.renderer.fog.FogData net.minecraft.client.renderer.chunk.SectionCopy \
                    net.minecraft.client.renderer.WorldBorderRenderer net.minecraft.world.level.border.WorldBorder \
-                   net.minecraft.client.Camera net.minecraft.client.renderer.LevelRenderer; do
+                   net.minecraft.client.Minecraft net.minecraft.client.renderer.GameRenderer; do
             javap -cp "$JAR" -p "$c" || true
           done
           javap -cp "$JAR" -p -c net.minecraft.client.renderer.chunk.SectionCopy || true

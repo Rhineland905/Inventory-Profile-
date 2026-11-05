@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** Hides the vanilla blue border wall. */
 @Mixin(WorldBorderRenderer.class)
 public class WorldBorderRendererMixin {
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    @Inject(method = {"render", "renderOit"}, at = @At("HEAD"), cancellable = true)
     private void foggyborder$hideWall(CallbackInfo ci) {
         if (FoggyBorder.config.disableWorldborder) ci.cancel();
     }

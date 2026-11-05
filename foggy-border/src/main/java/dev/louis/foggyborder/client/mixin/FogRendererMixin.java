@@ -22,7 +22,7 @@ public class FogRendererMixin {
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/fog/FogData;renderDistanceEnd:F", ordinal = 0)
     )
     private void foggyborder$modifyFog(Camera camera, int renderDistance, DeltaTracker deltaTracker, float darken, ClientLevel level,
-                                       CallbackInfoReturnable<Vector4f> cir, @Local FogData fogData, @Local Vector4f color) {
+                                       CallbackInfoReturnable<FogData> cir, @Local FogData fogData) {
         if (level == null) return;
         Vec3 pos = camera.position();
         double distance = level.getWorldBorder().getDistanceToBorder(pos.x, pos.z);
@@ -31,7 +31,8 @@ public class FogRendererMixin {
                 Math.max(distance * FoggyBorder.config.fogEndDistanceMultiplier, FoggyBorder.config.minimumFogEndDistance),
                 fogData.environmentalEnd);
 
-        if (distance < 32) {
+        Vector4f color = fogData.color;
+        if (distance < 32 && color != null) {
             // Same tint as the original: drop green and blue so the fog turns reddish right at the border.
             float mult = Math.min((float) (distance + 2 / 16f), 1);
             color.y = color.y * mult;
