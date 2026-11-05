@@ -1,0 +1,46 @@
+name: Build Foggy Border
+on:
+  push:
+    paths: ['foggy-border/**', '.github/workflows/foggy-border.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: foggy-border
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew && ./gradlew build --stacktrace
+      - name: API dump
+        if: always()
+        run: |
+          JAR=""
+          for j in $(find ~/.gradle/caches .gradle -name '*.jar' 2>/dev/null | grep -i minecraft | grep -v sources); do
+            if unzip -l "$j" | grep -q 'net/minecraft/client/renderer/fog/FogRenderer.class'; then JAR="$j"; break; fi
+          done
+          echo "JAR=$JAR"
+          unzip -l "$JAR" | grep -iE 'renderer/chunk/|WorldBorder|fog/' || true
+          javap -cp "$JAR" -p -c net.minecraft.client.renderer.fog.FogRenderer || true
+          for c in net.minecraft.client.renderer.fog.FogData net.minecraft.client.renderer.chunk.SectionCopy \
+                   net.minecraft.client.renderer.WorldBorderRenderer net.minecraft.world.level.border.WorldBorder \
+                   net.minecraft.client.Camera net.minecraft.client.renderer.LevelRenderer; do
+            javap -cp "$JAR" -p "$c" || true
+          done
+          javap -cp "$JAR" -p -c net.minecraft.client.renderer.chunk.SectionCopy || true
+      - run: ls -la build/libs/
+      # Draft release: not public, only used to hand the jar over.
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: foggy-border-26.3
+          name: Foggy Border for Fabric 26.3
+          draft: true
+          target_commitish: ${{ github.sha }}
+          files: foggy-border/build/libs/foggy-border-*.jar

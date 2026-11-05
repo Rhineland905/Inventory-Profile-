@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "foggyborder",
+  "version": "${version}",
+  "name": "FoggyBorder",
+  "description": "A thick fog replaces the blue world border lines. Port to Minecraft 26.3. O = settings.",
+  "authors": ["Dev0Louis"],
+  "contributors": ["Rhineland905 (26.3 port)"],
+  "contact": { "sources": "https://github.com/Dev0Louis/FoggyBorder" },
+  "license": "MIT",
+  "environment": "client",
+  "icon": "assets/foggyborder/icon.png",
+  "entrypoints": {
+    "client": ["dev.louis.foggyborder.client.FoggyBorder"]
+  },
+  "mixins": ["foggyborder.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~26.3",
+    "java": ">=25"
+  }
+}
