@@ -36,10 +36,11 @@ jobs:
           done
           javap -cp "$JAR" -p -c net.minecraft.client.renderer.chunk.SectionCopy || true
       - run: ls -la build/libs/
-      - run: sudo apt-get update -q && sudo apt-get install -yq xvfb libglx-mesa0 mesa-utils libgl1-mesa-dri libgl1 libegl1 libx11-6 libxext6 libxrandr2 libxcursor1 libxi6 libxss1 libxinerama1 libxkbcommon0 libxkbcommon-x11-0 libxfixes3 || true
+      - run: sudo apt-get update -q && sudo apt-get install -yq xvfb libglx-mesa0 mesa-vulkan-drivers advancecomp mesa-utils libgl1-mesa-dri libgl1 libegl1 libx11-6 libxext6 libxrandr2 libxcursor1 libxi6 libxss1 libxinerama1 libxkbcommon0 libxkbcommon-x11-0 libxfixes3 libdecor-0-0 libwayland-client0 || true
       - name: In-game test
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
+          SDL_VIDEODRIVER: x11
           MESA_GL_VERSION_OVERRIDE: "4.6"
           MESA_GLSL_VERSION_OVERRIDE: "460"
           GALLIUM_DRIVER: llvmpipe
