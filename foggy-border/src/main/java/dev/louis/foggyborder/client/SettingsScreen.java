@@ -105,7 +105,7 @@ public final class SettingsScreen extends Screen {
         if (FoggyBorder.config.dontRenderBehindBorder != behindAtOpen) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.levelRenderer != null && mc.level != null) {
-                mc.levelRenderer.invalidateCompiledGeometry(mc.level, mc.options, mc.gameRenderer.getMainCamera(), mc.getBlockColors());
+                mc.levelRenderer.invalidateCompiledGeometry(mc.level, mc.options, mc.gameRenderer.mainCamera(), mc.getBlockColors());
             }
         }
         super.onClose();
