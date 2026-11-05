@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "foggyborder-gametest",
+  "version": "1.0.0",
+  "name": "Foggy Border in-game test",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-client-gametest": ["dev.louis.foggyborder.gametest.FoggyBorderShots"]
+  }
+}

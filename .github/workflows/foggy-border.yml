@@ -36,11 +36,31 @@ jobs:
           done
           javap -cp "$JAR" -p -c net.minecraft.client.renderer.chunk.SectionCopy || true
       - run: ls -la build/libs/
+      - run: sudo apt-get update -q && sudo apt-get install -yq xvfb libglx-mesa0 mesa-utils libgl1-mesa-dri libgl1 libegl1 libx11-6 libxext6 libxrandr2 libxcursor1 libxi6 libxss1 libxinerama1 libxkbcommon0 libxkbcommon-x11-0 libxfixes3 || true
+      - name: In-game test
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          MESA_GL_VERSION_OVERRIDE: "4.6"
+          MESA_GLSL_VERSION_OVERRIDE: "460"
+          GALLIUM_DRIVER: llvmpipe
+        run: timeout 900 xvfb-run -a -s "-screen 0 1280x720x24+32 +extension GLX +render -noreset" ./gradlew runClientGameTest --stacktrace 2>&1 | tee gametest.log; echo "exit ${PIPESTATUS[0]}"
+      - name: Collect
+        if: always()
+        run: |
+          mkdir -p out
+          find . -path ./out -prune -o -name '*.png' -path '*screenshot*' -print -exec cp {} out/ \;
+          find . -path ./out -prune -o -name 'latest.log' -print -exec cp {} out/latest.log \;
+          find . -path ./out -prune -o -path '*crash-reports*' -name '*.txt' -print -exec cp {} out/ \;
+          cp gametest.log out/gametest.log || true
+          ls -la out
       # Draft release: not public, only used to hand the jar over.
       - uses: softprops/action-gh-release@v2
+        if: always()
         with:
           tag_name: foggy-border-26.3
           name: Foggy Border for Fabric 26.3
           draft: true
           target_commitish: ${{ github.sha }}
-          files: foggy-border/build/libs/foggy-border-*.jar
+          files: |
+            foggy-border/build/libs/foggy-border-*.jar
+            foggy-border/out/*

@@ -27,3 +27,14 @@ java {
 tasks.withType(JavaCompile).configureEach { it.options.release = 25 }
 
 jar { from('LICENSE') { rename { "${it}_${project.base.archivesName.get()}" } } }
+
+// In-game check (CI only): starts a world next to a small world border and takes screenshots.
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'foggyborder-gametest'
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
+}
