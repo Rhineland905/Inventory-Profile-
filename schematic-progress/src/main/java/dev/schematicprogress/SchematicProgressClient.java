@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +27,9 @@ public final class SchematicProgressClient implements ClientModInitializer {
         } catch (Exception ignored) {}
         WebServer.start();
         KeyMapping open = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.schematicprogress.open", 78 /* N */, KeyMapping.Category.MISC));
+                "key.schematicprogress.open", InputConstants.KEY_N, KeyMapping.Category.MISC));
         KeyMapping origin = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.schematicprogress.origin", -1, KeyMapping.Category.MISC));
+                "key.schematicprogress.origin", InputConstants.UNKNOWN.getValue(), KeyMapping.Category.MISC));
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
             while (open.consumeClick()) openBrowser(mc);
             while (origin.consumeClick()) {

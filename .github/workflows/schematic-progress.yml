@@ -30,9 +30,13 @@ jobs:
           for c in net.minecraft.client.multiplayer.ClientLevel net.minecraft.world.level.Level net.minecraft.world.level.LevelReader \
                    net.minecraft.world.level.block.Block net.minecraft.world.level.block.state.BlockBehaviour\$BlockStateBase \
                    net.minecraft.world.level.material.MapColor net.minecraft.world.entity.player.Inventory \
-                   net.minecraft.client.Minecraft net.minecraft.world.item.ItemStack net.minecraft.core.Registry; do
+                   com.mojang.blaze3d.platform.InputConstants net.minecraft.client.Minecraft net.minecraft.world.item.ItemStack net.minecraft.core.Registry; do
             javap -cp "$JAR" -public "$c" || true
           done
+      - name: Key code check
+        run: |
+          J=$(find ~/.gradle/caches .gradle -name '*.jar' 2>/dev/null | grep -i minecraft | grep -v sources | while read j; do unzip -l "$j" | grep -q 'com/mojang/blaze3d/platform/InputConstants.class' && echo "$j" && break; done)
+          javap -cp "$J" -public -constants com.mojang.blaze3d.platform.InputConstants | grep -E 'KEY_(N|J|U|K|O|UNKNOWN)\b|UNKNOWN' || true
       - run: ls -la build/libs/
       - run: sudo apt-get update -q && sudo apt-get install -yq xvfb libglx-mesa0 mesa-vulkan-drivers mesa-utils libgl1-mesa-dri libgl1 libegl1 libx11-6 libxext6 libxrandr2 libxcursor1 libxi6 libxss1 libxinerama1 libxkbcommon0 libxkbcommon-x11-0 libxfixes3 libdecor-0-0 libwayland-client0 || true
       - name: In-game test
