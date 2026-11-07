@@ -4,6 +4,7 @@ import dev.louis.foggyborder.client.config.Config;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ public class FoggyBorder implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         KeyMapping settings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.foggyborder.settings", 79 /* O */, KeyMapping.Category.MISC));
+                "key.foggyborder.settings", InputConstants.KEY_O, KeyMapping.Category.MISC));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (settings.consumeClick()) {
                 client.setScreenAndShow(new SettingsScreen());
