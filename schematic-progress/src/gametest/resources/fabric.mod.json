@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "schematicprogress-gametest",
+  "version": "1.0.0",
+  "name": "Schematic Progress in-game test",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-client-gametest": ["dev.schematicprogress.gametest.SchematicProgressTest"]
+  }
+}

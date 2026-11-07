@@ -27,3 +27,14 @@ java {
 tasks.withType(JavaCompile).configureEach { it.options.release = 25 }
 
 jar { from('LICENSE') { rename { "${it}_${project.base.archivesName.get()}" } } }
+
+// In-game check (CI only): loads a small schematic over HTTP and saves the dashboard data.
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'schematicprogress-gametest'
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
+}

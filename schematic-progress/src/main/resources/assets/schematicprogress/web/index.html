@@ -40,7 +40,7 @@ button.on { background: #3a4a66; border-color: #5672a3; }
 #map { display: block; image-rendering: pixelated; }
 #tip { position: fixed; pointer-events: none; background: #000d; border: 1px solid var(--line); padding: 5px 8px; border-radius: 6px; font-size: 12px; display: none; z-index: 10; white-space: nowrap; }
 #layers { display: flex; align-items: flex-end; gap: 2px; height: 70px; overflow-x: auto; padding-bottom: 2px; }
-#layers div { flex: 0 0 auto; width: 10px; background: var(--panel2); border-radius: 2px 2px 0 0; cursor: pointer; position: relative; height: 100%; }
+#layers div { flex: 1 1 0; min-width: 6px; max-width: 28px; background: var(--panel2); border-radius: 2px 2px 0 0; cursor: pointer; position: relative; height: 100%; }
 #layers div span { position: absolute; bottom: 0; left: 0; right: 0; background: var(--accent); border-radius: 2px 2px 0 0; }
 #layers div.cur { outline: 2px solid #fff; }
 table { width: 100%; border-collapse: collapse; }
