@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schematic Progress</title>
+<style>
+:root {
+  --bg: #14161a; --panel: #1d2026; --panel2: #252932; --line: #2f3440;
+  --text: #e7e9ee; --muted: #9aa1ad; --accent: #6cc070; --warn: #e8a33d; --bad: #e0574f; --unk: #5b6170;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.4 system-ui, "Segoe UI", Roboto, sans-serif; }
+header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px 16px; background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+header h1 { font-size: 17px; margin: 0 8px 0 0; letter-spacing: .3px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--bad); display: inline-block; margin-right: 6px; }
+.dot.on { background: var(--accent); }
+main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; padding: 14px 16px; max-width: 1500px; margin: 0 auto; }
+@media (max-width: 960px) { main { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 10px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.card h2 .sp { flex: 1; }
+.span2 { grid-column: 1 / -1; }
+select, input, button { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; }
+input[type=number] { width: 84px; }
+button { cursor: pointer; }
+button:hover { border-color: #4a5160; }
+button.primary { background: #2f6b39; border-color: #3b8447; }
+button.on { background: #3a4a66; border-color: #5672a3; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.muted { color: var(--muted); }
+.big { font-size: 34px; font-weight: 700; line-height: 1; }
+.bar { height: 12px; background: var(--panel2); border-radius: 6px; overflow: hidden; display: flex; margin: 10px 0 8px; }
+.bar > div { height: 100%; }
+.stats { display: flex; flex-wrap: wrap; gap: 16px; }
+.stat b { display: block; font-size: 18px; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+#mapWrap { position: relative; overflow: auto; max-height: 560px; background: #0e1013; border-radius: 8px; border: 1px solid var(--line); }
+#map { display: block; image-rendering: pixelated; }
+#tip { position: fixed; pointer-events: none; background: #000d; border: 1px solid var(--line); padding: 5px 8px; border-radius: 6px; font-size: 12px; display: none; z-index: 10; white-space: nowrap; }
+#layers { display: flex; align-items: flex-end; gap: 2px; height: 70px; overflow-x: auto; padding-bottom: 2px; }
+#layers div { flex: 0 0 auto; width: 10px; background: var(--panel2); border-radius: 2px 2px 0 0; cursor: pointer; position: relative; height: 100%; }
+#layers div span { position: absolute; bottom: 0; left: 0; right: 0; background: var(--accent); border-radius: 2px 2px 0 0; }
+#layers div.cur { outline: 2px solid #fff; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: right; padding: 5px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; cursor: pointer; user-select: none; position: sticky; top: 0; background: var(--panel); }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 7px; vertical-align: -2px; border: 1px solid #0006; }
+td.miss { color: var(--bad); font-weight: 700; }
+td.ok { color: var(--accent); }
+.scroll { max-height: 520px; overflow: auto; }
+.todo { border-bottom: 1px solid var(--line); padding: 7px 0; }
+.todo summary { cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.todo summary b { margin-left: auto; }
+.coords { font-family: ui-monospace, Consolas, monospace; font-size: 12px; color: var(--muted); padding: 6px 0 0 19px; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.coords .w { color: var(--warn); }
+.msg { padding: 8px 12px; border-radius: 8px; margin: 10px 16px 0; display: none; }
+.msg.err { background: #4a1f1d; border: 1px solid #7c302b; display: block; }
+.msg.info { background: #1f3a24; border: 1px solid #2f5c37; display: block; }
+.empty { text-align: center; padding: 40px 10px; color: var(--muted); }
+.empty code { background: var(--panel2); padding: 2px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>⛏ Schematic Progress</h1>
+  <span><span id="conn" class="dot"></span><span id="connText" class="muted">нет связи с игрой</span></span>
+  <span class="row" style="margin-left:auto">
+    <select id="files" style="max-width:340px"><option>…</option></select>
+    <button id="reload" title="Обновить список файлов">⟳</button>
+    <button id="load" class="primary">Загрузить</button>
+    <button id="unload">Выгрузить</button>
+  </span>
+</header>
+<div id="msg" class="msg"></div>
+
+<div id="empty" class="empty">
+  <p style="font-size:16px">Схематика не загружена.</p>
+  <p>Положи файл <code>.litematic</code>, <code>.schem</code> или <code>.nbt</code> в папку<br><code id="dir">schematics</code><br>и выбери его вверху.</p>
+  <p>Схематика ставится углом туда, где ты стоишь. Потом место можно сдвинуть.</p>
+</div>
+
+<main id="main" style="display:none">
+  <section class="card">
+    <h2>Общий прогресс <span class="sp"></span><span id="schemName" class="muted" style="text-transform:none;letter-spacing:0"></span></h2>
+    <div class="row" style="align-items:baseline;gap:14px">
+      <span class="big" id="pct">0%</span>
+      <span class="muted" id="pctText"></span>
+    </div>
+    <div class="bar" id="bar"></div>
+    <div class="stats">
+      <div class="stat"><b id="sDone" style="color:var(--accent)">0</b><span class="muted">поставлено</span></div>
+      <div class="stat"><b id="sMiss" style="color:var(--bad)">0</b><span class="muted">осталось поставить</span></div>
+      <div class="stat"><b id="sWrong" style="color:var(--warn)">0</b><span class="muted">не тот блок</span></div>
+      <div class="stat"><b id="sUnk" style="color:var(--unk)">0</b><span class="muted">не прогружено</span></div>
+    </div>
+    <div id="dimWarn" class="msg err" style="margin:10px 0 0;display:none">Ты в другом измерении — сравнение на паузе.</div>
+  </section>
+
+  <section class="card">
+    <h2>Где стоит схематика</h2>
+    <div class="row">
+      X <input type="number" id="ox"> Y <input type="number" id="oy"> Z <input type="number" id="oz">
+      <button id="setOrigin">Применить</button>
+      <button id="here" class="primary">Поставить где я стою</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <span class="muted">Сдвиг:</span>
+      <button data-n="-1,0,0">X−</button><button data-n="1,0,0">X+</button>
+      <button data-n="0,-1,0">Y−</button><button data-n="0,1,0">Y+</button>
+      <button data-n="0,0,-1">Z−</button><button data-n="0,0,1">Z+</button>
+      <span class="muted" style="margin-left:8px">Поворот:</span>
+      <select id="rot"><option value="0">0°</option><option value="1">90°</option><option value="2">180°</option><option value="3">270°</option></select>
+    </div>
+    <div class="muted" style="margin-top:10px" id="sizeText"></div>
+    <div class="muted" id="playerText"></div>
+  </section>
+
+  <section class="card span2">
+    <h2>Слои <span class="sp"></span><span class="muted" style="text-transform:none;letter-spacing:0">нажми на столбик, чтобы открыть слой</span></h2>
+    <div id="layers"></div>
+  </section>
+
+  <section class="card">
+    <h2>
+      Слой <span id="layerName" style="color:var(--text)"></span>
+      <span class="sp"></span>
+      <button id="lDown">▼</button><button id="lUp">▲</button><button id="lAuto">Авто</button>
+    </h2>
+    <div class="row" style="align-items:baseline;gap:14px">
+      <span class="big" id="lPct">0%</span><span class="muted" id="lText"></span>
+    </div>
+    <div class="bar" id="lBar"></div>
+    <div id="mapWrap"><canvas id="map"></canvas></div>
+    <div class="legend">
+      <span><i style="background:var(--accent)"></i>поставлено (цвет блока)</span>
+      <span><i style="background:var(--bad)"></i>надо поставить</span>
+      <span><i style="background:var(--warn)"></i>стоит не тот блок</span>
+      <span><i style="background:var(--unk)"></i>не прогружено</span>
+      <span><i style="background:#fff;border-radius:50%"></i>ты</span>
+      <span>↑ север</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Что ещё поставить на этом слое <span class="sp"></span><span id="todoCount" class="muted"></span></h2>
+    <div class="scroll" id="todo"></div>
+  </section>
+
+  <section class="card span2">
+    <h2>
+      Материалы <span class="sp"></span>
+      <input id="search" placeholder="поиск…" style="width:150px;text-transform:none">
+      <button data-f="all" class="on">Все</button>
+      <button data-f="missing">Не хватает</button>
+      <button data-f="layer">Для слоя</button>
+      <button id="copy">Скопировать список</button>
+    </h2>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th data-s="name">Блок</th><th data-s="total">Всего</th><th data-s="placed">Поставлено</th>
+          <th data-s="left">Осталось</th><th data-s="inv">В инвентаре</th><th data-s="need">Не хватает</th>
+          <th data-s="layer">Для слоя</th><th data-s="stacks">Стаки</th>
+        </tr></thead>
+        <tbody id="mats"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<div id="tip"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let state = null, layer = null, filter = 'all', sortKey = 'left', sortDir = -1, viewLayer = -1;
+
+const hex = c => '#' + (c >>> 0).toString(16).padStart(6, '0').slice(-6);
+const fmt = n => n.toLocaleString('ru-RU');
+const pct = (a, b) => b ? Math.floor(a * 1000 / b) / 10 : 100;
+const stacks = n => { const s = Math.floor(n / 64), r = n % 64; return n <= 0 ? '' : (s ? s + '×64' : '') + (s && r ? ' + ' : '') + (r ? r : ''); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function post(cmd, params = {}) {
+  const r = await fetch('/api/' + cmd + '?' + new URLSearchParams(params), { method: 'POST' });
+  const j = await r.json();
+  if (!j.ok) showMsg(j.error, true);
+  setTimeout(tick, 150);
+  return j;
+}
+function showMsg(t, err) { const m = $('msg'); m.textContent = t; m.className = 'msg ' + (t ? (err ? 'err' : 'info') : ''); }
+
+async function loadFiles() {
+  const j = await (await fetch('/api/files')).json();
+  $('dir').textContent = j.dir;
+  const sel = $('files'), cur = state && state.file;
+  sel.innerHTML = j.files.length ? j.files.map(f => `<option${f === cur ? ' selected' : ''}>${esc(f)}</option>`).join('')
+                                 : '<option value="">(папка schematics пустая)</option>';
+}
+
+function bar(el, parts) {
+  el.innerHTML = parts.filter(p => p[0] > 0).map(p => `<div style="width:${p[0]}%;background:${p[1]}"></div>`).join('');
+}
+
+function renderState() {
+  const s = state;
+  $('conn').className = 'dot on';
+  $('connText').textContent = s.inWorld ? 'игра подключена' : 'игра запущена, но ты не в мире';
+  if (s.error) showMsg(s.error, true);
+  $('main').style.display = s.loaded ? '' : 'none';
+  $('empty').style.display = s.loaded ? 'none' : '';
+  if (!s.loaded) return;
+
+  const p = s.progress, t = p.total;
+  $('schemName').textContent = s.name;
+  $('pct').textContent = pct(p.done, t) + '%';
+  $('pctText').textContent = s.scanned ? `${fmt(p.done)} из ${fmt(t)} блоков` : 'сканирую мир…';
+  bar($('bar'), [[p.done / t * 100, 'var(--accent)'], [p.wrong / t * 100, 'var(--warn)'], [p.unknown / t * 100, 'var(--unk)']]);
+  $('sDone').textContent = fmt(p.done); $('sMiss').textContent = fmt(p.missing);
+  $('sWrong').textContent = fmt(p.wrong); $('sUnk').textContent = fmt(p.unknown);
+  $('dimWarn').style.display = s.dimensionOk ? 'none' : 'block';
+
+  for (const [i, k] of ['ox', 'oy', 'oz'].entries()) if (document.activeElement !== $(k)) $(k).value = s.origin[i];
+  if (document.activeElement !== $('rot')) $('rot').value = s.rotation;
+  $('sizeText').textContent = `Размер: ${s.size[0]} × ${s.size[1]} × ${s.size[2]} (Ш × В × Д), слои Y ${s.baseY}…${s.baseY + s.size[1] - 1}`;
+  $('playerText').textContent = `Ты сейчас: ${s.player.x} ${s.player.y} ${s.player.z}`;
+
+  const L = $('layers');
+  if (L.children.length !== s.layers.length) {
+    L.innerHTML = s.layers.map((_, i) => `<div data-l="${i}"><span></span></div>`).join('');
+  }
+  s.layers.forEach((l, i) => {
+    const d = L.children[i], [tot, done, wrong] = l;
+    d.firstChild.style.height = (tot ? done / tot * 100 : 0) + '%';
+    d.firstChild.style.background = tot === 0 ? 'transparent' : done === tot ? 'var(--accent)' : wrong ? 'var(--warn)' : '#4f9a55';
+    d.className = i === shownLayer() ? 'cur' : '';
+    d.title = `Y ${s.baseY + i}: ${done}/${tot}` + (wrong ? `, не тот блок: ${wrong}` : '');
+  });
+  $('lAuto').className = s.layerAuto ? 'on' : '';
+  renderMats();
+}
+
+function shownLayer() { return state ? (state.layerAuto ? state.layer : (viewLayer >= 0 ? viewLayer : state.layer)) : -1; }
+
+function renderMats() {
+  const s = state, q = $('search').value.trim().toLowerCase();
+  let rows = s.materials.map(m => ({ ...m, left: m.total - m.placed, need: Math.max(0, m.total - m.placed - m.inv), stacks: m.total - m.placed }));
+  if (filter === 'missing') rows = rows.filter(r => r.need > 0);
+  if (filter === 'layer') rows = rows.filter(r => r.layer > 0);
+  if (q) rows = rows.filter(r => r.name.toLowerCase().includes(q) || r.key.includes(q));
+  rows.sort((a, b) => sortKey === 'name' ? sortDir * a.name.localeCompare(b.name) : sortDir * (a[sortKey] - b[sortKey]));
+  $('mats').innerHTML = rows.map(r => `<tr>
+    <td><span class="sw" style="background:${hex(r.color)}"></span>${esc(r.name)}</td>
+    <td>${fmt(r.total)}</td><td class="${r.left === 0 ? 'ok' : ''}">${fmt(r.placed)}</td><td>${fmt(r.left)}</td>
+    <td>${fmt(r.inv)}</td><td class="${r.need ? 'miss' : 'ok'}">${r.need ? fmt(r.need) : '✓'}</td>
+    <td>${r.layer ? fmt(r.layer) : ''}</td><td class="muted">${stacks(r.left)}</td></tr>`).join('')
+    || '<tr><td colspan="8" class="muted" style="text-align:center">Пусто</td></tr>';
+  window._rows = rows;
+}
+
+function renderLayer() {
+  const l = layer, s = state;
+  if (!l || !l.loaded || !s || !s.loaded) return;
+  const info = s.layers[l.layer] || [0, 0, 0, 0];
+  $('layerName').textContent = `${l.layer + 1} / ${s.layers.length} (Y ${l.y})`;
+  const counts = { d: 0, m: 0, w: 0, u: 0 };
+  for (const c of l.status) if (c in counts) counts[c]++;
+  const tot = counts.d + counts.m + counts.w + counts.u;
+  $('lPct').textContent = pct(counts.d, tot) + '%';
+  $('lText').textContent = `${fmt(counts.d)} из ${fmt(tot)}` + (counts.m + counts.w ? ` — осталось ${fmt(counts.m + counts.w)}` : ' — слой готов ✓');
+  bar($('lBar'), [[counts.d / tot * 100, 'var(--accent)'], [counts.w / tot * 100, 'var(--warn)'], [counts.u / tot * 100, 'var(--unk)']]);
+
+  // map
+  const cv = $('map'), wrap = $('mapWrap');
+  const cell = Math.max(3, Math.min(24, Math.floor((wrap.clientWidth - 2) / l.w)));
+  cv.width = l.w * cell; cv.height = l.h * cell;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#0e1013'; g.fillRect(0, 0, cv.width, cv.height);
+  for (let i = 0; i < l.cells.length; i++) {
+    const p = l.cells[i]; if (p < 0) continue;
+    const x = (i % l.w) * cell, y = Math.floor(i / l.w) * cell, st = l.status[i];
+    if (st === 'd') { g.fillStyle = hex(l.palette[p].color); g.fillRect(x, y, cell, cell); }
+    else if (st === 'm') {
+      g.fillStyle = hex(l.palette[p].color) + '55'; g.fillRect(x, y, cell, cell);
+      g.strokeStyle = '#e0574f'; g.lineWidth = Math.max(1, cell / 6); g.strokeRect(x + g.lineWidth / 2, y + g.lineWidth / 2, cell - g.lineWidth, cell - g.lineWidth);
+    } else if (st === 'w') { g.fillStyle = '#e8a33d'; g.fillRect(x, y, cell, cell); }
+    else { g.fillStyle = '#5b6170'; g.fillRect(x, y, cell, cell); }
+  }
+  if (cell >= 8) { g.strokeStyle = '#0005'; g.lineWidth = 1;
+    for (let x = 0; x <= l.w; x++) { g.beginPath(); g.moveTo(x * cell + .5, 0); g.lineTo(x * cell + .5, cv.height); g.stroke(); }
+    for (let y = 0; y <= l.h; y++) { g.beginPath(); g.moveTo(0, y * cell + .5); g.lineTo(cv.width, y * cell + .5); g.stroke(); } }
+  const pxx = (s.player.x - l.minX + .5) * cell, pzz = (s.player.z - l.minZ + .5) * cell;
+  if (pxx >= 0 && pzz >= 0 && pxx <= cv.width && pzz <= cv.height) {
+    g.fillStyle = '#fff'; g.strokeStyle = '#000'; g.lineWidth = 2;
+    g.beginPath(); g.arc(pxx, pzz, Math.max(4, cell * .45), 0, 7); g.fill(); g.stroke();
+  }
+  cv._cell = cell;
+
+  // todo list (keep opened groups open)
+  const open = new Set([...document.querySelectorAll('#todo details[open]')].map(d => d.dataset.p));
+  $('todoCount').textContent = l.todo.length ? fmt(l.todo.reduce((a, t) => a + t.count, 0)) + ' блоков' : '';
+  $('todo').innerHTML = l.todo.length ? l.todo.map(t => `<details class="todo" data-p="${t.pal}"${open.has(String(t.pal)) ? ' open' : ''}>
+    <summary><span class="sw" style="background:${hex(t.color)}"></span>${esc(t.name)} <span class="muted" style="font-size:11px">${esc(t.state.replace('minecraft:', ''))}</span><b>${fmt(t.count)}</b></summary>
+    <div class="coords">${t.pos.map(p => `<span class="${p[3] === 3 ? 'w' : ''}" title="${p[3] === 3 ? 'стоит другой блок' : ''}">${p[0]} ${p[1]} ${p[2]}</span>`).join('')}${t.count > t.pos.length ? `<span>… и ещё ${t.count - t.pos.length}</span>` : ''}</div>
+  </details>`).join('') : '<div class="empty">На этом слое всё поставлено 🎉</div>';
+}
+
+async function tick() {
+  try {
+    state = await (await fetch('/api/state')).json();
+    renderState();
+    if (state.loaded) {
+      layer = await (await fetch('/api/layer?y=' + shownLayer())).json();
+      renderLayer();
+    }
+  } catch (e) {
+    $('conn').className = 'dot'; $('connText').textContent = 'нет связи с игрой — Minecraft запущен?';
+  }
+}
+
+// --- controls ---
+$('reload').onclick = loadFiles;
+$('load').onclick = () => { const f = $('files').value; if (f) { showMsg('Загружаю ' + f + '…'); post('load', { file: f }).then(j => j.ok && showMsg('')); } };
+$('unload').onclick = () => post('unload');
+$('here').onclick = () => post('here');
+$('setOrigin').onclick = () => post('origin', { x: $('ox').value, y: $('oy').value, z: $('oz').value });
+$('rot').onchange = () => post('rotate', { r: $('rot').value });
+document.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { const [dx, dy, dz] = b.dataset.n.split(','); post('nudge', { dx, dy, dz }); });
+function goLayer(i) { if (!state) return; i = Math.max(0, Math.min(state.layers.length - 1, i)); viewLayer = i; post('layer', { y: i }); }
+$('lUp').onclick = () => goLayer(shownLayer() + 1);
+$('lDown').onclick = () => goLayer(shownLayer() - 1);
+$('lAuto').onclick = () => { viewLayer = -1; post('layer', { y: -1 }); };
+$('layers').onclick = e => { const d = e.target.closest('[data-l]'); if (d) goLayer(+d.dataset.l); };
+document.querySelectorAll('[data-f]').forEach(b => b.onclick = () => {
+  filter = b.dataset.f; document.querySelectorAll('[data-f]').forEach(x => x.className = x === b ? 'on' : ''); state && renderMats();
+});
+document.querySelectorAll('th[data-s]').forEach(th => th.onclick = () => {
+  const k = th.dataset.s; sortDir = sortKey === k ? -sortDir : (k === 'name' ? 1 : -1); sortKey = k; state && renderMats();
+});
+$('search').oninput = () => state && renderMats();
+$('copy').onclick = () => {
+  const text = (window._rows || []).filter(r => r.left > 0).map(r => `${r.name}: ${r.left}` + (r.left >= 64 ? ` (${stacks(r.left)})` : '') + (r.need ? `, не хватает ${r.need}` : '')).join('\n');
+  navigator.clipboard.writeText(text).then(() => showMsg('Список скопирован'), () => showMsg('Не удалось скопировать', true));
+};
+const tip = $('tip');
+$('map').onmousemove = e => {
+  if (!layer || !layer.loaded) return;
+  const cv = $('map'), r = cv.getBoundingClientRect(), c = cv._cell;
+  const cx = Math.floor((e.clientX - r.left) / c), cz = Math.floor((e.clientY - r.top) / c), i = cz * layer.w + cx;
+  const p = layer.cells[i];
+  if (p === undefined || p < 0) { tip.style.display = 'none'; return; }
+  const st = { d: 'поставлено', m: 'надо поставить', w: 'стоит другой блок', u: 'не прогружено' }[layer.status[i]];
+  tip.innerHTML = `<b>${esc(layer.palette[p].name)}</b> — ${st}<br><span class="muted">${layer.minX + cx} ${layer.y} ${layer.minZ + cz}</span>`;
+  tip.style.display = 'block'; tip.style.left = (e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 14) + 'px';
+};
+$('map').onmouseleave = () => tip.style.display = 'none';
+
+tick().then(loadFiles);
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "schematicprogress",
+  "version": "${version}",
+  "name": "Schematic Progress",
+  "description": "Loads a schematic (.litematic, .schem, .nbt), compares it with the world and shows the materials you still need, the current layer progress and the blocks left to place on a local web dashboard (http://localhost:8765). Display only, places nothing.",
+  "authors": ["Rhineland905"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": { "client": ["dev.schematicprogress.SchematicProgressClient"] },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~26.3",
+    "java": ">=25"
+  }
+}
